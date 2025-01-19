@@ -73,7 +73,7 @@ export function SuccessStep() {
 				<Button
 					className="w-full"
 					size="lg"
-					onClick={() => router.push('/dashboard')}
+					onClick={() => router.push('/app')}
 				>
 					{success.cta}
 				</Button>

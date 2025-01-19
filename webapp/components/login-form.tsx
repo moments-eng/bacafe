@@ -10,12 +10,32 @@ import GoogleLogo from '@/public/google-logo.svg';
 import Image from 'next/image';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 export function LoginForm({
 	className,
 	...props
 }: React.ComponentPropsWithoutRef<'div'>) {
 	const { login } = hebrewContent;
+	const [isLoading, setIsLoading] = useState<{
+		google: boolean;
+		facebook: boolean;
+	}>({
+		google: false,
+		facebook: false,
+	});
+
+	const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+		try {
+			setIsLoading((prev) => ({ ...prev, [provider]: true }));
+			await signIn(provider, { redirectTo: '/app' });
+		} catch (error) {
+			setIsLoading((prev) => ({ ...prev, [provider]: false }));
+		}
+	};
+
+	const isAuthenticating = isLoading.google || isLoading.facebook;
 
 	return (
 		<div
@@ -33,22 +53,37 @@ export function LoginForm({
 					<Button
 						variant="outline"
 						className="relative h-12 justify-center gap-2 overflow-hidden bg-white/5 backdrop-blur-sm hover:bg-white/10"
-						onClick={() => signIn('facebook', { redirectTo: '/app' })}
+						onClick={() => handleSocialLogin('facebook')}
+						disabled={isAuthenticating}
 					>
-						<Image
-							src={FacebookLogo}
-							alt="Facebook Logo"
-							width={20}
-							height={20}
-						/>
+						{isLoading.facebook ? (
+							<Loader2 className="h-5 w-5 animate-spin" />
+						) : (
+							<Image
+								src={FacebookLogo}
+								alt="Facebook Logo"
+								width={20}
+								height={20}
+							/>
+						)}
 						<span>{login.socialLogin.facebook}</span>
 					</Button>
 					<Button
 						variant="outline"
 						className="relative h-12 justify-center gap-2 overflow-hidden bg-white/5 backdrop-blur-sm hover:bg-white/10"
-						onClick={() => signIn('google', { redirectTo: '/app' })}
+						onClick={() => handleSocialLogin('google')}
+						disabled={isAuthenticating}
 					>
-						<Image src={GoogleLogo} alt="Google Logo" width={20} height={20} />
+						{isLoading.google ? (
+							<Loader2 className="h-5 w-5 animate-spin" />
+						) : (
+							<Image
+								src={GoogleLogo}
+								alt="Google Logo"
+								width={20}
+								height={20}
+							/>
+						)}
 						<span>{login.socialLogin.google}</span>
 					</Button>
 				</div>
@@ -76,6 +111,7 @@ export function LoginForm({
 							placeholder={login.form.email.placeholder}
 							className="h-12 bg-white/5 backdrop-blur-sm"
 							dir="ltr"
+							disabled={isAuthenticating}
 						/>
 					</div>
 
@@ -95,14 +131,17 @@ export function LoginForm({
 							type="password"
 							className="h-12 bg-white/5 backdrop-blur-sm"
 							dir="ltr"
+							disabled={isAuthenticating}
 						/>
 					</div>
 
-					<Button className="mt-2 h-12" type="submit">
+					<Button
+						className="mt-2 h-12"
+						type="submit"
+						disabled={isAuthenticating}
+					>
 						{login.form.submit}
 					</Button>
-
-				
 				</form>
 
 				{/* Terms */}

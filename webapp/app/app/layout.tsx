@@ -2,6 +2,8 @@
 import { Header } from '@/components/header';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { SessionProvider } from 'next-auth/react';
+import { Suspense } from 'react';
+import Loading from './loading';
 
 export default function AppLayout({
 	children,
@@ -13,7 +15,9 @@ export default function AppLayout({
 			<DirectionProvider dir="rtl">
 				<Header />
 				<div className="relative flex min-h-screen flex-col">
-					<main className="flex-1">{children}</main>
+					<main className="flex-1">
+						<Suspense fallback={<Loading />}>{children}</Suspense>
+					</main>
 				</div>
 			</DirectionProvider>
 		</SessionProvider>

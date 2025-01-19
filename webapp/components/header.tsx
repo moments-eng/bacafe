@@ -36,7 +36,7 @@ export function Header() {
 						side="right"
 						className="flex w-[85vw] flex-col gap-0 overflow-hidden p-0 sm:max-w-sm [&_*]:text-right"
 					>
-						<SheetTitle hidden>Bapoop</SheetTitle>
+						<SheetTitle hidden>בקפה</SheetTitle>
 						<Sidebar />
 					</SheetContent>
 				</Sheet>

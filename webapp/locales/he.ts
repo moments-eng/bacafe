@@ -7,7 +7,10 @@ export const hebrewContent = {
 		'קבלו תקציר יומי של תוכן שמתאים בדיוק לכם, ישירות לערוצים המועדפים עליכם. ללא פרסומות, ללא בלגן - רק מה שאתם אוהבים.',
 	startButton: 'התחל כאן',
 	learnMore: 'למידע נוסף',
-
+	metadata: {
+		title: 'בקפה',
+		description: 'תוכן שמתאים לכם בדיוק בזמן',
+	},
 	onboarding: {
 		header: {
 			title: 'בוא נכיר אותך טיפה',
@@ -149,6 +152,27 @@ export const hebrewContent = {
 			signup: {
 				title: 'הרשמה',
 				description: 'צור/י חשבון חדש',
+			},
+		},
+	},
+
+	app: {
+		loading: 'טוען...',
+		redirect: 'מעביר אותך להשלמת תהליך ההיכרות...',
+		welcome: {
+			title: 'ברוכים הבאים לחוויה החדשה שלך',
+			greeting: 'היי {name} 👋',
+			subtitle: 'אנחנו בונים בשבילך את פרופיל התוכן המושלם',
+			description:
+				'בזמן שאנחנו מאמנים את האלגוריתם שלנו להכיר אותך, הנה כמה דברים שכדאי שתדע:',
+			features: [
+				'התוכן שלך נבחר בקפידה על פי ההעדפות שבחרת',
+				'ככל שתשתמש/י יותר, כך נדע להתאים לך תוכן טוב יותר',
+				'בכל יום נשלח לך תקציר מותאם אישית בדיוק בזמן שביקשת',
+			],
+			beta: {
+				label: 'בטא',
+				text: 'את/ה חלק מקבוצה נבחרת של משתמשים שמעצבים איתנו את העתיד של צריכת התוכן',
 			},
 		},
 	},

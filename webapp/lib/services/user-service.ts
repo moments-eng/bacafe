@@ -27,6 +27,12 @@ export class UserService {
 		});
 		return user?.toJSON() || null;
 	}
+
+	async getUser(email: string): Promise<User | null> {
+		await connectDB();
+		const user = await UserModel.findOne({ email });
+		return user?.toJSON() || null;
+	}
 }
 
 export const userService = new UserService();
