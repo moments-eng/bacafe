@@ -155,7 +155,6 @@ export const hebrewContent = {
 			},
 		},
 	},
-
 	app: {
 		loading: 'טוען...',
 		redirect: 'מעביר אותך להשלמת תהליך ההיכרות...',
