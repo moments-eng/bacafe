@@ -1,11 +1,6 @@
 'use client';
 
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useOnboardingStore } from '@/stores/onboarding';
-import { hebrewContent } from '@/locales/he';
-import { markOnboardingDone, updateUser } from '../actions';
+import { Button } from '@/components/ui/button';
 import {
 	Form,
 	FormControl,
@@ -13,8 +8,6 @@ import {
 	FormItem,
 	FormMessage,
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import {
 	Select,
 	SelectContent,
@@ -22,16 +15,17 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { hebrewContent } from '@/locales/he';
+import { useOnboardingStore } from '@/stores/onboarding';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { updateUser } from '../actions';
 
 const { onboarding } = hebrewContent;
 const { timePreference } = onboarding.steps;
-
-const timeOptions = {
-	morning: timePreference.morning.time,
-	noon: timePreference.noon.time,
-	evening: timePreference.evening.time,
-} as const;
 
 const formSchema = z.object({
 	digestTime: z.string().min(1, {
@@ -84,7 +78,6 @@ export function TimePreferenceStep() {
 
 		if (result.success) {
 			setDigestTime(values.digestTime);
-			await markOnboardingDone();
 			nextStep();
 		}
 	};
