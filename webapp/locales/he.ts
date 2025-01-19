@@ -1,5 +1,6 @@
 export const hebrewContent = {
-	tagline: 'מכניסים אותך לעניינים בקקה של הבוקר',
+	companyName: 'בקפה',
+	tagline: 'מכניסים אותך לעניינים בקפה של הבוקר',
 	mainTitle: 'מהפכה בצריכת',
 	mainTitleHighlight: 'התוכן שלך',
 	description:

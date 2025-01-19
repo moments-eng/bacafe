@@ -1,14 +1,15 @@
 'use client';
 
-import Confetti from 'react-confetti';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { Mail, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useContainerDimensions } from '@/hooks/use-container-dimensions';
 import { hebrewContent } from '@/locales/he';
 import { useOnboardingStore } from '@/stores/onboarding';
-import { useContainerDimensions } from '@/hooks/use-container-dimensions';
-import { CardWrapper } from '../components/card-wrapper';
+import { motion } from 'framer-motion';
+import { Mail, MessageCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import Confetti from 'react-confetti';
+import { updateUser } from '../actions';
 
 const { success } = hebrewContent.onboarding;
 
@@ -17,8 +18,12 @@ export function SuccessStep() {
 	const { name, digestTime } = useOnboardingStore();
 	const { width, height } = useContainerDimensions();
 
+	useEffect(() => {
+		updateUser({ isOnboardingDone: true });
+	}, []);
+
 	return (
-		<CardWrapper>
+		<div className="relative p-6 space-y-6">
 			<Confetti
 				width={width}
 				height={height}
@@ -88,6 +93,6 @@ export function SuccessStep() {
 					</Button>
 				</div>
 			</motion.div>
-		</CardWrapper>
+		</div>
 	);
 }

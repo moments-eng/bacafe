@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Heebo } from 'next/font/google';
 import './globals.css';
+import { SessionProvider } from 'next-auth/react';
 
 const heebo = Heebo({
 	subsets: ['hebrew'],

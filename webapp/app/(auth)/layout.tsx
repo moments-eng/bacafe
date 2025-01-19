@@ -10,8 +10,8 @@ export default function AuthLayout({
 }) {
 	return (
 		<div className="relative min-h-[100dvh]">
-			{/* Back Button */}
-			<div className="absolute right-4 top-4 z-50">
+			<div className="relative">{children}</div>
+			<div>
 				<Link href="/">
 					<Button
 						variant="ghost"
@@ -22,9 +22,6 @@ export default function AuthLayout({
 					</Button>
 				</Link>
 			</div>
-
-			{/* Main Content */}
-			<div className="relative">{children}</div>
 		</div>
 	);
 }

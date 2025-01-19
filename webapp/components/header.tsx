@@ -1,30 +1,30 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
-import { Leckerli_One } from 'next/font/google';
 import {
 	Sheet,
 	SheetContent,
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet';
+import { Menu } from 'lucide-react';
 import { Sidebar } from './sidebar/sidebar';
-import { useSession } from 'next-auth/react';
+import { hebrewContent } from '@/locales/he';
+import { Bona_Nova_SC } from 'next/font/google';
 
-const titleFont = Leckerli_One({
-	subsets: ['latin'],
+const titleFont = Bona_Nova_SC({
+	subsets: ['hebrew'],
 	weight: ['400'],
 });
 
 export function Header() {
 	return (
-		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+		<header className="sticky top-0 z-50 w-full border-b backdrop-blur ">
 			<div className="container flex h-14 max-w-screen-md items-center justify-between">
 				<div
 					className={`${titleFont.className} text-xl flex items-center gap-1`}
 				>
-					<span>💩</span> Bapoop
+					{hebrewContent.companyName} <span>☕</span>
 				</div>
 				<Sheet>
 					<SheetTrigger asChild>

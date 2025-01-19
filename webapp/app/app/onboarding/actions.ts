@@ -1,6 +1,6 @@
 'use server';
 
-import { auth, handlers } from '@/auth';
+import { auth } from '@/auth';
 import { userService } from '@/lib/services/user-service';
 import { unauthorized } from 'next/navigation';
 import { z } from 'zod';
@@ -32,15 +32,15 @@ export async function updateUser(
 	data: UserUpdateData,
 ): Promise<UpdateUserResponse> {
 	const session = await auth();
-	if (!session?.user?.id) {
+	if (!session?.user?.email) {
 		return unauthorized();
 	}
 
 	console.log('Starting updateUser with data:', data);
 
-	const userId = session.user.id;
+	const userEmail = session.user.email;
 
-	console.log('Processing update for userId:', userId);
+	console.log('Processing update for userId:', userEmail);
 
 	try {
 		const validatedFields = userUpdateSchema.safeParse(data);
@@ -54,7 +54,7 @@ export async function updateUser(
 			};
 		}
 
-		await userService.updateUser(userId, { $set: validatedFields.data });
+		await userService.updateUser(userEmail, { $set: validatedFields.data });
 		console.log('User updated successfully');
 
 		return {
@@ -74,13 +74,13 @@ export async function updateArticleScore(
 	score: -1 | 1,
 ): Promise<UpdateUserResponse> {
 	const session = await auth();
-	if (!session?.user?.id) {
+	if (!session?.user?.email) {
 		return unauthorized();
 	}
-	const userId = session.user.id;
+	const userEmail = session.user.email;
 
 	try {
-		await userService.updateUser(userId, {
+		await userService.updateUser(userEmail, {
 			$push: { articleScores: { articleId, score } },
 		});
 

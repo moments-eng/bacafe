@@ -17,24 +17,12 @@ type UpdateOperation = {
 };
 
 export class UserService {
-	async createUser(userData: CreateUserInput) {
-		await connectDB();
-		const user = await UserModel.create(userData);
-		return user.toJSON();
-	}
-
-	async getUserById(userId: string) {
-		await connectDB();
-		const user = await UserModel.findOne({ id: userId });
-		return user?.toJSON() || null;
-	}
-
 	async updateUser(
-		userId: string,
+		email: string,
 		updateData: Partial<CreateUserInput> | UpdateOperation,
 	) {
 		await connectDB();
-		const user = await UserModel.findOneAndUpdate({ id: userId }, updateData, {
+		const user = await UserModel.findOneAndUpdate({ email }, updateData, {
 			new: true,
 		});
 		return user?.toJSON() || null;

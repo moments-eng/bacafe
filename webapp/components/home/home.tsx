@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { auth } from '@/auth';
 import { hebrewContent } from '@/locales/he';
-import { Leckerli_One } from 'next/font/google';
+import { Bona_Nova_SC } from 'next/font/google';
 import Link from 'next/link';
 import './home.css';
 
-const titleFont = Leckerli_One({
-	subsets: ['latin'],
+const titleFont = Bona_Nova_SC({
+	subsets: ['hebrew'],
 	weight: ['400'],
 });
 
@@ -20,7 +20,7 @@ export async function Home() {
 	return (
 		<div>
 			<h1 className={`${titleFont.className} brand-title`}>
-				<span>💩</span> Bapoop
+				{hebrewContent.companyName} <span>☕</span>
 			</h1>
 
 			<p className="text-center text-muted-foreground mt-2 font-medium font-heebo">

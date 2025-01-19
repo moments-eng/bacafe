@@ -11,7 +11,7 @@ export default function LoginPage() {
 	const { auth } = hebrewContent;
 
 	return (
-		<div className="flex min-h-[100dvh] flex-col items-center justify-center">
+		<div className="flex min-h-[100dvh] flex-col items-center">
 			<div className="w-full max-w-[400px] px-4">
 				<div className="mb-8 text-center">
 					<h1 className="text-2xl font-bold">{auth.pages.login.title}</h1>

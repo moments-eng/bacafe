@@ -1,13 +1,15 @@
-import { cn } from '@/lib/utils';
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { hebrewContent } from '@/locales/he';
 import FacebookLogo from '@/public/facebook-logo.svg';
 import GoogleLogo from '@/public/google-logo.svg';
-import { hebrewContent } from '@/locales/he';
+import Image from 'next/image';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { Heebo } from 'next/font/google';
 
 export function LoginForm({
 	className,
@@ -31,6 +33,7 @@ export function LoginForm({
 					<Button
 						variant="outline"
 						className="relative h-12 justify-center gap-2 overflow-hidden bg-white/5 backdrop-blur-sm hover:bg-white/10"
+						onClick={() => signIn('facebook', { redirectTo: '/app' })}
 					>
 						<Image
 							src={FacebookLogo}
@@ -43,6 +46,7 @@ export function LoginForm({
 					<Button
 						variant="outline"
 						className="relative h-12 justify-center gap-2 overflow-hidden bg-white/5 backdrop-blur-sm hover:bg-white/10"
+						onClick={() => signIn('google', { redirectTo: '/app' })}
 					>
 						<Image src={GoogleLogo} alt="Google Logo" width={20} height={20} />
 						<span>{login.socialLogin.google}</span>
@@ -98,15 +102,7 @@ export function LoginForm({
 						{login.form.submit}
 					</Button>
 
-					<p className="text-center text-sm text-muted-foreground">
-						{login.form.noAccount}{' '}
-						<Link
-							href="/signup"
-							className="font-medium text-foreground hover:text-primary"
-						>
-							{login.form.signUp}
-						</Link>
-					</p>
+				
 				</form>
 
 				{/* Terms */}

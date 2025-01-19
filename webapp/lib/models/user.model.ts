@@ -25,9 +25,6 @@ interface ArticleScore {
 })
 export class User extends TimeStamps {
 	@prop({ required: true, unique: true })
-	public sub!: string;
-
-	@prop({ required: true })
 	public email!: string;
 
 	@prop({ required: true })

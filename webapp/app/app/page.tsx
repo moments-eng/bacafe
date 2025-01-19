@@ -1,4 +1,6 @@
+import { auth } from '@/auth';
 
-export default function Page() {
+export default async function Page() {
+	const session = await auth();
 	return <div>Hello</div>;
 }
