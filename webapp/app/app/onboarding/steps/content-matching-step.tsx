@@ -1,47 +1,53 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useOnboardingStore } from '@/stores/onboarding';
+import { Progress } from '@/components/ui/progress';
 import { hebrewContent } from '@/locales/he';
-import { Check } from 'lucide-react';
+import { useOnboardingStore } from '@/stores/onboarding';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
-import { markOnboardingDone, updateUser } from '../actions';
-import { useRouter } from 'next/navigation';
+import { articles } from '../onboarding-articles';
+import ArticleCard from '@/components/article-card';
+import { updateArticleScore } from '../actions';
 
 const { onboarding } = hebrewContent;
 
-const interests = [
-	{ id: 'tech', label: onboarding.steps.interests.topics.tech },
-	{ id: 'health', label: onboarding.steps.interests.topics.health },
-	{ id: 'food', label: onboarding.steps.interests.topics.food },
-	{ id: 'art', label: onboarding.steps.interests.topics.art },
-	{ id: 'music', label: onboarding.steps.interests.topics.music },
-	{ id: 'travel', label: onboarding.steps.interests.topics.travel },
-];
-
 export function ContentMatchingStep() {
 	const { name, nextStep } = useOnboardingStore();
-	const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-	const [error, setError] = useState<string>();
-	const router = useRouter();
+	const [currentIndex, setCurrentIndex] = useState(0);
+	const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(
+		null,
+	);
+	const [isAnimating, setIsAnimating] = useState(false);
 
-	const toggleInterest = (id: string) => {
-		setSelectedInterests((prev) =>
-			prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-		);
-	};
+	const handleSwipe = async (direction: 'left' | 'right') => {
+		if (isAnimating) return;
 
-	const handleContinue = async () => {
-		if (selectedInterests.length < 3) return;
+		setIsAnimating(true);
+		setSwipeDirection(direction);
 
-		const result = await updateUser({
-			interests: selectedInterests,
-		});
+		// Update the article score
+		const score = direction === 'right' ? 1 : -1;
+		await updateArticleScore(articles[currentIndex].id, score);
 
-		if (result.success) {
-			nextStep();
+		if (currentIndex >= articles.length - 1) {
+			// If this is the last article, move to next step
+			setTimeout(() => {
+				setSwipeDirection(null);
+				setIsAnimating(false);
+				nextStep();
+			}, 100);
+		} else {
+			// Otherwise, show next article
+			setTimeout(() => {
+				setCurrentIndex((prev) => prev + 1);
+				setSwipeDirection(null);
+				setIsAnimating(false);
+			}, 100);
 		}
 	};
+
+	const progress = ((currentIndex + 1) / articles.length) * 100;
 
 	return (
 		<div className="space-y-4">
@@ -51,34 +57,30 @@ export function ContentMatchingStep() {
 			<p className="text-sm text-muted-foreground">
 				{onboarding.steps.interests.description}
 			</p>
-
-			<div className="grid grid-cols-2 gap-3">
-				{interests.map((interest) => (
-					<Button
-						key={interest.id}
-						variant={
-							selectedInterests.includes(interest.id) ? 'default' : 'outline'
-						}
-						className="h-24 relative"
-						onClick={() => toggleInterest(interest.id)}
-					>
-						{selectedInterests.includes(interest.id) && (
-							<Check className="absolute top-2 right-2 h-4 w-4" />
-						)}
-						<span className="text-lg">{interest.label}</span>
-					</Button>
-				))}
+			<div className="w-full max-w-sm mb-4">
+				<Progress value={progress} className="w-full" />
 			</div>
 
-			{error && <p className="text-sm text-destructive">{error}</p>}
+			<div className="w-full max-w-sm relative h-[500px]">
+				<div className="relative w-full h-full">
+					<ArticleCard
+						key={currentIndex}
+						article={articles[currentIndex]}
+						onSwipe={handleSwipe}
+					/>
+				</div>
 
-			<Button
-				className="w-full"
-				disabled={selectedInterests.length < 3}
-				onClick={handleContinue}
-			>
-				{onboarding.buttons.continue}
-			</Button>
+				{swipeDirection === 'left' && (
+					<div className="absolute inset-y-0 left-0 flex items-center justify-center w-16 bg-red-500 bg-opacity-50 rounded-l-lg animate-fadeOut">
+						<ArrowLeft className="text-white" size={32} />
+					</div>
+				)}
+				{swipeDirection === 'right' && (
+					<div className="absolute inset-y-0 right-0 flex items-center justify-center w-16 bg-green-500 bg-opacity-50 rounded-r-lg animate-fadeOut">
+						<ArrowRight className="text-white" size={32} />
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

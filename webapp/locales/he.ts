@@ -52,15 +52,8 @@ export const hebrewContent = {
 			},
 			interests: {
 				title: 'מה מעניין אותך',
-				description: 'בחר/י לפחות 3 נושאים כדי שנוכל להתאים את התוכן עבורך',
-				topics: {
-					tech: '💻 טכנולוגיה',
-					health: '🏃‍♂️ בריאות וכושר',
-					food: '🍳 בישול',
-					art: '🎨 אמנות ועיצוב',
-					music: '🎵 מוזיקה',
-					travel: '✈️ טיולים',
-				},
+				description:
+					'תתחילו להחליק ימינה/שמאלה כדי שנוכל להבין מה באמת אתם אוהבים!',
 			},
 			timePreference: {
 				label: 'מתי תרצה/י לקבל את התוכן היומי?',
@@ -113,6 +106,49 @@ export const hebrewContent = {
 			settings: 'הגדרות',
 			privacyPolicy: 'מדיניות פרטיות',
 			logout: 'התנתקות',
+		},
+	},
+
+	login: {
+		welcome: 'ברוכים השבים',
+		subtitle: 'התחברו עם חשבון Apple או Google',
+		socialLogin: {
+			facebook: 'התחברות עם פייסבוק',
+			google: 'התחברות עם גוגל',
+		},
+		divider: 'או המשיכו עם',
+		form: {
+			email: {
+				label: 'אימייל',
+				placeholder: 'your@email.com',
+			},
+			password: {
+				label: 'סיסמה',
+				forgotPassword: 'שכחת סיסמה?',
+			},
+			submit: 'התחברות',
+			noAccount: 'עדיין אין לך חשבון?',
+			signUp: 'הרשמה',
+		},
+		terms: {
+			prefix: 'בלחיצה על המשך, את/ה מסכימ/ה',
+			termsOfService: 'לתנאי השימוש',
+			and: 'ו',
+			privacyPolicy: 'מדיניות הפרטיות',
+		},
+	},
+
+	auth: {
+		backButton: 'חזרה',
+		pages: {
+			login: {
+				title: 'התחברות',
+				description: 'התחבר/י כדי להמשיך לאזור האישי',
+			},
+			signup: {
+				title: 'הרשמה',
+				description: 'צור/י חשבון חדש',
+			},
 		},
 	},
 };

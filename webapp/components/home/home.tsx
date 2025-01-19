@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { auth0 } from '@/lib/auth0';
+import { auth } from '@/auth';
 import { hebrewContent } from '@/locales/he';
 import { Leckerli_One } from 'next/font/google';
 import Link from 'next/link';
@@ -11,11 +11,8 @@ const titleFont = Leckerli_One({
 });
 
 async function getStartHereUrl() {
-	const session = await auth0.getSession();
-	if (!session?.user) {
-		return '/auth/login';
-	}
-	return '/app';
+	const session = await auth();
+	return session?.user ? '/app' : '/login';
 }
 
 export async function Home() {

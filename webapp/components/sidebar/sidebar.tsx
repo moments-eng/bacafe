@@ -4,19 +4,10 @@ import { UserProfile } from './user-profile';
 import { Navigation } from './navigation';
 import { LogoutButton } from './logout-button';
 
-interface SidebarProps {
-	user: {
-		name?: string | null;
-		email?: string | null;
-		avatar?: string | null;
-	} | null;
-}
-
 export function Sidebar() {
-
 	return (
 		<div className="flex h-full flex-col">
-			<UserProfile/>
+			<UserProfile />
 
 			<div className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
 				<Navigation items={mainMenuItems} />

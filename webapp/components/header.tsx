@@ -9,8 +9,8 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet';
-import { useUser } from '@auth0/nextjs-auth0';
 import { Sidebar } from './sidebar/sidebar';
+import { useSession } from 'next-auth/react';
 
 const titleFont = Leckerli_One({
 	subsets: ['latin'],
@@ -18,8 +18,6 @@ const titleFont = Leckerli_One({
 });
 
 export function Header() {
-	const { user } = useUser();
-
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 			<div className="container flex h-14 max-w-screen-md items-center justify-between">
@@ -39,7 +37,7 @@ export function Header() {
 						className="flex w-[85vw] flex-col gap-0 overflow-hidden p-0 sm:max-w-sm [&_*]:text-right"
 					>
 						<SheetTitle hidden>Bapoop</SheetTitle>
-						<Sidebar user={user} />
+						<Sidebar />
 					</SheetContent>
 				</Sheet>
 			</div>

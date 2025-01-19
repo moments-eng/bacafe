@@ -9,6 +9,11 @@ import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 
 export type Gender = 'male' | 'female' | 'notSpecified';
 
+interface ArticleScore {
+	articleId: number;
+	score: -1 | 1;
+}
+
 @modelOptions({
 	schemaOptions: {
 		timestamps: true,
@@ -20,7 +25,7 @@ export type Gender = 'male' | 'female' | 'notSpecified';
 })
 export class User extends TimeStamps {
 	@prop({ required: true, unique: true })
-	public auth0Id!: string;
+	public sub!: string;
 
 	@prop({ required: true })
 	public email!: string;
@@ -34,9 +39,6 @@ export class User extends TimeStamps {
 	@prop({ min: 13, max: 120 })
 	public age?: number;
 
-	@prop({ type: () => [String], default: [] })
-	public interests?: string[];
-
 	@prop({ default: false })
 	public isOnboardingDone!: boolean;
 
@@ -45,6 +47,9 @@ export class User extends TimeStamps {
 
 	@prop({ required: true, default: '08:00' })
 	public digestTime?: string;
+
+	@prop({ type: () => [Object], default: [] })
+	public articleScores?: ArticleScore[];
 }
 
 export const UserModel = mongoose.models.User || getModelForClass(User);

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const UserSchema = z.object({
 	_id: z.string().optional(),
-	auth0Id: z.string(),
+	id: z.string(),
 	email: z.string().email(),
 	name: z.string(),
 	isOnboardingDone: z.boolean().default(false),

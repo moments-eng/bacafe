@@ -1,18 +1,24 @@
 'use server';
 
-import { auth0 } from '@/lib/auth0';
+import { auth, handlers } from '@/auth';
 import { userService } from '@/lib/services/user-service';
 import { unauthorized } from 'next/navigation';
-import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const userUpdateSchema = z.object({
 	name: z.string().min(2).max(50).optional(),
 	age: z.number().min(13).max(120).optional(),
 	gender: z.enum(['male', 'female', 'notSpecified']).optional(),
-	interests: z.array(z.string()).min(3).optional(),
 	isOnboardingDone: z.boolean().optional(),
 	digestTime: z.string().optional(),
+	articleScores: z
+		.array(
+			z.object({
+				articleId: z.number(),
+				score: z.union([z.literal(-1), z.literal(1)]),
+			}),
+		)
+		.optional(),
 });
 
 type UserUpdateData = z.infer<typeof userUpdateSchema>;
@@ -25,16 +31,15 @@ interface UpdateUserResponse {
 export async function updateUser(
 	data: UserUpdateData,
 ): Promise<UpdateUserResponse> {
-	console.log('Starting updateUser with data:', data);
-
-	const user = await auth0.getSession();
-
-	if (!user?.user.sub) {
-		console.log('No user sub found, returning unauthorized');
+	const session = await auth();
+	if (!session?.user?.id) {
 		return unauthorized();
 	}
 
-	const userId = user.user.sub;
+	console.log('Starting updateUser with data:', data);
+
+	const userId = session.user.id;
+
 	console.log('Processing update for userId:', userId);
 
 	try {
@@ -49,7 +54,7 @@ export async function updateUser(
 			};
 		}
 
-		await userService.updateUser(userId, validatedFields.data);
+		await userService.updateUser(userId, { $set: validatedFields.data });
 		console.log('User updated successfully');
 
 		return {
@@ -64,15 +69,29 @@ export async function updateUser(
 	}
 }
 
-export async function markOnboardingDone() {
-	const session = await auth0.getSession();
-
-	if (!session?.user?.sub) {
+export async function updateArticleScore(
+	articleId: number,
+	score: -1 | 1,
+): Promise<UpdateUserResponse> {
+	const session = await auth();
+	if (!session?.user?.id) {
 		return unauthorized();
 	}
+	const userId = session.user.id;
 
-	await auth0.updateSession({
-		...session,
-		user: { ...session.user, isOnboardingDone: true },
-	});
+	try {
+		await userService.updateUser(userId, {
+			$push: { articleScores: { articleId, score } },
+		});
+
+		return {
+			success: true,
+		};
+	} catch (error) {
+		console.error('Error updating article score:', error);
+		return {
+			success: false,
+			error: 'Failed to update article score',
+		};
+	}
 }
