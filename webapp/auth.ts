@@ -1,12 +1,12 @@
-import NextAuth, { type User } from 'next-auth';
-import client from './lib/db/db';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
-import Google, { type GoogleProfile } from 'next-auth/providers/google';
+import NextAuth, { type User } from 'next-auth';
 import Facebook, { type FacebookProfile } from 'next-auth/providers/facebook';
+import Google, { type GoogleProfile } from 'next-auth/providers/google';
 import authConfig from './auth.config';
+import MongoDBClient from './lib/db/db';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-	adapter: MongoDBAdapter(client),
+	adapter: MongoDBAdapter(MongoDBClient.getInstance()),
 	session: { strategy: 'jwt' },
 	...authConfig,
 	providers: [

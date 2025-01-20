@@ -29,7 +29,7 @@ export function LoginForm({
 	const handleSocialLogin = async (provider: 'google' | 'facebook') => {
 		try {
 			setIsLoading((prev) => ({ ...prev, [provider]: true }));
-			await signIn(provider, { redirectTo: '/app' });
+			await signIn(provider, { redirectTo: '/dashboard' });
 		} catch (error) {
 			setIsLoading((prev) => ({ ...prev, [provider]: false }));
 		}

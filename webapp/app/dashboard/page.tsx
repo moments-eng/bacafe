@@ -16,7 +16,7 @@ export default async function Page() {
 	const user = await getUser();
 
 	if (!user?.isOnboardingDone) {
-		redirect('/app/onboarding');
+		redirect('/dashboard/onboarding');
 	}
 
 	const { welcome } = hebrewContent.app;

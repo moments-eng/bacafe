@@ -26,7 +26,7 @@ export function SuccessStep() {
 	const handleNavigate = async () => {
 		setIsLoading(true);
 		try {
-			await router.push('/app');
+			await router.push('/dashboard');
 		} finally {
 			setIsLoading(false);
 		}

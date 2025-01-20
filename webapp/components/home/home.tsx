@@ -12,7 +12,7 @@ const titleFont = Bona_Nova_SC({
 
 async function getStartHereUrl() {
 	const session = await auth();
-	return session?.user ? '/app' : '/login';
+	return session?.user ? '/dashboard' : '/login';
 }
 
 export async function Home() {
