@@ -8,7 +8,9 @@
 		"start": "next start",
 		"lint": "biome lint .",
 		"format": "biome format --write",
-		"check": "biome check --apply ."
+		"check": "biome check --apply .",
+		"build-and-push": "./scripts/build-and-push.sh",
+		"deploy": "./scripts/deploy.sh"
 	},
 	"dependencies": {
 		"@auth/mongodb-adapter": "^3.7.4",
