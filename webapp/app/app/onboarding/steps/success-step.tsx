@@ -42,14 +42,14 @@ export function SuccessStep() {
 	};
 
 	return (
-		<div className="relative p-6 space-y-6">
+		<div className="relative space-y-6">
 			<Confetti
 				width={width}
 				height={height}
 				style={{
-					position: 'fixed',
 					top: -200,
 					left: -200,
+					zIndex: 1000,
 				}}
 				numberOfPieces={500}
 				recycle={false}
@@ -98,7 +98,7 @@ export function SuccessStep() {
 					{isLoading ? (
 						<>
 							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							{onboarding.success.loading}
+							{success.loading}
 						</>
 					) : (
 						success.cta
@@ -119,7 +119,7 @@ export function SuccessStep() {
 						{isLoading ? (
 							<>
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								{onboarding.success.loading}
+								{success.loading}
 							</>
 						) : (
 							<>
