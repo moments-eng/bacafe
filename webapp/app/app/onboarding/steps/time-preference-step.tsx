@@ -23,6 +23,8 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { updateUser } from '../actions';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 const { onboarding } = hebrewContent;
 const { timePreference } = onboarding.steps;
@@ -63,6 +65,7 @@ const customTimeOptions = Array.from({ length: 24 }, (_, i) => {
 
 export function TimePreferenceStep() {
 	const { digestTime, setDigestTime, nextStep } = useOnboardingStore();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
@@ -72,13 +75,18 @@ export function TimePreferenceStep() {
 	});
 
 	const onSubmit = async (values: FormValues) => {
-		const result = await updateUser({
-			digestTime: values.digestTime,
-		});
+		setIsLoading(true);
+		try {
+			const result = await updateUser({
+				digestTime: values.digestTime,
+			});
 
-		if (result.success) {
-			setDigestTime(values.digestTime);
-			nextStep();
+			if (result.success) {
+				setDigestTime(values.digestTime);
+				nextStep();
+			}
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -162,8 +170,15 @@ export function TimePreferenceStep() {
 						)}
 					/>
 
-					<Button type="submit" className="w-full h-9">
-						{onboarding.buttons.complete}
+					<Button type="submit" className="w-full h-9" disabled={isLoading}>
+						{isLoading ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								{onboarding.buttons.loading}
+							</>
+						) : (
+							onboarding.buttons.complete
+						)}
 					</Button>
 				</form>
 			</Form>

@@ -54,7 +54,7 @@ export function ContentMatchingStep() {
 				<Progress value={progress} className="w-full" />
 			</div>
 
-			<div className="w-full max-w-sm relative h-[500px]">
+			<div className="w-full max-w-sm relative h-[450px]">
 				<div className="relative w-full h-full">
 					<ArticleCard
 						key={currentIndex}

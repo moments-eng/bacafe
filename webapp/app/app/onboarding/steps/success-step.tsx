@@ -5,9 +5,9 @@ import { useContainerDimensions } from '@/hooks/use-container-dimensions';
 import { hebrewContent } from '@/locales/he';
 import { useOnboardingStore } from '@/stores/onboarding';
 import { motion } from 'framer-motion';
-import { Mail, MessageCircle } from 'lucide-react';
+import { Mail, MessageCircle, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { updateUser } from '../actions';
 
@@ -17,10 +17,29 @@ export function SuccessStep() {
 	const router = useRouter();
 	const { name, digestTime } = useOnboardingStore();
 	const { width, height } = useContainerDimensions();
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		updateUser({ isOnboardingDone: true });
 	}, []);
+
+	const handleNavigate = async () => {
+		setIsLoading(true);
+		try {
+			await router.push('/app');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const handleChatNavigate = async () => {
+		setIsLoading(true);
+		try {
+			await router.push('/chat');
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	return (
 		<div className="relative p-6 space-y-6">
@@ -73,9 +92,17 @@ export function SuccessStep() {
 				<Button
 					className="w-full"
 					size="lg"
-					onClick={() => router.push('/app')}
+					onClick={handleNavigate}
+					disabled={isLoading}
 				>
-					{success.cta}
+					{isLoading ? (
+						<>
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							{onboarding.success.loading}
+						</>
+					) : (
+						success.cta
+					)}
 				</Button>
 
 				<div className="space-y-2">
@@ -86,10 +113,20 @@ export function SuccessStep() {
 						variant="secondary"
 						className="w-full"
 						size="lg"
-						onClick={() => router.push('/chat')}
+						onClick={handleChatNavigate}
+						disabled={isLoading}
 					>
-						<MessageCircle className="mr-2 h-4 w-4" />
-						{success.chatButton}
+						{isLoading ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								{onboarding.success.loading}
+							</>
+						) : (
+							<>
+								<MessageCircle className="mr-2 h-4 w-4" />
+								{success.chatButton}
+							</>
+						)}
 					</Button>
 				</div>
 			</motion.div>

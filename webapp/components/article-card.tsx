@@ -8,11 +8,23 @@ import {
 	CardFooter,
 	CardHeader,
 } from '@/components/ui/card';
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import type { Article } from '@/types/article';
-import { Sparkles, ThumbsDownIcon, ThumbsUpIcon, HeartOff } from 'lucide-react';
+import {
+	ChevronDown,
+	Sparkles,
+	ThumbsDownIcon,
+	ThumbsUpIcon,
+	HeartOff,
+} from 'lucide-react';
 import { animated, useSpring } from 'react-spring';
 import { useSwipeable } from 'react-swipeable';
+import { useState } from 'react';
 
 interface ArticleCardProps {
 	article: Article;
@@ -20,6 +32,7 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
+	const [isOpen, setIsOpen] = useState(false);
 	const [{ x, rot, scale }, api] = useSpring(() => ({
 		x: 0,
 		rot: 0,
@@ -91,8 +104,14 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
 			}}
 			className="absolute w-full max-w-sm origin-bottom"
 		>
-			<Card className="w-full">
-				<CardHeader className="relative p-0 h-64">
+			<Card
+				className={cn(
+					'w-full transition-all duration-200',
+					isOpen ? 'max-h-[600px]' : 'max-h-[450px]',
+					'overflow-y-auto',
+				)}
+			>
+				<CardHeader className="relative p-0 h-44 sticky top-0 z-10 bg-background">
 					<img
 						src={article.imageUrl}
 						alt={article.title}
@@ -104,21 +123,44 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
 				</CardHeader>
 				<CardContent className="p-4">
 					<h2 className="text-xl font-bold mb-2">{article.title}</h2>
-					<p className="text-gray-600">{article.subtitle}</p>
+					<Collapsible open={isOpen} onOpenChange={setIsOpen}>
+						<p
+							className={cn('text-muted-foreground', !isOpen && 'line-clamp-2')}
+						>
+							{article.subtitle}
+						</p>
+						<CollapsibleTrigger asChild>
+							<Button
+								variant="ghost"
+								size="sm"
+								className="w-full mt-2 flex items-center justify-center gap-1 h-6"
+							>
+								<ChevronDown
+									className={cn(
+										'h-4 w-4 transition-transform duration-200',
+										isOpen && 'transform rotate-180',
+									)}
+								/>
+								<span className="text-xs">
+									{isOpen ? 'הצג פחות' : 'קרא עוד'}
+								</span>
+							</Button>
+						</CollapsibleTrigger>
+					</Collapsible>
 				</CardContent>
-				<CardFooter className="flex justify-between p-4 border-t gap-3">
+				<CardFooter className="flex justify-between p-4 border-t gap-3 sticky bottom-0 bg-background">
 					<Button
 						variant="outline"
 						size="icon"
 						className={cn(
-							'rounded-full w-14 h-14 transition-all duration-200',
+							'rounded-full w-12 h-12 transition-all duration-200',
 							'border-green-200 hover:border-green-400 group',
 							'border-2 hover:scale-110 hover:bg-green-50',
 						)}
 						onClick={() => onSwipe('right')}
 					>
 						<Sparkles
-							className="w-7 h-7 text-green-500 group-hover:text-green-600 transition-colors"
+							className="w-6 h-6 text-green-500 group-hover:text-green-600 transition-colors"
 							fill="currentColor"
 						/>
 					</Button>
@@ -126,14 +168,14 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
 						variant="outline"
 						size="icon"
 						className={cn(
-							'rounded-full w-14 h-14 transition-all duration-200',
+							'rounded-full w-12 h-12 transition-all duration-200',
 							'border-emerald-200 hover:border-emerald-400 group',
 							'border-2 hover:scale-110 hover:bg-emerald-50',
 						)}
 						onClick={() => onSwipe('right')}
 					>
 						<ThumbsUpIcon
-							className="w-7 h-7 text-emerald-500 group-hover:text-emerald-600 transition-colors"
+							className="w-6 h-6 text-emerald-500 group-hover:text-emerald-600 transition-colors"
 							fill="currentColor"
 						/>
 					</Button>
@@ -141,30 +183,29 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
 						variant="outline"
 						size="icon"
 						className={cn(
-							'rounded-full w-14 h-14 transition-all duration-200',
+							'rounded-full w-12 h-12 transition-all duration-200',
 							'border-orange-200 hover:border-orange-400 group',
 							'border-2 hover:scale-110 hover:bg-orange-50',
 						)}
 						onClick={() => onSwipe('left')}
 					>
 						<ThumbsDownIcon
-							className="w-7 h-7 text-orange-500 group-hover:text-orange-600 transition-colors"
+							className="w-6 h-6 text-orange-500 group-hover:text-orange-600 transition-colors"
 							fill="currentColor"
 						/>
 					</Button>
-
 					<Button
 						variant="outline"
 						size="icon"
 						className={cn(
-							'rounded-full w-14 h-14 transition-all duration-200',
+							'rounded-full w-12 h-12 transition-all duration-200',
 							'border-red-200 hover:border-red-400 group',
 							'border-2 hover:scale-110 hover:bg-red-50',
 						)}
 						onClick={() => onSwipe('left')}
 					>
 						<HeartOff
-							className="w-7 h-7 text-red-500 group-hover:text-red-600 transition-colors"
+							className="w-6 h-6 text-red-500 group-hover:text-red-600 transition-colors"
 							fill="currentColor"
 						/>
 					</Button>

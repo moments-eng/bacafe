@@ -56,8 +56,15 @@ export const hebrewContent = {
 			},
 			interests: {
 				title: 'מה מעניין אותך',
-				description:
-					'תתחילו להחליק ימינה/שמאלה כדי שנוכל להבין מה באמת אתם אוהבים!',
+				description: 'החלק ימינה לתוכן שאהבת, שמאלה לתוכן שפחות',
+				readMore: 'קרא עוד',
+				showLess: 'הצג פחות',
+				actions: {
+					love: 'אהבתי מאוד',
+					like: 'אהבתי',
+					dislike: 'לא אהבתי',
+					hate: 'ממש לא אהבתי',
+				},
 			},
 			timePreference: {
 				label: 'מתי תרצה/י לקבל את התוכן היומי?',
@@ -89,6 +96,7 @@ export const hebrewContent = {
 			continue: 'המשך',
 			back: 'חזרה',
 			complete: 'סיום ההגדרות',
+			loading: 'טוען...',
 		},
 		success: {
 			title: 'עשית את זה!',
@@ -100,6 +108,7 @@ export const hebrewContent = {
 			chatInvite:
 				"רוצה שנכיר אותך עוד יותר טוב? בוא לצ'אט איתנו ונסגור לך פינה!",
 			chatButton: "שוחח איתנו בצ'אט",
+			loading: 'טוען...',
 		},
 	},
 

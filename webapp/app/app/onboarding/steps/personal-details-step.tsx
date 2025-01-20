@@ -18,6 +18,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 const { onboarding } = hebrewContent;
 
@@ -43,6 +45,7 @@ type FormValues = z.infer<typeof formSchema>;
 export function PersonalDetailsStep() {
 	const { name, age, gender, setName, setAge, setGender, nextStep } =
 		useOnboardingStore();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
@@ -54,17 +57,22 @@ export function PersonalDetailsStep() {
 	});
 
 	const onSubmit = async (values: FormValues) => {
-		const result = await updateUser({
-			name: values.name,
-			age: typeof values.age === 'string' ? undefined : values.age,
-			gender: values.gender,
-		});
+		setIsLoading(true);
+		try {
+			const result = await updateUser({
+				name: values.name,
+				age: typeof values.age === 'string' ? undefined : values.age,
+				gender: values.gender,
+			});
 
-		if (result.success) {
-			setName(values.name);
-			setAge(typeof values.age === 'string' ? 0 : values.age);
-			setGender(values.gender);
-			nextStep();
+			if (result.success) {
+				setName(values.name);
+				setAge(typeof values.age === 'string' ? 0 : values.age);
+				setGender(values.gender);
+				nextStep();
+			}
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -178,8 +186,19 @@ export function PersonalDetailsStep() {
 						)}
 					/>
 
-					<Button type="submit" className="w-full h-9 mt-2">
-						{onboarding.buttons.continue}
+					<Button
+						type="submit"
+						className="w-full h-9 mt-2"
+						disabled={isLoading}
+					>
+						{isLoading ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								{onboarding.buttons.loading}
+							</>
+						) : (
+							onboarding.buttons.continue
+						)}
 					</Button>
 				</form>
 			</Form>
