@@ -10,12 +10,7 @@ import {
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { Article } from '@/types/article';
-import {
-	Sparkles,
-	ThumbsDownIcon,
-	ThumbsUpIcon,
-	HeartOff,
-} from 'lucide-react';
+import { Sparkles, ThumbsDownIcon, ThumbsUpIcon, HeartOff } from 'lucide-react';
 import { animated, useSpring } from 'react-spring';
 import { useSwipeable } from 'react-swipeable';
 
@@ -32,6 +27,8 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
 		config: { tension: 300, friction: 20 },
 	}));
 
+	const SWIPE_THRESHOLD = 150; // Minimum swipe distance to trigger action
+
 	const handlers = useSwipeable({
 		onSwiping: ({ deltaX }) => {
 			api.start({
@@ -40,30 +37,47 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
 				scale: 1,
 			});
 		},
-		onSwipedLeft: () => {
-			api.start({
-				x: -500,
-				rot: -20,
-				scale: 0.5,
-				config: { duration: 150 },
-				onRest: () => {
-					onSwipe('left');
-				},
-			});
+		onSwipedLeft: ({ deltaX }) => {
+			if (Math.abs(deltaX) >= SWIPE_THRESHOLD) {
+				api.start({
+					x: -500,
+					rot: -20,
+					scale: 0.5,
+					config: { duration: 150 },
+					onRest: () => onSwipe('left'),
+				});
+			} else {
+				// Return to center if swipe wasn't strong enough
+				api.start({
+					x: 0,
+					rot: 0,
+					scale: 1,
+					config: { tension: 200, friction: 20 },
+				});
+			}
 		},
-		onSwipedRight: () => {
-			api.start({
-				x: 500,
-				rot: 20,
-				scale: 0.5,
-				config: { duration: 150 },
-				onRest: () => {
-					onSwipe('right');
-				},
-			});
+		onSwipedRight: ({ deltaX }) => {
+			if (Math.abs(deltaX) >= SWIPE_THRESHOLD) {
+				api.start({
+					x: 500,
+					rot: 20,
+					scale: 0.5,
+					config: { duration: 150 },
+					onRest: () => onSwipe('right'),
+				});
+			} else {
+				// Return to center if swipe wasn't strong enough
+				api.start({
+					x: 0,
+					rot: 0,
+					scale: 1,
+					config: { tension: 200, friction: 20 },
+				});
+			}
 		},
 		trackMouse: true,
 		trackTouch: true,
+		preventScrollOnSwipe: true,
 	});
 
 	return (
