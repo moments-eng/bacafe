@@ -9,6 +9,7 @@
 		"lint": "biome lint .",
 		"format": "biome format --write",
 		"check": "biome check --apply .",
+		"check-types": "tsc --noEmit",
 		"build-and-push": "./scripts/build-and-push.sh",
 		"deploy": "./scripts/deploy.sh"
 	},
