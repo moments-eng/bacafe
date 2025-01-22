@@ -4,6 +4,12 @@ import { columns } from '@/components/admin/users/columns';
 import { UsersTableToolbar } from '@/components/admin/users/toolbar';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
+import type {
+	UserRole,
+	UserStatus,
+	UserTableItem,
+	UserTier,
+} from '@/lib/types/user.types';
 import {
 	type PaginationState,
 	type SortingState,
@@ -17,7 +23,7 @@ import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
 
 // This would come from your API
-const mockUsers = [
+const mockUsers: UserTableItem[] = [
 	{
 		id: '1',
 		email: 'john@example.com',
@@ -25,9 +31,9 @@ const mockUsers = [
 		picture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
 		age: 30,
 		gender: 'male',
-		role: 'user',
-		status: 'approved',
-		tier: 'free',
+		role: 'user' as UserRole,
+		status: 'approved' as UserStatus,
+		tier: 'free' as UserTier,
 		isOnboardingDone: true,
 		digestTime: '08:00',
 		createdAt: new Date('2024-01-01'),
@@ -43,7 +49,7 @@ export default function UsersPage() {
 		pageIndex: 0,
 		pageSize: 10,
 	});
-	const [data] = useState(mockUsers);
+	const [data] = useState<UserTableItem[]>(mockUsers);
 
 	const table = useReactTable({
 		data,

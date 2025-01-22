@@ -16,6 +16,7 @@ import type {
 	UserRole,
 	UserStatus,
 	UserTableItem,
+	UserTier,
 } from '@/lib/types/user.types';
 import type { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, UserCheck, UserX } from 'lucide-react';
@@ -78,9 +79,9 @@ export const columns: ColumnDef<UserTableItem>[] = [
 				<Badge
 					variant={
 						status === 'approved'
-							? 'success'
+							? 'default'
 							: status === 'pending'
-								? 'warning'
+								? 'secondary'
 								: 'destructive'
 					}
 				>
@@ -110,7 +111,7 @@ export const columns: ColumnDef<UserTableItem>[] = [
 		),
 		enableSorting: true,
 		cell: ({ row }) => {
-			const tier = row.getValue('tier');
+			const tier = row.getValue<UserTier>('tier');
 			return (
 				<Badge variant={tier === 'premium' ? 'default' : 'secondary'}>
 					{tier}

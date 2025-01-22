@@ -15,7 +15,7 @@ async function getStartHereUrl() {
 	return session?.user ? '/dashboard' : '/login';
 }
 
-export async function Home() {
+export default async function Home() {
 	const startHereUrl = await getStartHereUrl();
 	return (
 		<div>
