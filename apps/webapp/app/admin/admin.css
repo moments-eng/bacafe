@@ -1,0 +1,10 @@
+/* Override the container styles for admin routes */
+body.mobile-container {
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	background: hsl(var(--background)) !important;
+	box-shadow: none !important;
+	border: none !important;
+	direction: ltr;
+}

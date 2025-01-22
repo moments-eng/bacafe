@@ -1,7 +1,7 @@
 import type { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
-import { type User, UserModel } from '../models/user.model';
 import type { Document } from 'mongoose';
 import connectDB from '../db/mongoose';
+import { type User, UserModel } from '../models/user.model';
 
 interface CreateUserInput
 	extends Omit<User, keyof Document | keyof TimeStamps> {}

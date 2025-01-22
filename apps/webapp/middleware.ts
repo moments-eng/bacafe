@@ -1,7 +1,7 @@
-import NextAuth from 'next-auth';
-import authConfig from './auth.config';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import NextAuth from 'next-auth';
 import { NextResponse } from 'next/server';
+import authConfig from './auth.config';
 
 export const { auth } = NextAuth(authConfig);
 

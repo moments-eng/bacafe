@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils';
 import { hebrewContent } from '@/locales/he';
 import FacebookLogo from '@/public/facebook-logo.svg';
 import GoogleLogo from '@/public/google-logo.svg';
-import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
 
 export function LoginForm({
 	className,

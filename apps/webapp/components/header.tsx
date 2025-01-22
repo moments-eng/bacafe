@@ -7,10 +7,10 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
-import { Sidebar } from './sidebar/sidebar';
 import { hebrewContent } from '@/locales/he';
+import { Menu } from 'lucide-react';
 import { Bona_Nova_SC } from 'next/font/google';
+import { Sidebar } from './sidebar/sidebar';
 
 const titleFont = Bona_Nova_SC({
 	subsets: ['hebrew'],

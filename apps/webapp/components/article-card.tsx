@@ -17,14 +17,14 @@ import { cn } from '@/lib/utils';
 import type { Article } from '@/types/article';
 import {
 	ChevronDown,
+	HeartOff,
 	Sparkles,
 	ThumbsDownIcon,
 	ThumbsUpIcon,
-	HeartOff,
 } from 'lucide-react';
+import { useState } from 'react';
 import { animated, useSpring } from 'react-spring';
 import { useSwipeable } from 'react-swipeable';
-import { useState } from 'react';
 
 interface ArticleCardProps {
 	article: Article;

@@ -1,5 +1,5 @@
-import { Newspaper, User, Settings, Shield } from 'lucide-react';
 import { hebrewContent } from '@/locales/he';
+import { Newspaper, Settings, Shield, User } from 'lucide-react';
 
 export const mainMenuItems = [
 	{

@@ -5,7 +5,7 @@ import { useContainerDimensions } from '@/hooks/use-container-dimensions';
 import { hebrewContent } from '@/locales/he';
 import { useOnboardingStore } from '@/stores/onboarding';
 import { motion } from 'framer-motion';
-import { Mail, MessageCircle, Loader2 } from 'lucide-react';
+import { Loader2, Mail, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';

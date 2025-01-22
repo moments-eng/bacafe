@@ -20,11 +20,11 @@ import { hebrewContent } from '@/locales/he';
 import { useOnboardingStore } from '@/stores/onboarding';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { updateUser } from '../actions';
-import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
 
 const { onboarding } = hebrewContent;
 const { timePreference } = onboarding.steps;

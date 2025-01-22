@@ -1,9 +1,9 @@
 import {
-	prop,
 	getModelForClass,
 	modelOptions,
-	pre,
 	mongoose,
+	pre,
+	prop,
 } from '@typegoose/typegoose';
 import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
 

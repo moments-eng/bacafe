@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
 import { auth } from '@/auth';
+import { Button } from '@/components/ui/button';
 import { hebrewContent } from '@/locales/he';
 import { Bona_Nova_SC } from 'next/font/google';
 import Link from 'next/link';

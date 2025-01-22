@@ -1,5 +1,5 @@
-import type { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
+import type { Config } from 'tailwindcss';
 
 export default {
 	darkMode: ['class'],
@@ -12,8 +12,12 @@ export default {
 		extend: {
 			keyframes: {
 				fadeOut: {
-					'0%': { opacity: '1' },
-					'100%': { opacity: '0' },
+					'0%': {
+						opacity: '1',
+					},
+					'100%': {
+						opacity: '0',
+					},
 				},
 			},
 			animation: {

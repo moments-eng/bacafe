@@ -15,13 +15,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
 	children,
-	}: Readonly<{
+}: Readonly<{
 	children: React.ReactNode;
 }>) {
 	return (
 		<html lang="he" dir="rtl">
-			<body className={heebo.className}>
-				<div className="mobile-container">{children}</div>
+			<body className={`${heebo.className} mobile-container`}>
+				<main>{children}</main>
 			</body>
 		</html>
 	);

@@ -1,13 +1,13 @@
 'use client';
 
+import ArticleCard from '@/components/article-card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { hebrewContent } from '@/locales/he';
 import { useOnboardingStore } from '@/stores/onboarding';
 import { useState } from 'react';
-import { articles } from '../onboarding-articles';
-import ArticleCard from '@/components/article-card';
 import { updateArticleScore } from '../actions';
+import { articles } from '../onboarding-articles';
 
 const { onboarding } = hebrewContent;
 

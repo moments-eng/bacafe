@@ -1,8 +1,8 @@
 import { Separator } from '@/components/ui/separator';
-import { mainMenuItems, bottomMenuItems } from '@/lib/constants/menu-items';
-import { UserProfile } from './user-profile';
-import { Navigation } from './navigation';
+import { bottomMenuItems, mainMenuItems } from '@/lib/constants/menu-items';
 import { LogoutButton } from './logout-button';
+import { Navigation } from './navigation';
+import { UserProfile } from './user-profile';
 
 export function Sidebar() {
 	return (

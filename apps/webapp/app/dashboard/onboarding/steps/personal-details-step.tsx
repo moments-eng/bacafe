@@ -1,11 +1,6 @@
 'use client';
 
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useOnboardingStore } from '@/stores/onboarding';
-import { hebrewContent } from '@/locales/he';
-import { updateUser } from '../actions';
+import { Button } from '@/components/ui/button';
 import {
 	Form,
 	FormControl,
@@ -16,10 +11,15 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { hebrewContent } from '@/locales/he';
+import { useOnboardingStore } from '@/stores/onboarding';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import { updateUser } from '../actions';
 
 const { onboarding } = hebrewContent;
 

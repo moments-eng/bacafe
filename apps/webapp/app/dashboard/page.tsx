@@ -1,10 +1,10 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
-import { hebrewContent } from '@/locales/he';
-import { Loader2 } from 'lucide-react';
 import { getUser } from '@/actions/user';
+import { auth } from '@/auth';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { hebrewContent } from '@/locales/he';
+import { Loader2 } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
 export default async function Page() {
 	const session = await auth();
