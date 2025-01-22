@@ -41,8 +41,8 @@ export default async function Page() {
 				<p className="text-sm text-muted-foreground">{welcome.description}</p>
 
 				<ul className="space-y-3">
-					{welcome.features.map((feature, index) => (
-						<li key={index} className="flex items-center gap-2">
+					{welcome.features.map((feature) => (
+						<li key={feature} className="flex items-center gap-2">
 							<span className="text-primary">•</span>
 							<span className="text-sm">{feature}</span>
 						</li>

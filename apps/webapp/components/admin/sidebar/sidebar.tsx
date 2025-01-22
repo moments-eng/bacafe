@@ -2,8 +2,8 @@
 
 import { Coffee, Database, Users } from 'lucide-react';
 
-import { NavMain } from '@/components/admin-sidebar/admin-nav-main';
-import { NavUser } from '@/components/admin-sidebar/admin-nav-user';
+import { NavMain } from '@/components/admin/sidebar/nav-main';
+import { NavUser } from '@/components/admin/sidebar/nav-user';
 import {
 	Sidebar,
 	SidebarContent,

@@ -1,7 +1,7 @@
 'use client';
 
-import { DailyDigestGraph } from '@/components/graphs/daily-digest-graph';
-import { UsersSignupGraph } from '@/components/graphs/users-signup-graph';
+import { DailyDigestGraph } from '@/components/admin/dashboard/daily-digest-graph';
+import { UsersSignupGraph } from '@/components/admin/dashboard/users-signup-graph';
 import { StatsCard } from '@/components/stats/stats-card';
 import type { ChartConfig } from '@/components/ui/chart';
 import { Clock, Eye, FileText, UserPlus, Users } from 'lucide-react';

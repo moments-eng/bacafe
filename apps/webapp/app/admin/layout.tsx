@@ -1,7 +1,7 @@
-import { AdminSidebar } from '@/components/admin-sidebar/admin-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { SessionProvider } from 'next-auth/react';
 import './admin.css';
+import { AdminSidebar } from '@/components/admin/sidebar/sidebar';
 
 export default function AdminLayout({
 	children,
