@@ -20,6 +20,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { updateUser } from '../actions';
+import { UserGender } from '@/lib/models/user.model';
 
 const { onboarding } = hebrewContent;
 
@@ -35,9 +36,7 @@ const formSchema = z.object({
 			message: onboarding.steps.personalDetails.age.error,
 		}),
 	]),
-	gender: z.enum(['male', 'female', 'notSpecified'], {
-		required_error: onboarding.steps.personalDetails.gender.error,
-	}),
+	gender: z.enum([UserGender.FEMALE, UserGender.MALE, UserGender.NOT_SPECIFIED]),
 });
 
 type FormValues = z.infer<typeof formSchema>;

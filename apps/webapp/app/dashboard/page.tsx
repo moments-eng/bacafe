@@ -3,8 +3,8 @@ import { auth } from '@/auth';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { hebrewContent } from '@/locales/he';
-import { Loader2 } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { ApprovalPending } from './components/approval-pending';
 
 export default async function Page() {
 	const session = await auth();
@@ -17,6 +17,10 @@ export default async function Page() {
 
 	if (!user?.isOnboardingDone) {
 		redirect('/dashboard/onboarding');
+	}
+
+	if (!user.approved) {
+		return <ApprovalPending />;
 	}
 
 	const { welcome } = hebrewContent.app;

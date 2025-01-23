@@ -4,6 +4,10 @@ import Facebook, { type FacebookProfile } from 'next-auth/providers/facebook';
 import Google, { type GoogleProfile } from 'next-auth/providers/google';
 import authConfig from './auth.config';
 import MongoDBClient from './lib/db/db';
+import { UserRole } from './lib/models/user.model';
+import { userService } from './lib/services/user-service';
+
+const jwtTrigger = ['signUp', 'signIn'];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	adapter: MongoDBAdapter(MongoDBClient.getInstance()),
@@ -20,6 +24,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 					name: profile.name,
 					email: profile.email,
 					image: profile.picture,
+					role: UserRole.USER,
+					approved: false,
 				};
 			},
 		}),
@@ -33,8 +39,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 					name: profile.name,
 					email: profile.email,
 					image: profile.picture.data.url,
+					role: UserRole.USER,
+					approved: false,
 				};
 			},
 		}),
 	],
+	callbacks: {
+		jwt: async ({ token, trigger }) => {
+			if (jwtTrigger.includes(trigger || '') && token.email) {
+				const user = await userService.getUser(token.email);
+				token.role = user?.role;
+				token.approved = user?.approved;
+			}
+			token.moshe = 'moshe';
+			return token;
+		},
+
+		session: async ({ session, token }) => {
+			session.user.role = token.role as UserRole;
+			session.user.approved = token.approved as boolean;
+			return session;
+		},
+	},
 });

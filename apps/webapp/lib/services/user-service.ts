@@ -30,8 +30,7 @@ export class UserService {
 
 	async getUser(email: string): Promise<User | null> {
 		await connectDB();
-		const user = await UserModel.findOne({ email });
-		return user?.toJSON() || null;
+		return UserModel.findOne({ email }).lean();
 	}
 }
 

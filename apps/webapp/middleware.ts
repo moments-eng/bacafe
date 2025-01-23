@@ -3,15 +3,14 @@ import NextAuth from 'next-auth';
 import { NextResponse } from 'next/server';
 import authConfig from './auth.config';
 
-export const { auth } = NextAuth(authConfig);
+const { auth } = NextAuth(authConfig);
 
-export function middleware(req: NextApiRequest, res: NextApiResponse) {
+export default auth(async (req) => {
 	const url = new URL(req.url || '');
 	if (req.method === 'GET' && url.pathname === '/health') {
 		return NextResponse.json({ message: 'OK' });
 	}
-	return auth(req, res);
-}
+});
 
 export const config = {
 	matcher: [

@@ -183,5 +183,16 @@ export const hebrewContent = {
 				text: 'את/ה חלק מקבוצה נבחרת של משתמשים שמעצבים איתנו את העתיד של צריכת התוכן',
 			},
 		},
+		approvalPending: {
+			title: 'בקשתך התקבלה בהצלחה! 🎉',
+			subtitle: 'תודה שבחרת להצטרף אלינו',
+			message: 'אנחנו חווים עומס רב של הרשמות בימים אלו',
+			explanation:
+				'כדי להבטיח את איכות השירות והחוויה האישית לכל משתמש, אנחנו מאשרים הרשמות באופן הדרגתי',
+			waitingList:
+				'בקשתך נמצאת ברשימת ההמתנה ואנחנו נעדכן אותך במייל ברגע שנוכל לאשר אותה',
+			thankYou: 'תודה על הסבלנות וההבנה',
+			contact: 'אם יש לך שאלות, אתה מוזמן ליצור איתנו קשר',
+		},
 	},
 };

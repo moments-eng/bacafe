@@ -1,6 +1,7 @@
 'use server';
 
 import { auth } from '@/auth';
+import { UserGender } from '@/lib/models/user.model';
 import { userService } from '@/lib/services/user-service';
 import { unauthorized } from 'next/navigation';
 import { z } from 'zod';
@@ -8,7 +9,9 @@ import { z } from 'zod';
 const userUpdateSchema = z.object({
 	name: z.string().min(2).max(50).optional(),
 	age: z.number().min(13).max(120).optional(),
-	gender: z.enum(['male', 'female', 'notSpecified']).optional(),
+	gender: z
+		.enum([UserGender.FEMALE, UserGender.MALE, UserGender.NOT_SPECIFIED])
+		.optional(),
 	isOnboardingDone: z.boolean().optional(),
 	digestTime: z.string().optional(),
 	articleScores: z

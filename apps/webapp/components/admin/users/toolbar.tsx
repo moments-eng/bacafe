@@ -9,25 +9,32 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { UserTableItem } from '@/lib/types/user.types';
+import type { UserDTO } from '@/lib/dtos/user.dto';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import type { Table } from '@tanstack/react-table';
 
-interface UsersToolbarProps<TData> {
-	table: Table<TData>;
+interface UsersToolbarProps {
+	table: Table<UserDTO>;
+	onApproveSelected?: () => void;
+	onDisapproveSelected?: () => void;
 }
 
-export function UsersTableToolbar<TData>({ table }: UsersToolbarProps<TData>) {
+export function UsersTableToolbar({
+	table,
+	onApproveSelected,
+	onDisapproveSelected,
+}: UsersToolbarProps) {
 	const isFiltered = table.getState().columnFilters.length > 0;
+	const hasSelection = table.getSelectedRowModel().rows.length > 0;
 
 	return (
 		<div className="flex items-center justify-between">
 			<div className="flex flex-1 items-center space-x-2">
 				<Input
 					placeholder="Filter users..."
-					value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+					value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
 					onChange={(event) =>
-						table.getColumn('email')?.setFilterValue(event.target.value)
+						table.getColumn('name')?.setFilterValue(event.target.value)
 					}
 					className="h-8 w-[150px] lg:w-[250px]"
 				/>
@@ -43,6 +50,26 @@ export function UsersTableToolbar<TData>({ table }: UsersToolbarProps<TData>) {
 				)}
 			</div>
 			<div className="flex items-center space-x-2">
+				{hasSelection && (
+					<>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={onApproveSelected}
+							className="h-8"
+						>
+							Approve Selected
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={onDisapproveSelected}
+							className="h-8"
+						>
+							Disapprove Selected
+						</Button>
+					</>
+				)}
 				<Select
 					value={table.getColumn('status')?.getFilterValue() as string}
 					onValueChange={(value) =>

@@ -1,5 +1,6 @@
 'use client';
 
+import { updateUserRole, updateUserStatus } from '@/app/admin/users/actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,16 +13,17 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type {
+import { useToast } from '@/hooks/use-toast';
+import {
 	UserRole,
-	UserStatus,
-	UserTableItem,
-	UserTier,
-} from '@/lib/types/user.types';
+	type UserStatus,
+	type UserTier,
+} from '@/lib/models/user.model';
+import type { UserResponse } from '@/lib/types/user.types';
 import type { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, UserCheck, UserX } from 'lucide-react';
 
-export const columns: ColumnDef<UserTableItem>[] = [
+export const columns: ColumnDef<UserResponse>[] = [
 	{
 		id: 'select',
 		header: ({ table }) => (
@@ -45,7 +47,7 @@ export const columns: ColumnDef<UserTableItem>[] = [
 		enableHiding: false,
 	},
 	{
-		accessorKey: 'picture',
+		accessorKey: 'name',
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="User" />
 		),
@@ -54,7 +56,7 @@ export const columns: ColumnDef<UserTableItem>[] = [
 			return (
 				<div className="flex items-center gap-4">
 					<Avatar>
-						<AvatarImage src={user.picture} alt={user.name} />
+						<AvatarImage src={user.image} alt={user.name} />
 						<AvatarFallback>
 							{user.name.slice(0, 2).toUpperCase()}
 						</AvatarFallback>
@@ -65,6 +67,12 @@ export const columns: ColumnDef<UserTableItem>[] = [
 					</div>
 				</div>
 			);
+		},
+		filterFn: (row, id, value) => {
+			return row
+				.getValue<string>(id)
+				.toLowerCase()
+				.includes(value.toLowerCase());
 		},
 	},
 	{
@@ -137,6 +145,39 @@ export const columns: ColumnDef<UserTableItem>[] = [
 		id: 'actions',
 		cell: ({ row }) => {
 			const user = row.original;
+			const { toast } = useToast();
+
+			const handleStatusUpdate = async (approved: boolean) => {
+				try {
+					await updateUserStatus(user.id, approved);
+					toast({
+						title: 'Success',
+						description: `User ${approved ? 'approved' : 'disapproved'} successfully`,
+					});
+				} catch (error) {
+					toast({
+						title: 'Error',
+						description: 'Failed to update user status',
+						variant: 'destructive',
+					});
+				}
+			};
+
+			const handleRoleUpdate = async (role: UserRole) => {
+				try {
+					await updateUserRole(user.id, role);
+					toast({
+						title: 'Success',
+						description: `User role updated to ${role}`,
+					});
+				} catch (error) {
+					toast({
+						title: 'Error',
+						description: 'Failed to update user role',
+						variant: 'destructive',
+					});
+				}
+			};
 
 			return (
 				<DropdownMenu>
@@ -154,11 +195,21 @@ export const columns: ColumnDef<UserTableItem>[] = [
 						</DropdownMenuItem>
 						<DropdownMenuItem>View user details</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleStatusUpdate(true)}>
 							<UserCheck className="mr-2 h-4 w-4" /> Approve user
 						</DropdownMenuItem>
-						<DropdownMenuItem className="text-destructive">
-							<UserX className="mr-2 h-4 w-4" /> Disable user
+						<DropdownMenuItem
+							onClick={() => handleStatusUpdate(false)}
+							className="text-destructive"
+						>
+							<UserX className="mr-2 h-4 w-4" /> Disapprove user
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem onClick={() => handleRoleUpdate(UserRole.ADMIN)}>
+							Make admin
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => handleRoleUpdate(UserRole.USER)}>
+							Make user
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

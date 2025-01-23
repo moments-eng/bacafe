@@ -1,3 +1,4 @@
+import { UserGender } from '@/lib/models/user.model';
 import { create } from 'zustand';
 
 interface OnboardingState {
@@ -5,10 +6,10 @@ interface OnboardingState {
 	totalSteps: number;
 	name: string;
 	age: number;
-	gender: 'male' | 'female' | 'notSpecified';
+	gender: UserGender;
 	setName: (name: string) => void;
 	setAge: (age: number) => void;
-	setGender: (gender: 'male' | 'female' | 'notSpecified') => void;
+	setGender: (gender: UserGender) => void;
 	nextStep: () => void;
 	previousStep: () => void;
 	setStep: (step: number) => void;
@@ -21,7 +22,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
 	totalSteps: 4,
 	name: '',
 	age: 0,
-	gender: 'notSpecified',
+	gender: UserGender.NOT_SPECIFIED,
 	setName: (name) => set({ name }),
 	setAge: (age) => set({ age }),
 	setGender: (gender) => set({ gender }),

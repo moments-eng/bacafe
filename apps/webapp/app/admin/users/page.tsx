@@ -4,12 +4,8 @@ import { columns } from '@/components/admin/users/columns';
 import { UsersTableToolbar } from '@/components/admin/users/toolbar';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-import type {
-	UserRole,
-	UserStatus,
-	UserTableItem,
-	UserTier,
-} from '@/lib/types/user.types';
+import { useToast } from '@/hooks/use-toast';
+import type { UserResponse } from '@/lib/types/user.types';
 import {
 	type PaginationState,
 	type SortingState,
@@ -20,36 +16,66 @@ import {
 	useReactTable,
 } from '@tanstack/react-table';
 import { UserPlus } from 'lucide-react';
-import { useState } from 'react';
-
-// This would come from your API
-const mockUsers: UserTableItem[] = [
-	{
-		id: '1',
-		email: 'john@example.com',
-		name: 'John Doe',
-		picture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-		age: 30,
-		gender: 'male',
-		role: 'user' as UserRole,
-		status: 'approved' as UserStatus,
-		tier: 'free' as UserTier,
-		isOnboardingDone: true,
-		digestTime: '08:00',
-		createdAt: new Date('2024-01-01'),
-		updatedAt: new Date('2024-01-01'),
-	},
-	// Add more mock users...
-];
+import { useEffect, useState } from 'react';
+import { bulkUpdateUserStatus, getUsers } from './actions';
 
 export default function UsersPage() {
+	const { toast } = useToast();
+	const [loading, setLoading] = useState(true);
 	const [rowSelection, setRowSelection] = useState({});
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 10,
 	});
-	const [data] = useState<UserTableItem[]>(mockUsers);
+	const [data, setData] = useState<UserResponse[]>([]);
+	const [totalRows, setTotalRows] = useState(0);
+
+	const fetchUsers = async () => {
+		try {
+			setLoading(true);
+			const result = await getUsers({
+				page: pagination.pageIndex + 1,
+				limit: pagination.pageSize,
+				sortBy: sorting[0]?.id || 'createdAt',
+				sortOrder: sorting[0]?.desc ? 'desc' : 'asc',
+			});
+			setData(result.users);
+			setTotalRows(result.total);
+		} catch (error) {
+			toast({
+				title: 'Error',
+				description: 'Failed to fetch users',
+				variant: 'destructive',
+			});
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		fetchUsers();
+	}, [pagination.pageIndex, pagination.pageSize, sorting]);
+
+	const handleBulkAction = async (action: 'approve' | 'disapprove') => {
+		try {
+			const selectedIds = Object.keys(rowSelection);
+			await bulkUpdateUserStatus(selectedIds, action === 'approve');
+			await fetchUsers();
+			setRowSelection({});
+			toast({
+				title: 'Success',
+				description: `Successfully ${action}d selected users`,
+			});
+		} catch (error) {
+			toast({
+				title: 'Error',
+				description: `Failed to ${action} users`,
+				variant: 'destructive',
+			});
+		}
+	};
 
 	const table = useReactTable({
 		data,
@@ -61,11 +87,14 @@ export default function UsersPage() {
 		onRowSelectionChange: setRowSelection,
 		onSortingChange: setSorting,
 		onPaginationChange: setPagination,
+		pageCount: Math.ceil(totalRows / pagination.pageSize),
 		state: {
 			rowSelection,
 			sorting,
 			pagination,
 		},
+		manualPagination: true,
+		manualSorting: true,
 	});
 
 	return (
@@ -84,12 +113,16 @@ export default function UsersPage() {
 			</div>
 
 			<div className="space-y-4">
-				<UsersTableToolbar table={table} />
+				<UsersTableToolbar
+					table={table}
+					onApproveSelected={() => handleBulkAction('approve')}
+					onDisapproveSelected={() => handleBulkAction('disapprove')}
+				/>
 				<DataTable
 					table={table}
 					columns={columns}
 					selectedRows={table.getFilteredSelectedRowModel().rows.length}
-					totalRows={table.getFilteredRowModel().rows.length}
+					totalRows={totalRows}
 				/>
 			</div>
 		</div>

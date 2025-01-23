@@ -101,7 +101,6 @@
 	border: 1px solid hsl(var(--border) / 0.2);
 	font-family: "Heebo", sans-serif;
 	direction: rtl;
-	overflow: hidden;
 	isolation: isolate;
 }
 

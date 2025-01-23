@@ -1,7 +1,10 @@
+import type { UserRole } from '@/lib/models/user.model';
 import NextAuth, { Session } from 'next-auth';
 
 export interface InternalUser {
 	isOnboardingDone?: boolean;
+	role?: UserRole;
+	approved?: boolean;
 }
 
 declare module 'next-auth' {

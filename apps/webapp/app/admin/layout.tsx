@@ -1,13 +1,20 @@
+import { auth } from '@/auth';
+import { AdminSidebar } from '@/components/admin/sidebar/sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { SessionProvider } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 import './admin.css';
-import { AdminSidebar } from '@/components/admin/sidebar/sidebar';
 
-export default function AdminLayout({
+export default async function AdminLayout({
 	children,
-}: Readonly<{
+}: {
 	children: React.ReactNode;
-}>) {
+}) {
+	const session = await auth();
+	if (session?.user.role && session.user.role !== 'admin') {
+		redirect('/');
+	}
+
 	return (
 		<SidebarProvider>
 			<SessionProvider>
