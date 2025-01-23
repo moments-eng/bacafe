@@ -27,8 +27,7 @@ def log_request(f):
             logger.info(
                 "Request completed",
                 extra={
-                    'request_id': g.request_id,
-                    'status_code': response.status_code
+                    'request_id': g.request_id
                 }
             )
             return response

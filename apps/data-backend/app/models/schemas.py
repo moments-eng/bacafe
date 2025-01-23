@@ -29,24 +29,15 @@ class ReaderInterest(BaseModel):
 
 class ArticleRequest(BaseModel):
     title: str = Field(..., description="Title of the article")
-    summary: str = Field(..., description="Summary of the article content")
-    reader_interests: List[ReaderInterest] = Field(..., description="List of interests related to the article")
-    locations: List[str] = Field(..., description="Locations mentioned in the article")
-    concepts: List[str] = Field(..., description="Key concepts discussed in the article")
-    topics: List[Topics] = Field(..., description="Main topics of the article")
+    subtitle: str = Field(..., description="Subtitle of the article")
+    content: str = Field(..., description="Content of the article")
 
     class Config:
         json_schema_extra = {
             "example": {
                 "title": "The Future of AI in Healthcare",
-                "summary": "An exploration of how artificial intelligence is transforming medical diagnosis...",
-                "reader_interests": [
-                    {"interest": "AI in medicine", "ranking": 5},
-                    {"interest": "healthcare technology", "ranking": 4}
-                ],
-                "locations": ["United States", "Europe"],
-                "concepts": ["artificial intelligence", "medical diagnosis", "healthcare"],
-                "topics": ["health", "technology"]
+                "subtitle": "An exploration of how artificial intelligence is transforming medical diagnosis...",
+                "content": "An exploration of how artificial intelligence is transforming medical diagnosis..."
             }
         }
 

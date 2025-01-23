@@ -5,6 +5,8 @@ import { ArticleScrapingProcessor } from './article-scraping.processor';
 import { ArticleScrapingService } from './article-scraping.service';
 import { ScraperFactory } from './scrapers/scraper.factory';
 import { YnetScraper } from './scrapers/ynet.scraper';
+import { EnrichmentService } from './enrichment.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
 	imports: [
@@ -12,12 +14,14 @@ import { YnetScraper } from './scrapers/ynet.scraper';
 			name: 'article-scraping',
 		}),
 		ArticlesModule,
+		ConfigModule,
 	],
 	providers: [
 		ArticleScrapingService,
 		ArticleScrapingProcessor,
 		ScraperFactory,
 		YnetScraper,
+		EnrichmentService,
 	],
 	exports: [ArticleScrapingService],
 })

@@ -31,7 +31,7 @@ class ProcessService:
             llm = llm.with_structured_output(schema=fuseprompt.config['json_schema'])
         return llm
 
-    async def ingest_article(self, article: Article) -> ArticleResponse:
+    def ingest_article(self, article: Article):
         logger.info(
             "Starting article ingestion",
             extra={
@@ -41,24 +41,10 @@ class ProcessService:
         )
         
         # Process with LLM
-        fuseprompt = self.fuse_prompt_facade.get_prompt(PromptName.ARTICLE_INGEST)
+        fuseprompt = self.fuse_prompt_facade.get_prompt(PromptName.ARTICLE_INGEST_CHAT)
         llm = self.get_llm(fuseprompt)
         instructions = self.fuse_prompt_facade.compile_prompt(fuseprompt, article=article)[0]["content"]
         answer = llm.invoke(instructions)
-        
-        # Store in MongoDB
-        article_data = {
-            "title": answer.title,
-            "summary": answer.summary,
-            "reader_interests": answer.reader_interests,
-            "original_title": article.title,
-            "original_summary": article.summary,
-            "topics": article.topics,
-            "locations": article.locations,
-            "concepts": article.concepts
-        }
-        
-        await self.mongodb.insert_article(article_data)
         
         logger.info(
             "Article ingestion completed",
@@ -67,9 +53,9 @@ class ProcessService:
                 'article_title': article.title
             }
         )
-        return ArticleResponse(**answer)
+        return answer
 
-    async def ingest_reader(self, reader: Reader) -> ReaderResponse:
+    def ingest_reader(self, reader: Reader):
         logger.info(
             "Starting reader ingestion",
             extra={
@@ -88,12 +74,12 @@ class ProcessService:
         reader_data = {
             "age": reader.age,
             "gender": reader.gender,
-            "interests": answer.interests,
-            "summary": answer.summary,
+            "interests": answer.get('interests', []),
+            "summary": answer.get('summary', ''),
             "articles": [article.dict() for article in reader.articles]
         }
         
-        await self.mongodb.insert_reader(reader_data)
+        self.mongodb.insert_reader(reader_data)
         
         logger.info(
             "Reader ingestion completed",
@@ -102,4 +88,4 @@ class ProcessService:
                 'reader_age': reader.age
             }
         )
-        return ReaderResponse(**answer) 
+        return answer 

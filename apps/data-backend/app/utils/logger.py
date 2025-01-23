@@ -1,10 +1,14 @@
 import logging
 import sys
 import uuid
+import os
 from datetime import datetime
 from typing import Any, Dict
 from pythonjsonlogger import jsonlogger
 import structlog
+
+# Get environment mode
+LOG_ENV = os.getenv('LOG_ENV', 'production')
 
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record: Dict[str, Any], record: logging.LogRecord, message_dict: Dict[str, Any]) -> None:
@@ -19,13 +23,20 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
             log_record['request_id'] = str(uuid.uuid4())
 
 def setup_logger(name: str = "app") -> logging.Logger:
-    """Setup JSON logger with custom formatting"""
+    """Setup logger with different formatters based on environment"""
     logger = logging.getLogger(name)
     handler = logging.StreamHandler(sys.stdout)
     
-    formatter = CustomJsonFormatter(
-        '%(timestamp)s %(level)s %(name)s %(request_id)s %(message)s'
-    )
+    if LOG_ENV == 'development':
+        # Development: Simple console formatter with colors
+        formatter = logging.Formatter(
+            '\033[36m%(asctime)s\033[0m - \033[32m%(name)s\033[0m - \033[1m%(levelname)s\033[0m - %(message)s'
+        )
+    else:
+        # Production: JSON formatter
+        formatter = CustomJsonFormatter(
+            '%(timestamp)s %(level)s %(name)s %(request_id)s %(message)s'
+        )
     
     handler.setFormatter(formatter)
     logger.addHandler(handler)
@@ -33,14 +44,24 @@ def setup_logger(name: str = "app") -> logging.Logger:
     
     return logger
 
-# Create structured logger for application events
-structlog.configure(
-    processors=[
-        structlog.contextvars.merge_contextvars,
-        structlog.processors.add_log_level,
-        structlog.processors.TimeStamper(fmt="iso"),
+# Configure structlog based on environment
+processors = [
+    structlog.contextvars.merge_contextvars,
+    structlog.processors.add_log_level,
+    structlog.processors.TimeStamper(fmt="iso"),
+]
+
+if LOG_ENV == 'development':
+    processors.extend([
+        structlog.dev.ConsoleRenderer(colors=True)
+    ])
+else:
+    processors.extend([
         structlog.processors.JSONRenderer()
-    ],
+    ])
+
+structlog.configure(
+    processors=processors,
     logger_factory=structlog.PrintLoggerFactory(),
     wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
     cache_logger_on_first_use=True,

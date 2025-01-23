@@ -7,6 +7,7 @@ import {
 	ArticleScrapingResult,
 } from './types/article-scraping.types';
 import { ScraperFactory } from './scrapers/scraper.factory';
+import { EnrichmentService } from './enrichment.service';
 
 @Processor('article-scraping')
 export class ArticleScrapingProcessor extends WorkerHost {
@@ -15,6 +16,7 @@ export class ArticleScrapingProcessor extends WorkerHost {
 	constructor(
 		private readonly articlesService: ArticlesService,
 		private readonly scraperFactory: ScraperFactory,
+		private readonly enrichmentService: EnrichmentService,
 	) {
 		super();
 	}
@@ -33,10 +35,21 @@ export class ArticleScrapingProcessor extends WorkerHost {
 			const scraper = this.scraperFactory.getScraper(article.source);
 			const scrapingResult = await scraper.scrape(url);
 
+			// Update article with scraped content
 			await this.articlesService.update(articleId, {
 				content: scrapingResult.content,
 				author: scrapingResult.author,
 				imageUrl: scrapingResult.imageUrl,
+			});
+
+			const enrichmentData = await this.enrichmentService.enrichArticle({
+				title: article.title,
+				subtitle: article.subtitle,
+				content: scrapingResult.content,
+			});
+
+			await this.articlesService.update(articleId, {
+				enrichment: enrichmentData,
 			});
 
 			return {

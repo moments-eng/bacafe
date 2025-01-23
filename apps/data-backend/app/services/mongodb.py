@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional, Any
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import ASCENDING, DESCENDING
+from pymongo import MongoClient, ASCENDING, DESCENDING
 import os
 from ..utils.logger import logger
 from flask import g
@@ -15,24 +14,24 @@ class MongoDBService:
         """Initialize MongoDB connection"""
         try:
             mongodb_url = os.getenv('MONGODB_URI', 'mongodb://localhost:27017')
-            self.client = AsyncIOMotorClient(mongodb_url)
+            self.client = MongoClient(mongodb_url)
             self.db = self.client[os.getenv('MONGODB_DB', 'articles_db')]
             logger.info("MongoDB connection initialized")
         except Exception as e:
             logger.error(f"MongoDB connection failed: {str(e)}")
             raise
 
-    async def create_indexes(self):
+    def create_indexes(self):
         """Create necessary indexes"""
         try:
             # Articles collection indexes
-            await self.db.articles.create_index([("title", ASCENDING)], unique=True)
-            await self.db.articles.create_index([("topics", ASCENDING)])
-            await self.db.articles.create_index([("created_at", DESCENDING)])
+            self.db.articles.create_index([("title", ASCENDING)], unique=True)
+            self.db.articles.create_index([("topics", ASCENDING)])
+            self.db.articles.create_index([("created_at", DESCENDING)])
 
             # Readers collection indexes
-            await self.db.readers.create_index([("age", ASCENDING)])
-            await self.db.readers.create_index([("gender", ASCENDING)])
+            self.db.readers.create_index([("age", ASCENDING)])
+            self.db.readers.create_index([("gender", ASCENDING)])
 
             logger.info(
                 "MongoDB indexes created",
@@ -49,10 +48,10 @@ class MongoDBService:
             raise
 
     # Article operations
-    async def insert_article(self, article: Dict) -> str:
+    def insert_article(self, article: Dict) -> str:
         """Insert a new article"""
         try:
-            result = await self.db.articles.insert_one(article)
+            result = self.db.articles.insert_one(article)
             logger.info(
                 "Article inserted",
                 extra={
@@ -71,10 +70,10 @@ class MongoDBService:
             )
             raise
 
-    async def get_article(self, article_id: str) -> Optional[Dict]:
+    def get_article(self, article_id: str) -> Optional[Dict]:
         """Retrieve an article by ID"""
         try:
-            article = await self.db.articles.find_one({"_id": article_id})
+            article = self.db.articles.find_one({"_id": article_id})
             return article
         except Exception as e:
             logger.error(
@@ -87,11 +86,11 @@ class MongoDBService:
             )
             raise
 
-    async def get_articles_by_topic(self, topic: str, limit: int = 10) -> List[Dict]:
+    def get_articles_by_topic(self, topic: str, limit: int = 10) -> List[Dict]:
         """Retrieve articles by topic"""
         try:
             cursor = self.db.articles.find({"topics": topic}).limit(limit)
-            return await cursor.to_list(length=limit)
+            return list(cursor)
         except Exception as e:
             logger.error(
                 "Failed to retrieve articles by topic",
@@ -104,10 +103,10 @@ class MongoDBService:
             raise
 
     # Reader operations
-    async def insert_reader(self, reader: Dict) -> str:
+    def insert_reader(self, reader: Dict) -> str:
         """Insert a new reader"""
         try:
-            result = await self.db.readers.insert_one(reader)
+            result = self.db.readers.insert_one(reader)
             logger.info(
                 "Reader inserted",
                 extra={
@@ -126,10 +125,10 @@ class MongoDBService:
             )
             raise
 
-    async def get_reader(self, reader_id: str) -> Optional[Dict]:
+    def get_reader(self, reader_id: str) -> Optional[Dict]:
         """Retrieve a reader by ID"""
         try:
-            reader = await self.db.readers.find_one({"_id": reader_id})
+            reader = self.db.readers.find_one({"_id": reader_id})
             return reader
         except Exception as e:
             logger.error(
@@ -142,10 +141,10 @@ class MongoDBService:
             )
             raise
 
-    async def update_reader_interests(self, reader_id: str, interests: List[str]) -> bool:
+    def update_reader_interests(self, reader_id: str, interests: List[str]) -> bool:
         """Update reader interests"""
         try:
-            result = await self.db.readers.update_one(
+            result = self.db.readers.update_one(
                 {"_id": reader_id},
                 {"$set": {"interests": interests}}
             )

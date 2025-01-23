@@ -1,12 +1,12 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import type { Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
+import type { Document, Types } from "mongoose";
 
 export type ArticleDocument = Article & Document;
 
 @Schema({ timestamps: true })
 export class Article {
-	@ApiProperty({ description: 'Article ID' })
+	@ApiProperty({ description: "Article ID" })
 	_id: Types.ObjectId;
 
 	@Prop({ required: true })
@@ -41,6 +41,9 @@ export class Article {
 
 	@Prop({ required: true, unique: true })
 	externalId: string;
+
+	@Prop({ type: Object })
+	enrichment?: Record<string, any>;
 }
 
 export const ArticleSchema = SchemaFactory.createForClass(Article);

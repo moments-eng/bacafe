@@ -3,8 +3,9 @@ from langfuse import Langfuse
 from typing import Any, Dict
 
 class PromptName(Enum):
-    ARTICLE_INGEST = "article_ingest_chat"
+    ARTICLE_INGESTION = "article_ingestion"
     READER_PROFILER = "reader_profiler"
+    ARTICLE_INGEST_CHAT = "article_ingest_chat"
 
 class FusePromptFacade:
     def __init__(self):

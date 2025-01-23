@@ -27,8 +27,8 @@ const data = {
 			isActive: true,
 		},
 		{
-			title: 'Data Providers',
-			url: '/admin/providers',
+			title: 'Feeds',
+			url: '/admin/feeds',
 			icon: Database,
 		},
 	],

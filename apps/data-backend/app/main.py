@@ -3,13 +3,13 @@ from flask_pydantic import validate
 from .models.schemas import (
     ReaderRequest, 
     ArticleRequest, 
-    ArticleResponse, 
-    ReaderResponse, 
     ErrorResponse
 )
+from langfuse import Langfuse
 from .services.process import ProcessService
 from .utils.logger import logger
 from .middleware.request_context import log_request
+from .services.fuse_prompt import FusePromptFacade, PromptName
 
 app = Flask(__name__)
 process_service = ProcessService()
@@ -35,11 +35,12 @@ def ingest_article():
             "Article processed successfully",
             extra={
                 'request_id': g.request_id,
-                'article_title': result.title
+                'article_title': data.get('title')
             }
         )
-        return jsonify(result.dict())
+        return jsonify(result), 200
     except Exception as e:
+        print(e)
         logger.error(
             "Article processing failed",
             extra={
@@ -67,10 +68,10 @@ def ingest_reader():
             "Reader processed successfully",
             extra={
                 'request_id': g.request_id,
-                'interests_count': len(result.interests)
+                'interests_count': len(result.get('interests', []))
             }
         )
-        return jsonify(result.dict())
+        return jsonify(result)
     except Exception as e:
         logger.error(
             "Reader processing failed",
@@ -81,6 +82,3 @@ def ingest_reader():
         )
         error = ErrorResponse(error="Processing Error", details=str(e))
         return jsonify(error.dict()), 500
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000) 
