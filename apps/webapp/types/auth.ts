@@ -1,4 +1,4 @@
-import type { UserRole } from '@/lib/models/user.model';
+import type { UserRole } from '@/lib/types/user.types';
 import NextAuth, { Session } from 'next-auth';
 
 export interface InternalUser {

@@ -18,67 +18,65 @@ import {
 import { UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { bulkUpdateUserStatus, getUsers } from './actions';
+import { UserDTO } from '@/lib/dtos/user.dto';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/queries';
 
 export default function UsersPage() {
 	const { toast } = useToast();
-	const [loading, setLoading] = useState(true);
+	const queryClient = useQueryClient();
 	const [rowSelection, setRowSelection] = useState({});
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [pagination, setPagination] = useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 10,
 	});
-	const [data, setData] = useState<UserResponse[]>([]);
-	const [totalRows, setTotalRows] = useState(0);
 
-	const fetchUsers = async () => {
-		try {
-			setLoading(true);
-			const result = await getUsers({
+	const { data, isLoading } = useQuery({
+		queryKey: [QUERY_KEYS.USERS, pagination, sorting],
+		queryFn: () =>
+			getUsers({
 				page: pagination.pageIndex + 1,
 				limit: pagination.pageSize,
 				sortBy: sorting[0]?.id || 'createdAt',
 				sortOrder: sorting[0]?.desc ? 'desc' : 'asc',
+			}),
+	});
+
+	const { mutateAsync: bulkUpdate } = useMutation({
+		mutationFn: (variables: { ids: string[]; status: boolean }) =>
+			bulkUpdateUserStatus(variables.ids, variables.status),
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.USERS],
+				exact: false,
 			});
-			setData(result.users);
-			setTotalRows(result.total);
-		} catch (error) {
+			setRowSelection({});
+		},
+		onError: (error) => {
 			toast({
 				title: 'Error',
-				description: 'Failed to fetch users',
+				description:
+					error instanceof Error ? error.message : 'Failed to update users',
 				variant: 'destructive',
 			});
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		fetchUsers();
-	}, [pagination.pageIndex, pagination.pageSize, sorting]);
+		},
+	});
 
 	const handleBulkAction = async (action: 'approve' | 'disapprove') => {
-		try {
-			const selectedIds = Object.keys(rowSelection);
-			await bulkUpdateUserStatus(selectedIds, action === 'approve');
-			await fetchUsers();
-			setRowSelection({});
-			toast({
-				title: 'Success',
-				description: `Successfully ${action}d selected users`,
-			});
-		} catch (error) {
-			toast({
-				title: 'Error',
-				description: `Failed to ${action} users`,
-				variant: 'destructive',
-			});
-		}
+		const selectedIds = Object.keys(rowSelection);
+		await bulkUpdate({
+			ids: selectedIds,
+			status: action === 'approve',
+		});
+		toast({
+			title: 'Success',
+			description: `Successfully ${action}d selected users`,
+		});
 	};
 
 	const table = useReactTable({
-		data,
+		data: data?.users || [],
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
@@ -87,7 +85,7 @@ export default function UsersPage() {
 		onRowSelectionChange: setRowSelection,
 		onSortingChange: setSorting,
 		onPaginationChange: setPagination,
-		pageCount: Math.ceil(totalRows / pagination.pageSize),
+		pageCount: data?.total ? Math.ceil(data.total / pagination.pageSize) : 0,
 		state: {
 			rowSelection,
 			sorting,
@@ -118,11 +116,12 @@ export default function UsersPage() {
 					onApproveSelected={() => handleBulkAction('approve')}
 					onDisapproveSelected={() => handleBulkAction('disapprove')}
 				/>
-				<DataTable
-					table={table}
+				<DataTable<UserDTO, unknown>
 					columns={columns}
-					selectedRows={table.getFilteredSelectedRowModel().rows.length}
-					totalRows={totalRows}
+					data={data?.users || []}
+					searchKey="name"
+					emptyMessage="No users found"
+					isLoading={isLoading}
 				/>
 			</div>
 		</div>

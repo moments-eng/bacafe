@@ -1,6 +1,7 @@
 import {
 	Severity,
 	getModelForClass,
+	index,
 	modelOptions,
 	pre,
 	prop,
@@ -12,26 +13,15 @@ import type {
 } from '@typegoose/typegoose/lib/types';
 import mongoose from 'mongoose';
 
-export enum UserStatus {
-	APPROVED = 'approved',
-	PENDING = 'pending',
-	DISABLED = 'disabled',
-}
-
-export enum UserTier {
-	FREE = 'free',
-	PREMIUM = 'premium',
-}
-
-export enum UserRole {
-	USER = 'user',
-	ADMIN = 'admin',
-}
-
-export enum UserGender {
+enum UserGender {
 	MALE = 'male',
 	FEMALE = 'female',
 	NOT_SPECIFIED = 'notSpecified',
+}
+
+enum UserRole {
+	USER = 'user',
+	ADMIN = 'admin',
 }
 
 interface ArticleScore {
@@ -51,6 +41,9 @@ interface ArticleScore {
 @pre<User>('save', function () {
 	this.updatedAt = new Date();
 })
+@index({ approved: 1 })
+@index({ createdAt: 1 })
+@index({ role: 1 })
 export class User implements TimeStamps {
 	@prop({ required: true, unique: true })
 	public email!: string;

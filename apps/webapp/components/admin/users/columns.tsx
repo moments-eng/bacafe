@@ -16,12 +16,14 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import {
 	UserRole,
-	type UserStatus,
-	type UserTier,
-} from '@/lib/models/user.model';
-import type { UserResponse } from '@/lib/types/user.types';
+	UserStatus,
+	UserTier,
+	type UserResponse,
+} from '@/lib/types/user.types';
 import type { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, UserCheck, UserX } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS } from '@/lib/queries';
 
 export const columns: ColumnDef<UserResponse>[] = [
 	{
@@ -146,38 +148,50 @@ export const columns: ColumnDef<UserResponse>[] = [
 		cell: ({ row }) => {
 			const user = row.original;
 			const { toast } = useToast();
+			const queryClient = useQueryClient();
 
-			const handleStatusUpdate = async (approved: boolean) => {
-				try {
-					await updateUserStatus(user.id, approved);
+			const { mutate: updateStatus } = useMutation({
+				mutationFn: (approved: boolean) => updateUserStatus(user.id, approved),
+				onSuccess: (data) => {
+					queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USERS] });
 					toast({
 						title: 'Success',
-						description: `User ${approved ? 'approved' : 'disapproved'} successfully`,
+						description: `User ${data.success ? 'approved' : 'disapproved'} successfully`,
 					});
-				} catch (error) {
+				},
+				onError: (error) => {
 					toast({
 						title: 'Error',
-						description: 'Failed to update user status',
+						description:
+							error instanceof Error
+								? error.message
+								: 'Failed to update status',
 						variant: 'destructive',
 					});
-				}
-			};
+				},
+			});
 
-			const handleRoleUpdate = async (role: UserRole) => {
-				try {
-					await updateUserRole(user.id, role);
+			const { mutate: updateRole } = useMutation({
+				mutationFn: (role: UserRole) => updateUserRole(user.id, role),
+				onSuccess: (_, variable) => {
+					queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USERS] });
 					toast({
 						title: 'Success',
-						description: `User role updated to ${role}`,
+						description: `User role updated to ${variable}`,
 					});
-				} catch (error) {
+				},
+				onError: (error) => {
 					toast({
 						title: 'Error',
-						description: 'Failed to update user role',
+						description:
+							error instanceof Error ? error.message : 'Failed to update role',
 						variant: 'destructive',
 					});
-				}
-			};
+				},
+			});
+
+			const handleStatusUpdate = (approved: boolean) => updateStatus(approved);
+			const handleRoleUpdate = (role: UserRole) => updateRole(role);
 
 			return (
 				<DropdownMenu>

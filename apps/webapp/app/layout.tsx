@@ -2,6 +2,7 @@ import { hebrewContent } from '@/locales/he';
 import type { Metadata } from 'next';
 import { Heebo } from 'next/font/google';
 import './globals.css';
+import { Providers } from '@/providers';
 
 const heebo = Heebo({
 	subsets: ['hebrew'],
@@ -21,7 +22,9 @@ export default function RootLayout({
 	return (
 		<html lang="he" dir="rtl">
 			<body className={`${heebo.className} mobile-container`}>
-				<main>{children}</main>
+				<Providers>
+					<main>{children}</main>
+				</Providers>
 			</body>
 		</html>
 	);

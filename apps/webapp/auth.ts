@@ -4,8 +4,8 @@ import Facebook, { type FacebookProfile } from 'next-auth/providers/facebook';
 import Google, { type GoogleProfile } from 'next-auth/providers/google';
 import authConfig from './auth.config';
 import MongoDBClient from './lib/db/db';
-import { UserRole } from './lib/models/user.model';
 import { userService } from './lib/services/user-service';
+import { UserRole } from './lib/types/user.types';
 
 const jwtTrigger = ['signUp', 'signIn'];
 

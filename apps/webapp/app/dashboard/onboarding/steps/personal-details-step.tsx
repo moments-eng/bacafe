@@ -20,7 +20,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { updateUser } from '../actions';
-import { UserGender } from '@/lib/models/user.model';
+import { UserGender } from '@/lib/types/user.types';
 
 const { onboarding } = hebrewContent;
 

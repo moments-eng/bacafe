@@ -1,4 +1,4 @@
-import { UserGender } from '@/lib/models/user.model';
+import { UserGender } from '@/lib/types/user.types';
 import { create } from 'zustand';
 
 interface OnboardingState {

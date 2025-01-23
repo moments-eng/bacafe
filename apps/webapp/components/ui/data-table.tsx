@@ -1,6 +1,21 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import * as React from 'react';
+import {
+	ColumnDef,
+	ColumnFiltersState,
+	SortingState,
+	VisibilityState,
+	flexRender,
+	getCoreRowModel,
+	getFacetedRowModel,
+	getFacetedUniqueValues,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
+} from '@tanstack/react-table';
+
 import {
 	Table,
 	TableBody,
@@ -9,23 +24,59 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { type Table as TableType, flexRender } from '@tanstack/react-table';
-import { DataTablePagination } from './data-table-pagination';
 
-interface DataTableProps<TData> {
-	table: TableType<TData>;
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	columns: any[];
-	selectedRows: number;
-	totalRows: number;
+import { DataTablePagination } from './data-table-pagination';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface DataTableProps<TData, TValue> {
+	columns: ColumnDef<TData, TValue>[];
+	data: TData[];
+	searchKey?: string;
+	emptyMessage?: string;
+	selectedRows?: number;
+	totalRows?: number;
+	isLoading?: boolean;
 }
 
-export function DataTable<TData>({
-	table,
+export function DataTable<TData, TValue>({
 	columns,
+	data,
+	searchKey,
+	emptyMessage = 'No results.',
 	selectedRows,
 	totalRows,
-}: DataTableProps<TData>) {
+	isLoading,
+}: DataTableProps<TData, TValue>) {
+	const [rowSelection, setRowSelection] = React.useState({});
+	const [columnVisibility, setColumnVisibility] =
+		React.useState<VisibilityState>({});
+	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+		[],
+	);
+	const [sorting, setSorting] = React.useState<SortingState>([]);
+
+	const table = useReactTable({
+		data,
+		columns,
+		state: {
+			sorting,
+			columnVisibility,
+			rowSelection,
+			columnFilters,
+		},
+		enableRowSelection: true,
+		onRowSelectionChange: setRowSelection,
+		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
+		onColumnVisibilityChange: setColumnVisibility,
+		getCoreRowModel: getCoreRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFacetedRowModel: getFacetedRowModel(),
+		getFacetedUniqueValues: getFacetedUniqueValues(),
+	});
+
 	return (
 		<div className="space-y-4">
 			<div className="rounded-md border">
@@ -35,7 +86,7 @@ export function DataTable<TData>({
 							<TableRow key={headerGroup.id}>
 								{headerGroup.headers.map((header) => {
 									return (
-										<TableHead key={header.id}>
+										<TableHead key={header.id} colSpan={header.colSpan}>
 											{header.isPlaceholder
 												? null
 												: flexRender(
@@ -49,7 +100,19 @@ export function DataTable<TData>({
 						))}
 					</TableHeader>
 					<TableBody>
-						{table.getRowModel().rows?.length ? (
+						{isLoading ? (
+							Array(3)
+								.fill(0)
+								.map((_, i) => (
+									<TableRow key={`skeleton-${i}`}>
+										{columns.map((column, j) => (
+											<TableCell key={`cell-${i}-${j}`}>
+												<Skeleton className="h-4 w-[80%]" />
+											</TableCell>
+										))}
+									</TableRow>
+								))
+						) : table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
@@ -71,31 +134,14 @@ export function DataTable<TData>({
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No results.
+									{emptyMessage}
 								</TableCell>
 							</TableRow>
 						)}
 					</TableBody>
 				</Table>
 			</div>
-
-			{selectedRows > 0 && (
-				<div className="flex items-center justify-between">
-					<p className="text-sm text-muted-foreground">
-						{selectedRows} of {totalRows} row(s) selected.
-					</p>
-					<div className="flex items-center space-x-2">
-						<Button variant="outline" size="sm">
-							Approve Selected
-						</Button>
-						<Button variant="outline" size="sm" className="text-destructive">
-							Disable Selected
-						</Button>
-					</div>
-				</div>
-			)}
-
-			<DataTablePagination table={table} />
+			<DataTablePagination table={table} isLoading={isLoading} />
 		</div>
 	);
 }

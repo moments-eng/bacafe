@@ -1,4 +1,4 @@
-import { getUser } from '@/actions/user';
+import { getUser } from '../../actions/user';
 import { auth } from '@/auth';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';

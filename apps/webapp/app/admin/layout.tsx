@@ -3,6 +3,7 @@ import { AdminSidebar } from '@/components/admin/sidebar/sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { SessionProvider } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import './admin-globals.css';
 import './admin.css';
 
 export default async function AdminLayout({
