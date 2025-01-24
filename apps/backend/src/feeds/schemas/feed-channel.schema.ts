@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, Types } from 'mongoose';
+import { FeedDto } from '../dto/feed.dto';
 
 export type FeedChannelDocument = FeedChannel & Document;
 
@@ -47,9 +48,40 @@ export class FeedChannel {
 	@ApiProperty({ description: 'Last scraping timestamp' })
 	@Prop({ type: Date })
 	lastScrapedAt?: Date;
+
+	toDto(): FeedDto {
+		return {
+			id: this._id.toString(),
+			name: this.name,
+			url: this.url,
+			provider: this.provider,
+			language: this.language,
+			isActive: this.isActive,
+			categories: this.categories,
+			description: this.description,
+			scrapingInterval: this.scrapingInterval,
+			lastScrapedAt: this.lastScrapedAt,
+		};
+	}
 }
 
 export const FeedChannelSchema = SchemaFactory.createForClass(FeedChannel);
 
 // Create a unique index on the url field
 FeedChannelSchema.index({ url: 1 }, { unique: true });
+
+// Add the toDto method to the schema
+FeedChannelSchema.methods.toDto = function () {
+	return {
+		id: this._id.toString(),
+		name: this.name,
+		url: this.url,
+		provider: this.provider,
+		language: this.language,
+		isActive: this.isActive,
+		categories: this.categories,
+		description: this.description,
+		scrapingInterval: this.scrapingInterval,
+		lastScrapedAt: this.lastScrapedAt,
+	};
+};

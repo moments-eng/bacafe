@@ -18,7 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org moments-f1 --project bacafe-backend ./dist && sentry-cli sourcemaps upload --org moments-f1 --project bacafe-backend ./dist"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org moments-f1 --project bacafe-backend ./dist && sentry-cli sourcemaps upload --org moments-f1 --project bacafe-backend ./dist",
+    "generate:api": "openapi-codegen gen feeds",
+    "generate:api-types": "openapi-typescript http://localhost:3100/api-yaml -o lib/http-clients/feeds/schema.d.ts"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.1",

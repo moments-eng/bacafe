@@ -18,9 +18,9 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { CreateFeedDto } from './dto/create-feed.dto';
+import { FeedDto } from './dto/feed.dto';
 import { UpdateFeedStatusDto } from './dto/update-feed-status.dto';
 import { FeedsService } from './feeds.service';
-import { FeedChannel } from './schemas/feed-channel.schema';
 
 @ApiTags('feeds')
 @Controller('feeds')
@@ -32,7 +32,7 @@ export class FeedsController {
 	@ApiResponse({
 		status: HttpStatus.CREATED,
 		description: 'The feed has been successfully created.',
-		type: FeedChannel,
+		type: FeedDto,
 	})
 	@ApiResponse({
 		status: HttpStatus.BAD_REQUEST,
@@ -42,7 +42,7 @@ export class FeedsController {
 		status: HttpStatus.CONFLICT,
 		description: 'Feed with this URL already exists.',
 	})
-	async create(@Body() createFeedDto: CreateFeedDto): Promise<FeedChannel> {
+	async create(@Body() createFeedDto: CreateFeedDto): Promise<FeedDto> {
 		try {
 			return await this.feedsService.createFromRss(createFeedDto);
 		} catch (error) {
@@ -65,10 +65,10 @@ export class FeedsController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'Returns all feeds',
-		type: [FeedChannel],
+		type: [FeedDto],
 	})
 	@HttpCode(HttpStatus.OK)
-	async findAll(): Promise<FeedChannel[]> {
+	async findAll(): Promise<FeedDto[]> {
 		return this.feedsService.findAll();
 	}
 
@@ -78,14 +78,14 @@ export class FeedsController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'Returns the feed',
-		type: FeedChannel,
+		type: FeedDto,
 	})
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
 		description: 'Feed not found',
 	})
 	@HttpCode(HttpStatus.OK)
-	async findOne(@Param('id') id: string): Promise<FeedChannel> {
+	async findOne(@Param('id') id: string): Promise<FeedDto> {
 		try {
 			return await this.feedsService.findById(id);
 		} catch (error) {
@@ -99,7 +99,7 @@ export class FeedsController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'The feed status has been updated',
-		type: FeedChannel,
+		type: FeedDto,
 	})
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
@@ -113,7 +113,7 @@ export class FeedsController {
 	async updateStatus(
 		@Param('id') id: string,
 		@Body() updateFeedStatusDto: UpdateFeedStatusDto,
-	): Promise<FeedChannel> {
+	): Promise<FeedDto> {
 		try {
 			return await this.feedsService.updateFeedStatus(
 				id,
