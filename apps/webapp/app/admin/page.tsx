@@ -1,11 +1,14 @@
 'use client';
 
+import { DailyDigestGraph } from '@/components/admin/dashboard/daily-digest-graph';
+import { UsersSignupGraph } from '@/components/admin/dashboard/users-signup-graph';
+import { StatsCard } from '@/components/stats/stats-card';
 import {
 	Card,
-	CardHeader,
-	CardTitle,
 	CardContent,
 	CardDescription,
+	CardHeader,
+	CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -13,13 +16,10 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Clock, Eye, FileText, UserPlus, Users, Info } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEYS } from '@/lib/queries';
-import { DailyDigestGraph } from '@/components/admin/dashboard/daily-digest-graph';
-import { UsersSignupGraph } from '@/components/admin/dashboard/users-signup-graph';
-import { StatsCard } from '@/components/stats/stats-card';
+import { useQuery } from '@tanstack/react-query';
+import { Clock, Eye, FileText, Info, UserPlus, Users } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { getAdminStats } from './actions';
 
 export default function AdminPage() {

@@ -1,3 +1,5 @@
 .turbo
 .envrc
 .env
+
+node_modules

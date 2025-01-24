@@ -1,9 +1,9 @@
-import { getUser } from '../../actions/user';
 import { auth } from '@/auth';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { hebrewContent } from '@/locales/he';
 import { redirect } from 'next/navigation';
+import { getUser } from '../../actions/user';
 import { ApprovalPending } from './components/approval-pending';
 
 export default async function Page() {

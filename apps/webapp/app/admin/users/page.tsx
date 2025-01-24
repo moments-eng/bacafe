@@ -4,8 +4,12 @@ import { columns } from '@/components/admin/users/columns';
 import { UsersTableToolbar } from '@/components/admin/users/toolbar';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
+import { DataTablePagination } from '@/components/ui/data-table-pagination';
 import { useToast } from '@/hooks/use-toast';
+import type { UserDTO } from '@/lib/dtos/user.dto';
+import { QUERY_KEYS } from '@/lib/queries';
 import type { UserResponse } from '@/lib/types/user.types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
 	type PaginationState,
 	type SortingState,
@@ -18,9 +22,6 @@ import {
 import { UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { bulkUpdateUserStatus, getUsers } from './actions';
-import { UserDTO } from '@/lib/dtos/user.dto';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '@/lib/queries';
 
 export default function UsersPage() {
 	const { toast } = useToast();
@@ -123,6 +124,7 @@ export default function UsersPage() {
 					emptyMessage="No users found"
 					isLoading={isLoading}
 				/>
+				<DataTablePagination table={table} isLoading={isLoading} />
 			</div>
 		</div>
 	);

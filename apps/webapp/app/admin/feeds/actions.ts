@@ -1,9 +1,9 @@
 'use server';
 
 import { auth } from '@/auth';
-import { feedsApi } from '@/lib/http-clients/feeds/client';
+import { backendApi } from '@/lib/http-clients/backend/client';
+import type { components } from '@/lib/http-clients/backend/schema';
 import { revalidatePath } from 'next/cache';
-import type { components } from '@/lib/http-clients/feeds/schema';
 
 type CreateFeedDto = components['schemas']['CreateFeedDto'];
 type UpdateFeedStatusDto = components['schemas']['UpdateFeedStatusDto'];
@@ -21,7 +21,7 @@ async function checkAdminAccess() {
 
 export async function getFeeds() {
 	await checkAdminAccess();
-	const { data, error } = await feedsApi.GET('/feeds');
+	const { data, error } = await backendApi.GET('/feeds');
 	if (error) throw error;
 	return data;
 }
@@ -38,7 +38,7 @@ export async function createFeed(formData: FormData) {
 	};
 
 	try {
-		const { data, error } = await feedsApi.POST('/feeds', { body: payload });
+		const { data, error } = await backendApi.POST('/feeds', { body: payload });
 		if (error) throw error;
 		revalidatePath('/admin/feeds');
 		return { success: true, data };
@@ -54,7 +54,7 @@ export async function toggleFeedStatus(id: string, isActive: boolean) {
 	await checkAdminAccess();
 
 	try {
-		const { error } = await feedsApi.PATCH('/feeds/{id}/status', {
+		const { error } = await backendApi.PATCH('/feeds/{id}/status', {
 			params: { path: { id } },
 			body: { isActive } as UpdateFeedStatusDto,
 		});
@@ -73,7 +73,7 @@ export async function deleteFeed(id: string) {
 	await checkAdminAccess();
 
 	try {
-		const { error } = await feedsApi.DELETE('/feeds/{id}', {
+		const { error } = await backendApi.DELETE('/feeds/{id}', {
 			params: { path: { id } },
 		});
 		if (error) throw error;

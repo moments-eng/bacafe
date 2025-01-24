@@ -1,0 +1,13 @@
+.
+├── apps/
+│   ├── webapp/          # Next.js application
+│   ├── backend/         # NestJS application
+│   └── data-backend/    # Python Flask app (managed through scripts)
+├── packages/
+│   └── shared/          # Shared TS utilities/configs
+├── scripts/
+│   └── deploy.sh        # Deployment scripts
+├── package.json
+├── turbo.json
+└── .vscode/
+    └── settings.json    # Workspace settings 

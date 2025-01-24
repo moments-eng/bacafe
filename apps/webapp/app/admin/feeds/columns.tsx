@@ -1,15 +1,15 @@
-import type { ColumnDef } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { formatDistanceToNow } from 'date-fns';
-import { toggleFeedStatus, deleteFeed } from './actions';
-import type { components } from '@/lib/http-clients/feeds/schema';
-import { Button } from '@/components/ui/button';
-import { Trash2, Clock } from 'lucide-react';
 import { IntervalDialog } from '@/components/admin/feeds/interval-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { components } from '@/lib/http-clients/backend/schema';
 import { QUERY_KEYS } from '@/lib/queries';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { ColumnDef } from '@tanstack/react-table';
+import { formatDistanceToNow } from 'date-fns';
+import { Clock, Trash2 } from 'lucide-react';
+import { deleteFeed, toggleFeedStatus } from './actions';
 
 type FeedDto = components['schemas']['FeedDto'];
 

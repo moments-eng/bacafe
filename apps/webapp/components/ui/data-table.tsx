@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -14,7 +14,7 @@ import {
 	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
 import {
 	Table,
@@ -23,10 +23,10 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import { DataTablePagination } from './data-table-pagination';
-import { Skeleton } from '@/components/ui/skeleton';
+import { DataTablePagination } from "./data-table-pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -36,16 +36,18 @@ interface DataTableProps<TData, TValue> {
 	selectedRows?: number;
 	totalRows?: number;
 	isLoading?: boolean;
+	onRowClick?: (row: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
 	searchKey,
-	emptyMessage = 'No results.',
+	emptyMessage = "No results.",
 	selectedRows,
 	totalRows,
 	isLoading,
+	onRowClick,
 }: DataTableProps<TData, TValue>) {
 	const [rowSelection, setRowSelection] = React.useState({});
 	const [columnVisibility, setColumnVisibility] =
@@ -116,7 +118,9 @@ export function DataTable<TData, TValue>({
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									data-state={row.getIsSelected() && 'selected'}
+									data-state={row.getIsSelected() && "selected"}
+									onClick={() => onRowClick?.(row.original as TData)}
+									className="cursor-pointer hover:bg-muted/50"
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
@@ -141,7 +145,6 @@ export function DataTable<TData, TValue>({
 					</TableBody>
 				</Table>
 			</div>
-			<DataTablePagination table={table} isLoading={isLoading} />
 		</div>
 	);
 }

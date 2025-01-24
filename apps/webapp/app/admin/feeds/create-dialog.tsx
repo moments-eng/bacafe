@@ -1,5 +1,6 @@
 'use client';
 
+import { createFeed } from '@/app/admin/feeds/actions';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -18,13 +19,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { createFeed } from '@/app/admin/feeds/actions';
+import { QUERY_KEYS } from '@/lib/queries';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { PlusCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { PlusCircle } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '@/lib/queries';
 
 const formSchema = z.object({
 	provider: z.string().min(2, 'Provider must be at least 2 characters'),

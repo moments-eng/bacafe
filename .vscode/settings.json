@@ -1,0 +1,8 @@
+{
+  "eslint.workingDirectories": [
+    "apps/webapp",
+    "apps/backend",
+    "packages/*"
+  ],
+  "turbo.arguments": ["--filter=..."]
+} 
