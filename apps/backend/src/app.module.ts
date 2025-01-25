@@ -9,24 +9,26 @@ import { QueuesModule } from './queues/queues.module';
 import { ScrapersModule } from './scrapers/scrapers.module';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { APP_FILTER } from '@nestjs/core';
+import { OnboardingModule } from './onboarding/onboarding.module';
 
 @Module({
-	imports: [
-		ConfigModule.forRoot(),
-		ScrapersModule,
-		SentryModule.forRoot(),
-		MongooseModule.forRoot(process.env.MONGODB_URI ?? ''),
-		ArticlesModule,
-		FeedsModule,
-		QueuesModule,
-		FeedScrapingModule,
-	],
-	controllers: [AppController],
-	providers: [
-		{
-			provide: APP_FILTER,
-			useClass: SentryGlobalFilter,
-		},
-	],
+  imports: [
+    ConfigModule.forRoot(),
+    ScrapersModule,
+    SentryModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGODB_URI ?? ''),
+    ArticlesModule,
+    FeedsModule,
+    QueuesModule,
+    FeedScrapingModule,
+    OnboardingModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
+  ],
 })
 export class AppModule {}

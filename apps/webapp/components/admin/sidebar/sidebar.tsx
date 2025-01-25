@@ -1,6 +1,6 @@
 'use client';
 
-import { Coffee, Database, Newspaper, Users } from 'lucide-react';
+import { Coffee, Database, Newspaper, Users, Umbrella } from 'lucide-react';
 
 import { NavMain } from '@/components/admin/sidebar/nav-main';
 import { NavUser } from '@/components/admin/sidebar/nav-user';
@@ -35,6 +35,11 @@ const data = {
 			title: 'Articles',
 			url: '/admin/articles',
 			icon: Newspaper,
+		},
+		{
+			title: 'Onboarding',
+			url: '/admin/onboarding',
+			icon: Umbrella,
 		},
 	],
 };
