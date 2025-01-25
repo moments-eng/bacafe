@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, g, request
-from flask_pydantic import validate
 from .models.schemas import (
     ReaderRequest, 
     ArticleRequest, 

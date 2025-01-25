@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict
 from enum import Enum
 
 class Topics(str, Enum):
@@ -44,7 +44,7 @@ class ArticleRequest(BaseModel):
 class ReaderRequest(BaseModel):
     age: int = Field(..., ge=0, le=120, description="Age of the reader")
     gender: str = Field(..., description="Gender of the reader")
-    articles: List[ArticleRequest] = Field(..., description="List of articles read by the reader")
+    articles: List[Dict] = Field(..., description="List of articles read by the reader")
 
     class Config:
         json_schema_extra = {
