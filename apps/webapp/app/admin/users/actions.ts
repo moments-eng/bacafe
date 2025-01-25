@@ -3,7 +3,7 @@
 import { auth } from '@/auth';
 import { type UserDTO, UserTransformer } from '@/lib/dtos/user.dto';
 import { type User, UserModel } from '@/lib/models/user.model';
-import { type UserRole } from '@/lib/types/user.types';
+import type { UserRole } from '@/lib/types/user.types';
 import type { FilterQuery } from 'mongoose';
 import { revalidatePath } from 'next/cache';
 

@@ -1,24 +1,25 @@
 'use client';
 
+import { FeedsTableToolbar } from '@/components/admin/feeds/toolbar';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-import { useToast } from '@/hooks/use-toast';
-import { CreateFeedDialog } from './create-dialog';
+import { DataTablePagination } from '@/components/ui/data-table-pagination';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { components } from '@/lib/http-clients/feeds/schema';
-import { FeedsTableToolbar } from '@/components/admin/feeds/toolbar';
-import { columns } from './columns';
+import { useToast } from '@/hooks/use-toast';
+import type { components } from '@/lib/http-clients/backend/schema';
+import { QUERY_KEYS } from '@/lib/queries';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-	useReactTable,
 	getCoreRowModel,
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
+	useReactTable,
 } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { getFeeds } from './actions';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '@/lib/queries';
+import { columns } from './columns';
+import { CreateFeedDialog } from './create-dialog';
 
 type FeedDto = components['schemas']['FeedDto'];
 
@@ -81,6 +82,7 @@ export default function FeedsPage() {
 					searchKey="provider"
 					emptyMessage="No feeds found"
 				/>
+				<DataTablePagination table={table} isLoading={isLoading} />
 			</div>
 		</div>
 	);

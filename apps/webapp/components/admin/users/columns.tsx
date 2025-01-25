@@ -14,16 +14,16 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
+import { QUERY_KEYS } from '@/lib/queries';
 import {
-	UserRole,
-	UserStatus,
-	UserTier,
 	type UserResponse,
+	UserRole,
+	type UserStatus,
+	type UserTier,
 } from '@/lib/types/user.types';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, UserCheck, UserX } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '@/lib/queries';
 
 export const columns: ColumnDef<UserResponse>[] = [
 	{

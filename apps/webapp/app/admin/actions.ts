@@ -25,7 +25,6 @@ export async function getAdminStats() {
 			]),
 		]);
 
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	const digestPerformance: any[] = []; // Placeholder for digest stats
 
 	return {

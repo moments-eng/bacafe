@@ -21,7 +21,7 @@ export class Article {
 	@Prop({ required: true })
 	url: string;
 
-	@Prop({ required: true })
+	@Prop({ required: true, index: true })
 	source: string;
 
 	@Prop()
@@ -42,8 +42,14 @@ export class Article {
 	@Prop({ required: true, unique: true })
 	externalId: string;
 
-	@Prop({ type: Object })
-	enrichment?: Record<string, any>;
+	@Prop({ type: Object, index: true })
+	enrichment?: Record<string, unknown>;
+
+	@Prop()
+	createdAt: Date;
+
+	@Prop()
+	updatedAt: Date;
 }
 
 export const ArticleSchema = SchemaFactory.createForClass(Article);

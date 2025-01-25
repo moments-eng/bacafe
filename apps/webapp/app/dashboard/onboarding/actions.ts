@@ -1,8 +1,8 @@
 'use server';
 
 import { auth } from '@/auth';
-import { UserGender } from '@/lib/types/user.types';
 import { userService } from '@/lib/services/user-service';
+import { UserGender } from '@/lib/types/user.types';
 import { unauthorized } from 'next/navigation';
 import { z } from 'zod';
 

@@ -1,10 +1,10 @@
+import type { User } from '@/lib/models/user.model';
 import {
 	type UserGender,
 	type UserRole,
 	UserStatus,
 	UserTier,
 } from '@/lib/types/user.types';
-import type { User } from '@/lib/models/user.model';
 import type { Types } from 'mongoose';
 
 export interface UserDTO {

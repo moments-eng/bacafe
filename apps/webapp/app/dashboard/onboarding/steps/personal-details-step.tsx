@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { UserGender } from '@/lib/types/user.types';
 import { hebrewContent } from '@/locales/he';
 import { useOnboardingStore } from '@/stores/onboarding';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,7 +21,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { updateUser } from '../actions';
-import { UserGender } from '@/lib/types/user.types';
 
 const { onboarding } = hebrewContent;
 
@@ -36,7 +36,11 @@ const formSchema = z.object({
 			message: onboarding.steps.personalDetails.age.error,
 		}),
 	]),
-	gender: z.enum([UserGender.FEMALE, UserGender.MALE, UserGender.NOT_SPECIFIED]),
+	gender: z.enum([
+		UserGender.FEMALE,
+		UserGender.MALE,
+		UserGender.NOT_SPECIFIED,
+	]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
