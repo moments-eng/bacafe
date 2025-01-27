@@ -45,4 +45,7 @@ htmlcov/
 
 # Distribution
 *.tar.gz
-*.zip 
+*.zip
+
+.DS_Store
+.idea/

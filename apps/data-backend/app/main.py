@@ -4,11 +4,10 @@ from .models.schemas import (
     ArticleRequest, 
     ErrorResponse
 )
-from langfuse import Langfuse
+
 from .services.process import ProcessService
 from .utils.logger import logger
 from .middleware.request_context import log_request
-from .services.fuse_prompt import FusePromptFacade, PromptName
 
 app = Flask(__name__)
 process_service = ProcessService()
@@ -81,3 +80,37 @@ def ingest_reader():
         )
         error = ErrorResponse(error="Processing Error", details=str(e))
         return jsonify(error.dict()), 500
+
+
+@app.route('/api/daily-digest', methods=['POST'])
+@log_request
+def reader_daily_digest():
+    try:
+        data = request.get_json()
+        logger.info(
+            "Writing reader digest",
+            extra={
+                'request_id': g.request_id,
+                'reader_id': data.get('reader_id')
+            }
+        )
+        result = process_service.get_daily(data.get('reader_id'))
+        logger.info(
+            "Reader digest processed successfully",
+            extra={
+                'request_id': g.request_id,
+                'sections_count': len(result.get('sections', []))
+            }
+        )
+        return jsonify(result)
+    except Exception as e:
+        logger.error(
+            "Reader digest processing failed",
+            extra={
+                'request_id': g.request_id,
+                'error': str(e)
+            }
+        )
+        error = ErrorResponse(error="Processing Error", details=str(e))
+        return jsonify(error.dict()), 500
+

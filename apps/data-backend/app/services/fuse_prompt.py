@@ -3,6 +3,7 @@ from langfuse import Langfuse
 from typing import Any, Dict
 
 class PromptName(Enum):
+    DAILY_DIGEST = "daily_digest"
     ARTICLE_INGESTION = "article_ingestion"
     READER_PROFILER = "reader_profiler"
     ARTICLE_INGEST_CHAT = "article_ingest_chat"
