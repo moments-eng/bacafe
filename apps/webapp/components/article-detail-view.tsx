@@ -28,9 +28,9 @@ export function ArticleDetailView({
 				</DialogHeader>
 				<ScrollArea className="h-full pr-4">
 					<div className="space-y-6">
-						{article.imageUrl && (
+						{article.image && (
 							<img
-								src={article.imageUrl}
+								src={article.image.url}
 								alt="Article"
 								className="rounded-lg w-full h-64 object-cover"
 							/>

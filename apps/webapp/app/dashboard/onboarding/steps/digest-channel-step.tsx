@@ -18,7 +18,7 @@ const { channels } = onboarding.steps[4];
 
 const formSchema = z.object({
   channel: z.enum(["email", "whatsapp"], {
-    required_error: channels.error,
+    required_error: onboarding.steps[4].error,
   }),
 });
 

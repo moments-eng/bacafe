@@ -1,8 +1,8 @@
 import { hebrewContent } from "@/locales/he";
+import { Providers } from "@/providers";
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/providers";
 
 const heebo = Heebo({
   subsets: ["hebrew"],
@@ -14,7 +14,6 @@ export const metadata: Metadata = {
   description: hebrewContent.metadata.description,
 };
 
-const a = undefined;
 export default function RootLayout({
   children,
 }: Readonly<{

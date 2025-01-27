@@ -52,27 +52,36 @@ export const columns: ColumnDef<FeedDto>[] = [
   {
     accessorKey: "scrapingInterval",
     header: "Interval",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Clock className="h-4 w-4 text-muted-foreground" />
-        <IntervalDialog
-          feedId={row.original.id}
-          currentInterval={row.original.scrapingInterval}
-          isActive={row.original.isActive}
-          onSave={async (newInterval) => {
-            await updateFeedStatus(row.original.id, {
-              isActive: row.original.isActive,
-              scrapingInterval: newInterval,
-            });
-          }}
-        />
-        <span>
-          {row.original.scrapingInterval > 0
-            ? `${row.original.scrapingInterval}m`
-            : "Inactive"}
-        </span>
-      </div>
-    ),
+    cell: ({ row }) => {
+      const queryClient = useQueryClient();
+
+      const handleIntervalSave = async (newInterval: number) => {
+        await updateFeedStatus(row.original.id, {
+          isActive: newInterval > 0 ? row.original.isActive : false,
+          scrapingInterval: newInterval,
+        });
+
+        // Invalidate and refetch
+        await queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FEEDS] });
+      };
+
+      return (
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <IntervalDialog
+            feedId={row.original.id}
+            currentInterval={row.original.scrapingInterval}
+            isActive={row.original.isActive}
+            onSave={handleIntervalSave}
+          />
+          <span>
+            {row.original.scrapingInterval > 0
+              ? `${row.original.scrapingInterval}m`
+              : "Inactive"}
+          </span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "lastScrapedAt",
