@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional, Any
 from pymongo import MongoClient, ASCENDING, DESCENDING
+from bson import ObjectId
 import os
 from ..utils.logger import logger
 from flask import g
@@ -106,7 +107,7 @@ class MongoDBService:
     def insert_reader(self, reader: Dict) -> str:
         """Insert a new reader"""
         try:
-            result = self.db.readers.insert_one(reader)
+            result = self.db.users.insert_one(reader)
             logger.info(
                 "Reader inserted",
                 extra={
@@ -128,7 +129,7 @@ class MongoDBService:
     def get_reader(self, reader_id: str) -> Optional[Dict]:
         """Retrieve a reader by ID"""
         try:
-            reader = self.db.readers.find_one({"_id": reader_id})
+            reader = self.db.users.find_one({"_id": ObjectId(reader_id)})
             return reader
         except Exception as e:
             logger.error(
@@ -144,7 +145,7 @@ class MongoDBService:
     def update_reader_interests(self, reader_id: str, interests: List[str]) -> bool:
         """Update reader interests"""
         try:
-            result = self.db.readers.update_one(
+            result = self.db.users.update_one(
                 {"_id": reader_id},
                 {"$set": {"interests": interests}}
             )
