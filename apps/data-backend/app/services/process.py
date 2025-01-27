@@ -69,7 +69,6 @@ class ProcessService:
         embedder = self.get_embedder(fuseprompt_embeddings)
         embeddings_instructions = self.fuse_prompt_facade.compile_prompt(fuseprompt_embeddings, **article_profile)
         embeddings = embedder.embed_query(embeddings_instructions)
-
         logger.info(
             "Article ingestion completed",
             extra={
@@ -86,10 +85,10 @@ class ProcessService:
             "Starting reader ingestion",
             extra={
                 'request_id': g.request_id,
-                'reader_age': reader.age
+                
             }
         )
-        
+
         # Process with LLM
         fuseprompt = self.fuse_prompt_facade.get_prompt(PromptName.READER_PROFILER)
         llm = self.get_llm(fuseprompt)
@@ -108,7 +107,6 @@ class ProcessService:
             "Reader ingestion completed",
             extra={
                 'request_id': g.request_id,
-                'reader_age': reader.age
             }
         )
         return reader_profile

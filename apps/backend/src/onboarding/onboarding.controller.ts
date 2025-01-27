@@ -17,11 +17,7 @@ import { OnboardingService } from './onboarding.service';
 import { CreateOnboardingDto } from './dto/create-onboarding.dto';
 import { OnboardingDto } from './dto/onboarding.dto';
 import { PaginatedOnboardingDto } from './dto/paginated-onboarding.dto';
-import {
-  AddArticleToOnboardingDto,
-  UpdateArticlePositionDto,
-  UpdateArticlePositionsDto,
-} from './dto/article-operations.dto';
+import { AddArticleToOnboardingDto, UpdateArticlePositionsDto } from './dto/article-operations.dto';
 
 @ApiTags('onboarding')
 @Controller('onboarding')
@@ -35,6 +31,13 @@ export class OnboardingController {
   @ApiResponse({ status: HttpStatus.CREATED, type: OnboardingDto })
   async create(@Body() dto: CreateOnboardingDto): Promise<OnboardingDto> {
     return this.onboardingService.create(dto);
+  }
+
+  @Get('production')
+  @ApiOperation({ summary: 'Get the current production onboarding configuration' })
+  @ApiResponse({ status: HttpStatus.OK, type: OnboardingDto })
+  async getProductionVersion(): Promise<OnboardingDto> {
+    return this.onboardingService.getProductionVersion();
   }
 
   @Get()

@@ -129,7 +129,7 @@ export class ArticlesService {
         total,
       };
     } catch (error) {
-      this.logger.error(`Failed to query articles: ${error.message}`);
+      this.logger.error(`Failed to query articles: ${error instanceof Error ? error.message : 'Unknown error'}`);
       throw error;
     }
   }
@@ -137,7 +137,7 @@ export class ArticlesService {
   async getArticleStats(): Promise<ArticleStatsDto> {
     const [totalArticles, articlesPerProvider, providers, scrapedCount, enrichedCount] = await Promise.all([
       this.articleModel.countDocuments(),
-      this.articleModel.aggregate([
+      this.articleModel.aggregate<{ source: string; count: number }>([
         { $group: { _id: '$source', count: { $sum: 1 } } },
         { $project: { _id: 0, source: '$_id', count: 1 } },
       ]),

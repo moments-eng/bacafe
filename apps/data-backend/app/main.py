@@ -58,11 +58,10 @@ def ingest_reader():
         logger.info(
             "Processing reader request",
             extra={
-                'request_id': g.request_id,
-                'reader_age': data.get('age')
+                'request_id': g.request_id
             }
         )
-        result = process_service.ingest_reader(ReaderRequest(**data))
+        result = process_service.ingest_reader(data)
         logger.info(
             "Reader processed successfully",
             extra={
@@ -72,6 +71,7 @@ def ingest_reader():
         )
         return jsonify(result)
     except Exception as e:
+        print(e)
         logger.error(
             "Reader processing failed",
             extra={

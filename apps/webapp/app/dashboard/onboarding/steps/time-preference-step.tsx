@@ -177,7 +177,7 @@ export function TimePreferenceStep() {
 								{onboarding.buttons.loading}
 							</>
 						) : (
-							onboarding.buttons.complete
+							onboarding.buttons.continue
 						)}
 					</Button>
 				</form>
