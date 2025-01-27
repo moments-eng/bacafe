@@ -5,6 +5,7 @@ import { ArticlesService } from '../articles/articles.service';
 import { ArticleScrapingJobData, ArticleScrapingResult } from './types/article-scraping.types';
 import { ScraperFactory } from './scrapers/scraper.factory';
 import { EnrichmentService } from './enrichment.service';
+import { extractErrorMessage } from 'src/utils/error';
 
 @Processor('article-scraping')
 export class ArticleScrapingProcessor extends WorkerHost {
@@ -34,7 +35,7 @@ export class ArticleScrapingProcessor extends WorkerHost {
       await this.articlesService.update(articleId, {
         content: scrapingResult.content,
         author: scrapingResult.author,
-        imageUrl: scrapingResult.imageUrl,
+        image: scrapingResult.image,
       });
 
       const enrichmentData = await this.enrichmentService.enrichArticle({
@@ -54,9 +55,7 @@ export class ArticleScrapingProcessor extends WorkerHost {
         contentLength: scrapingResult.content.length,
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to scrape article ${articleId}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      this.logger.error(`Failed to scrape article ${articleId}: ${extractErrorMessage(error)}`);
       throw error;
     }
   }

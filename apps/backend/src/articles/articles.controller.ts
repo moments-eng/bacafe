@@ -7,6 +7,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { ListArticlesDto } from './dto/list-articles.dto';
 import { PaginatedArticlesDto } from './dto/paginated-articles.dto';
 import { QueryArticlesDto } from './dto/query-articles.dto';
+import { extractErrorMessage } from 'src/utils/error';
 
 @ApiTags('articles')
 @Controller('articles')
@@ -30,10 +31,7 @@ export class ArticlesController {
       const article = await this.articlesService.create(createArticleDto);
       return ArticleDto.fromSchema(article);
     } catch (error: unknown) {
-      throw new HttpException(
-        `Failed to create article: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException(`Failed to create article: ${extractErrorMessage(error)}`, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -53,10 +51,7 @@ export class ArticlesController {
     try {
       await this.articlesService.delete(id);
     } catch (error: unknown) {
-      throw new HttpException(
-        `Failed to delete article: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException(`Failed to delete article: ${extractErrorMessage(error)}`, HttpStatus.NOT_FOUND);
     }
   }
 

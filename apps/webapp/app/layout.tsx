@@ -1,31 +1,32 @@
-import { hebrewContent } from '@/locales/he';
-import type { Metadata } from 'next';
-import { Heebo } from 'next/font/google';
-import './globals.css';
-import { Providers } from '@/providers';
+import { hebrewContent } from "@/locales/he";
+import type { Metadata } from "next";
+import { Heebo } from "next/font/google";
+import "./globals.css";
+import { Providers } from "@/providers";
 
 const heebo = Heebo({
-	subsets: ['hebrew'],
-	weight: ['300', '400', '500', '700'],
+  subsets: ["hebrew"],
+  weight: ["300", "400", "500", "700"],
 });
 
 export const metadata: Metadata = {
-	title: hebrewContent.metadata.title,
-	description: hebrewContent.metadata.description,
+  title: hebrewContent.metadata.title,
+  description: hebrewContent.metadata.description,
 };
 
+const a = undefined;
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html lang="he" dir="rtl">
-			<body className={`${heebo.className} mobile-container`}>
-				<Providers>
-					<main>{children}</main>
-				</Providers>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="he" dir="rtl">
+      <body className={`${heebo.className} mobile-container`}>
+        <Providers>
+          <main>{children}</main>
+        </Providers>
+      </body>
+    </html>
+  );
 }

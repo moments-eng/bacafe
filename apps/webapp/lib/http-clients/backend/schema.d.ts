@@ -131,7 +131,8 @@ export interface paths {
         delete: operations["FeedsController_remove"];
         options?: never;
         head?: never;
-        patch?: never;
+        /** Update feed properties */
+        patch: operations["FeedsController_update"];
         trace?: never;
     };
     "/feeds/{id}/status": {
@@ -149,6 +150,23 @@ export interface paths {
         head?: never;
         /** Update feed status and scraping interval */
         patch: operations["FeedsController_updateStatus"];
+        trace?: never;
+    };
+    "/feeds/{id}/scrape": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trigger immediate feed scraping */
+        post: operations["FeedsController_scrapeNow"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/onboarding": {
@@ -276,6 +294,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CreateArticleImageDto: {
+            url: string;
+            credit?: string;
+        };
         CreateArticleDto: {
             title: string;
             subtitle: string;
@@ -287,8 +309,12 @@ export interface components {
             content?: string;
             author?: string;
             description?: string;
-            imageUrl?: string;
+            image?: components["schemas"]["CreateArticleImageDto"];
             categories?: string[];
+        };
+        ArticleImageDto: {
+            url: string;
+            credit?: string;
         };
         ArticleDto: {
             /** @description Article ID */
@@ -300,7 +326,7 @@ export interface components {
             source: string;
             author?: string;
             description?: string;
-            imageUrl?: string;
+            image?: components["schemas"]["ArticleImageDto"];
             categories: string[];
             /** Format: date-time */
             publishedAt: string;
@@ -432,6 +458,16 @@ export interface components {
              * @example 5
              */
             scrapingInterval?: number;
+        };
+        UpdateFeedDto: {
+            /** @description Whether the feed is active */
+            isActive?: boolean;
+            /** @description Scraping interval in minutes */
+            scrapingInterval?: number;
+            /** @description Feed name */
+            name?: string;
+            /** @description Feed categories */
+            categories?: string[];
         };
         OnboardingArticleDto: {
             /**
@@ -680,7 +716,6 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Returns all feeds */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -704,7 +739,6 @@ export interface operations {
             };
         };
         responses: {
-            /** @description The feed has been successfully created. */
             201: {
                 headers: {
                     [name: string]: unknown;
@@ -713,14 +747,12 @@ export interface operations {
                     "application/json": components["schemas"]["FeedDto"];
                 };
             };
-            /** @description Invalid feed data or RSS URL. */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Feed with this URL already exists. */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -734,14 +766,12 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Feed ID */
                 id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Returns the feed */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -750,7 +780,6 @@ export interface operations {
                     "application/json": components["schemas"]["FeedDto"];
                 };
             };
-            /** @description Feed not found */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -764,21 +793,55 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Feed ID */
                 id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description The feed has been deleted */
             204: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Feed not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FeedsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFeedDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedDto"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -792,7 +855,6 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Feed ID */
                 id: string;
             };
             cookie?: never;
@@ -803,7 +865,6 @@ export interface operations {
             };
         };
         responses: {
-            /** @description The feed status has been updated */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -812,14 +873,37 @@ export interface operations {
                     "application/json": components["schemas"]["FeedDto"];
                 };
             };
-            /** @description Invalid status data */
             400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Feed not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FeedsController_scrapeNow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
             404: {
                 headers: {
                     [name: string]: unknown;

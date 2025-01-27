@@ -8,6 +8,7 @@ import { userService } from "@/lib/services/user-service";
 import type { UserRole } from "@/lib/types/user.types";
 import type { FilterQuery } from "mongoose";
 import { revalidatePath } from "next/cache";
+import { withAdminAccess } from "../utils/auth";
 
 interface GetUsersOptions {
   page?: number;
@@ -34,19 +35,7 @@ interface GetUsersResponse {
   pageCount: number;
 }
 
-async function checkAdminAccess() {
-  const session = await auth();
-  if (!session?.user?.email) {
-    throw new Error("Unauthorized - Not logged in");
-  }
-
-  const user = await userService.getUser(session.user.email);
-  if (!user || user.role !== "admin") {
-    throw new Error("Unauthorized - Admin access required");
-  }
-}
-
-export async function getUsers({
+async function getUsersAction({
   page = 1,
   limit = 10,
   sortBy = "createdAt",
@@ -57,7 +46,6 @@ export async function getUsers({
 }: GetUsersOptions = {}): Promise<GetUsersResponse> {
   try {
     await connectDB();
-    await checkAdminAccess();
     const skip = (page - 1) * limit;
 
     const filters: UserFilters = {};
@@ -90,10 +78,8 @@ export async function getUsers({
   }
 }
 
-export async function updateUserStatus(userId: string, approved: boolean) {
+async function updateUserStatusAction(userId: string, approved: boolean) {
   try {
-    await checkAdminAccess();
-
     await UserModel.findByIdAndUpdate(userId, { approved });
     revalidatePath("/admin/users");
 
@@ -104,13 +90,11 @@ export async function updateUserStatus(userId: string, approved: boolean) {
   }
 }
 
-export async function bulkUpdateUserStatus(
+async function bulkUpdateUserStatusAction(
   userIds: string[],
   approved: boolean
 ) {
   try {
-    await checkAdminAccess();
-
     await UserModel.updateMany(
       { _id: { $in: userIds } },
       { $set: { approved } }
@@ -124,10 +108,8 @@ export async function bulkUpdateUserStatus(
   }
 }
 
-export async function updateUserRole(userId: string, role: UserRole) {
+async function updateUserRoleAction(userId: string, role: UserRole) {
   try {
-    await checkAdminAccess();
-
     await UserModel.findByIdAndUpdate(userId, { role });
     revalidatePath("/admin/users");
 
@@ -137,3 +119,8 @@ export async function updateUserRole(userId: string, role: UserRole) {
     throw error;
   }
 }
+
+export const getUsers = withAdminAccess(getUsersAction);
+export const updateUserStatus = withAdminAccess(updateUserStatusAction);
+export const bulkUpdateUserStatus = withAdminAccess(bulkUpdateUserStatusAction);
+export const updateUserRole = withAdminAccess(updateUserRoleAction);

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ArticleDto } from '../../articles/dto/article.dto';
-import { Onboarding } from '../schemas/onboarding.schema';
+import { ArticleWithPosition, Onboarding } from '../schemas/onboarding.schema';
 import type { Document } from 'mongoose';
 import type { Article } from '../../articles/schemas/article.schema';
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { extractErrorMessage } from 'src/utils/error';
 
 interface EnrichmentRequest {
   title: string;
@@ -22,7 +23,7 @@ export class EnrichmentService {
       const response = await axios.post(`${dataBackendUrl}/api/ingest-article`, data);
       return response.data as Record<string, unknown>;
     } catch (error) {
-      throw new Error(`Failed to enrich article: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(`Failed to enrich article: ${extractErrorMessage(error)}`);
     }
   }
 }

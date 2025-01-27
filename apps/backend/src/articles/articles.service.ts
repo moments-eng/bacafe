@@ -4,6 +4,7 @@ import { Model, FilterQuery } from 'mongoose';
 import { Article, type ArticleDocument } from './schemas/article.schema';
 import { ArticleFilterDto, ArticleSortDto } from './dto/query-articles.dto';
 import { ArticleStatsDto } from './dto/article-stats.dto';
+import { extractErrorMessage } from 'src/utils/error';
 
 @Injectable()
 export class ArticlesService {
@@ -129,7 +130,7 @@ export class ArticlesService {
         total,
       };
     } catch (error) {
-      this.logger.error(`Failed to query articles: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.logger.error(`Failed to query articles: ${extractErrorMessage(error)}`);
       throw error;
     }
   }

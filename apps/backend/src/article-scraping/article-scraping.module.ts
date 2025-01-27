@@ -9,20 +9,14 @@ import { EnrichmentService } from './enrichment.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-	imports: [
-		BullModule.registerQueue({
-			name: 'article-scraping',
-		}),
-		ArticlesModule,
-		ConfigModule,
-	],
-	providers: [
-		ArticleScrapingService,
-		ArticleScrapingProcessor,
-		ScraperFactory,
-		YnetScraper,
-		EnrichmentService,
-	],
-	exports: [ArticleScrapingService],
+  imports: [
+    BullModule.registerQueue({
+      name: 'article-scraping',
+    }),
+    ArticlesModule,
+    ConfigModule,
+  ],
+  providers: [ArticleScrapingService, ArticleScrapingProcessor, ScraperFactory, YnetScraper, EnrichmentService],
+  exports: [ArticleScrapingService],
 })
 export class ArticleScrapingModule {}

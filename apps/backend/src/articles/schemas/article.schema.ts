@@ -4,6 +4,17 @@ import type { Document, Types } from 'mongoose';
 
 export type ArticleDocument = Article & Document;
 
+@Schema()
+export class ArticleImage {
+  @ApiProperty()
+  @Prop({ required: true })
+  url: string;
+
+  @ApiProperty()
+  @Prop()
+  credit?: string;
+}
+
 @Schema({ timestamps: true })
 export class Article {
   @ApiProperty({ description: 'Article ID' })
@@ -30,8 +41,8 @@ export class Article {
   @Prop()
   description?: string;
 
-  @Prop()
-  imageUrl?: string;
+  @Prop({ type: ArticleImage })
+  image?: ArticleImage;
 
   @Prop({ type: [String], default: [] })
   categories: string[];

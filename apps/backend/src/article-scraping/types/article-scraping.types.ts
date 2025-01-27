@@ -1,9 +1,9 @@
 export interface ArticleScrapingJobData {
-	articleId: string;
-	url: string;
+  articleId: string;
+  url: string;
 }
 
 export interface ArticleScrapingResult {
-	success: boolean;
-	contentLength?: number;
+  success: boolean;
+  contentLength?: number;
 }

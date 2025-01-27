@@ -1,5 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Article } from '../schemas/article.schema';
+import { Article, ArticleImage } from '../schemas/article.schema';
+
+export class ArticleImageDto {
+  @ApiProperty()
+  url: string;
+
+  @ApiProperty({ required: false })
+  credit?: string;
+
+  static fromSchema(image: ArticleImage | undefined): ArticleImageDto | undefined {
+    if (!image) return undefined;
+    return {
+      url: image.url,
+      credit: image.credit,
+    };
+  }
+}
 
 export class ArticleDto {
   @ApiProperty({ description: 'Article ID' })
@@ -26,8 +42,8 @@ export class ArticleDto {
   @ApiProperty({ required: false })
   description?: string;
 
-  @ApiProperty({ required: false })
-  imageUrl?: string;
+  @ApiProperty({ required: false, type: ArticleImageDto })
+  image?: ArticleImageDto;
 
   @ApiProperty({ type: [String] })
   categories: string[];
@@ -57,7 +73,7 @@ export class ArticleDto {
       source: article.source,
       author: article.author,
       description: article.description,
-      imageUrl: article.imageUrl,
+      image: ArticleImageDto.fromSchema(article.image),
       categories: article.categories,
       publishedAt: article.publishedAt,
       externalId: article.externalId,

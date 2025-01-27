@@ -109,13 +109,13 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
       <Card
         className={cn(
           "w-full transition-all duration-200",
-          isOpen ? "max-h-[600px]" : "max-h-[450px]",
+          isOpen ? "max-h-[600px]" : "max-h-[500px]",
           "overflow-y-auto"
         )}
       >
         <CardHeader className="relative p-0 h-44 sticky top-0 z-10 bg-background">
           <img
-            src={article.imageUrl || "/images/article-placeholder.jpg"}
+            src={article.image?.url}
             alt={article.title}
             className="object-cover rounded-t-lg h-full w-full"
           />

@@ -7,15 +7,15 @@ import { FeedScrapingProcessor } from './feed-scraping.processor';
 import { FeedScrapingService } from './feed-scraping.service';
 
 @Module({
-	imports: [
-		BullModule.registerQueue({
-			name: 'feed-scraping',
-		}),
-		ArticlesModule,
-		FeedChannelModule,
-		ArticleScrapingModule,
-	],
-	providers: [FeedScrapingService, FeedScrapingProcessor],
-	exports: [FeedScrapingService],
+  imports: [
+    BullModule.registerQueue({
+      name: 'feed-scraping',
+    }),
+    ArticlesModule,
+    FeedChannelModule,
+    ArticleScrapingModule,
+  ],
+  providers: [FeedScrapingService, FeedScrapingProcessor],
+  exports: [FeedScrapingService],
 })
 export class FeedScrapingModule {}

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, Min } from 'class-validator';
+import { IsNumber, Min } from 'class-validator';
 
 export class ArticlePositionDto {
   @ApiProperty({ description: 'Article ID', example: '507f1f77bcf86cd799439011' })

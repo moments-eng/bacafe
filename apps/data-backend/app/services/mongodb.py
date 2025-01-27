@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional, Any
 from pymongo import MongoClient, ASCENDING, DESCENDING
-from bson import ObjectId
 import os
 from ..utils.logger import logger
 from flask import g

@@ -5,9 +5,9 @@ import { FeedsController } from './feeds.controller';
 import { FeedsService } from './feeds.service';
 
 @Module({
-	imports: [FeedChannelModule, FeedScrapingModule],
-	controllers: [FeedsController],
-	providers: [FeedsService],
-	exports: [FeedsService],
+  imports: [FeedChannelModule, FeedScrapingModule],
+  controllers: [FeedsController],
+  providers: [FeedsService],
+  exports: [FeedsService],
 })
 export class FeedsModule {}

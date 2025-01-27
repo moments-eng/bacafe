@@ -15,8 +15,7 @@ export const columns: ColumnDef<ArticleDto>[] = [
 		accessorKey: 'imageUrl',
 		header: 'Image',
 		cell: ({ row }) => {
-			console.log(row.original);
-			const imageUrl = row.getValue('imageUrl') as string | undefined;
+			const imageUrl = row.original.image?.url;
 			return imageUrl ? (
 				<div className="relative h-12 w-20">
 					<img

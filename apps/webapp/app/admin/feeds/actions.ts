@@ -6,36 +6,19 @@ import { backendApi } from "@/lib/http-clients/backend/client";
 import type { components } from "@/lib/http-clients/backend/schema";
 import { userService } from "@/lib/services/user-service";
 import { revalidatePath } from "next/cache";
+import { withAdminAccess } from "../utils/auth";
 
 type CreateFeedDto = components["schemas"]["CreateFeedDto"];
 type UpdateFeedStatusDto = components["schemas"]["UpdateFeedStatusDto"];
 
-async function checkAdminAccess() {
-  const session = await auth();
-  if (!session?.user?.email) {
-    throw new Error("Unauthorized - Not logged in");
-  }
-
-  const user = await userService.getUser(session.user.email);
-
-  if (user?.role !== "admin") {
-    throw new Error("Unauthorized - Admin access required");
-  }
-}
-
-export async function getFeeds() {
+async function getFeedsAction() {
   await connectDB();
-  await checkAdminAccess();
-  console.log("Calling getFeeds");
   const { data, error } = await backendApi.GET("/feeds");
-  console.log("getFeeds response", data, error);
   if (error) throw error;
   return data;
 }
 
-export async function createFeed(formData: FormData) {
-  await checkAdminAccess();
-
+async function createFeedAction(formData: FormData) {
   const payload: CreateFeedDto = {
     provider: formData.get("provider") as string,
     url: formData.get("url") as string,
@@ -45,7 +28,9 @@ export async function createFeed(formData: FormData) {
   };
 
   try {
-    const { data, error } = await backendApi.POST("/feeds", { body: payload });
+    const { data, error } = await backendApi.POST("/feeds", {
+      body: payload,
+    });
     if (error) throw error;
     revalidatePath("/admin/feeds");
     return { success: true, data };
@@ -57,9 +42,7 @@ export async function createFeed(formData: FormData) {
   }
 }
 
-export async function toggleFeedStatus(id: string, isActive: boolean) {
-  await checkAdminAccess();
-
+async function toggleFeedStatusAction(id: string, isActive: boolean) {
   try {
     const { error } = await backendApi.PATCH("/feeds/{id}/status", {
       params: { path: { id } },
@@ -76,9 +59,7 @@ export async function toggleFeedStatus(id: string, isActive: boolean) {
   }
 }
 
-export async function deleteFeed(id: string) {
-  await checkAdminAccess();
-
+async function deleteFeedAction(id: string) {
   try {
     const { error } = await backendApi.DELETE("/feeds/{id}", {
       params: { path: { id } },
@@ -93,3 +74,47 @@ export async function deleteFeed(id: string) {
     };
   }
 }
+
+async function triggerScrapeAction(id: string) {
+  try {
+    const { error } = await backendApi.POST("/feeds/{id}/scrape", {
+      params: { path: { id } },
+    });
+    if (error) throw error;
+    revalidatePath("/admin/feeds");
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to trigger scrape",
+    };
+  }
+}
+
+async function updateFeedStatusAction(
+  id: string,
+  payload: UpdateFeedStatusDto
+) {
+  try {
+    const { error } = await backendApi.PATCH("/feeds/{id}/status", {
+      params: { path: { id } },
+      body: payload,
+    });
+    if (error) throw error;
+    revalidatePath("/admin/feeds");
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update status",
+    };
+  }
+}
+
+export const getFeeds = withAdminAccess(getFeedsAction);
+export const createFeed = withAdminAccess(createFeedAction);
+export const toggleFeedStatus = withAdminAccess(toggleFeedStatusAction);
+export const deleteFeed = withAdminAccess(deleteFeedAction);
+export const triggerScrape = withAdminAccess(triggerScrapeAction);
+export const updateFeedStatus = withAdminAccess(updateFeedStatusAction);
