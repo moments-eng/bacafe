@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArticleDto } from '../../articles/dto/article.dto';
-import { ArticleWithPosition, Onboarding } from '../schemas/onboarding.schema';
 import type { Document } from 'mongoose';
-import type { Article } from '../../articles/schemas/article.schema';
+import { ArticleDto } from '../../articles/dto/article.dto';
+import type { ArticleDocument } from '../../articles/schemas/article.schema';
+import { Onboarding } from '../schemas/onboarding.schema';
 
 export class OnboardingArticlePositionDto {
   @ApiProperty({ type: ArticleDto, description: 'The article in the onboarding flow' })
@@ -36,7 +36,7 @@ export class OnboardingDto {
     return {
       id: schema._id.toString(),
       articles: schema.articles.map((a) => ({
-        article: ArticleDto.fromSchema(a.article as Article),
+        article: ArticleDto.fromSchema(a.article as ArticleDocument),
         position: a.position,
       })),
       createdAt: schema.createdAt,

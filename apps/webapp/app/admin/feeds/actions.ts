@@ -1,21 +1,20 @@
 "use server";
 
-import { auth } from "@/auth";
-import connectDB from "@/lib/db/mongoose";
-import { backendApi } from "@/lib/http-clients/backend/client";
-import type { components } from "@/lib/http-clients/backend/schema";
-import { userService } from "@/lib/services/user-service";
+import {
+  CreateFeedDto,
+  UpdateFeedStatusDto,
+} from "@/generated/http-clients/backend/api";
+import { feedsApi } from "@/lib/http-clients/backend/client";
 import { revalidatePath } from "next/cache";
 import { withAdminAccess } from "../utils/auth";
 
-type CreateFeedDto = components["schemas"]["CreateFeedDto"];
-type UpdateFeedStatusDto = components["schemas"]["UpdateFeedStatusDto"];
-
 async function getFeedsAction() {
-  await connectDB();
-  const { data, error } = await backendApi.GET("/feeds");
-  if (error) throw error;
-  return data;
+  try {
+    const { data } = await feedsApi.findAllFeeds();
+    return data;
+  } catch (error) {
+    throw new Error("Failed to fetch feeds");
+  }
 }
 
 async function createFeedAction(formData: FormData) {
@@ -28,10 +27,7 @@ async function createFeedAction(formData: FormData) {
   };
 
   try {
-    const { data, error } = await backendApi.POST("/feeds", {
-      body: payload,
-    });
-    if (error) throw error;
+    const { data } = await feedsApi.createFeed(payload);
     revalidatePath("/admin/feeds");
     return { success: true, data };
   } catch (error) {
@@ -44,13 +40,9 @@ async function createFeedAction(formData: FormData) {
 
 async function toggleFeedStatusAction(id: string, isActive: boolean) {
   try {
-    const { error } = await backendApi.PATCH("/feeds/{id}/status", {
-      params: { path: { id } },
-      body: { isActive } as UpdateFeedStatusDto,
-    });
-    if (error) throw error;
+    const { data } = await feedsApi.updateFeedStatus(id, { isActive });
     revalidatePath("/admin/feeds");
-    return { success: true };
+    return { success: true, data };
   } catch (error) {
     return {
       success: false,
@@ -61,10 +53,7 @@ async function toggleFeedStatusAction(id: string, isActive: boolean) {
 
 async function deleteFeedAction(id: string) {
   try {
-    const { error } = await backendApi.DELETE("/feeds/{id}", {
-      params: { path: { id } },
-    });
-    if (error) throw error;
+    await feedsApi.deleteFeed(id);
     revalidatePath("/admin/feeds");
     return { success: true };
   } catch (error) {
@@ -77,12 +66,9 @@ async function deleteFeedAction(id: string) {
 
 async function triggerScrapeAction(id: string) {
   try {
-    const { error } = await backendApi.POST("/feeds/{id}/scrape", {
-      params: { path: { id } },
-    });
-    if (error) throw error;
+    const { data } = await feedsApi.scrapeFeedNow(id);
     revalidatePath("/admin/feeds");
-    return { success: true };
+    return { success: true, data };
   } catch (error) {
     return {
       success: false,
@@ -97,13 +83,9 @@ async function updateFeedStatusAction(
   payload: UpdateFeedStatusDto
 ) {
   try {
-    const { error } = await backendApi.PATCH("/feeds/{id}/status", {
-      params: { path: { id } },
-      body: payload,
-    });
-    if (error) throw error;
+    const { data } = await feedsApi.updateFeed(id, payload);
     revalidatePath("/admin/feeds");
-    return { success: true };
+    return { success: true, data };
   } catch (error) {
     return {
       success: false,

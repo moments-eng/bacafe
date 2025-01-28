@@ -1,15 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { DataTable } from "@/components/ui/data-table";
-import { createColumns } from "./columns";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import {
-  deleteOnboarding,
-  getOnboardings,
-  promoteToProduction,
-} from "./actions";
+import { DataTable } from "@/components/ui/data-table";
 import {
   Dialog,
   DialogContent,
@@ -18,12 +10,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { OnboardingDto } from "@/generated/http-clients/backend";
 import { useToast } from "@/hooks/use-toast";
-import { components } from "@/lib/http-clients/backend/schema";
+import { useQuery } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import {
+  deleteOnboarding,
+  getOnboardings,
+  promoteToProduction,
+} from "./actions";
+import { createColumns } from "./columns";
 import { CreateOnboardingDialog } from "./create-onboarding-dialog";
-
-type OnboardingDto = components["schemas"]["OnboardingDto"];
 
 export default function OnboardingPage() {
   const { toast } = useToast();

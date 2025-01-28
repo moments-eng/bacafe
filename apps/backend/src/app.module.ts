@@ -10,6 +10,7 @@ import { ScrapersModule } from './scrapers/scrapers.module';
 import { SentryModule, SentryGlobalFilter } from '@sentry/nestjs/setup';
 import { APP_FILTER } from '@nestjs/core';
 import { OnboardingModule } from './onboarding/onboarding.module';
+import { DailyDigestModule } from './daily-digest/daily-digest.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OnboardingModule } from './onboarding/onboarding.module';
     QueuesModule,
     FeedScrapingModule,
     OnboardingModule,
+    DailyDigestModule,
   ],
   controllers: [AppController],
   providers: [

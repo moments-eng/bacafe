@@ -143,7 +143,7 @@ class ProcessService:
                         'url': 1,
                         "title": "$enrichment.title",
                         "summary": "$enrichment.summary",
-                        "imageUrl": 1
+                        "image": 1
                     }
             }
         ]

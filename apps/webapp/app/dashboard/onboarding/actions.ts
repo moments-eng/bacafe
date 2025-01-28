@@ -1,11 +1,10 @@
 "use server";
 
 import { auth } from "@/auth";
-import { backendApi } from "@/lib/http-clients/backend/client";
+import { onboardingApi } from "@/lib/http-clients/backend/client";
 import { PreferredArticle } from "@/lib/models/user.model";
 import { userService } from "@/lib/services/user-service";
 import { UserGender } from "@/lib/types/user.types";
-import { PrefetchAction } from "next/dist/client/components/router-reducer/router-reducer-types";
 import { unauthorized } from "next/navigation";
 import { z } from "zod";
 
@@ -162,12 +161,11 @@ export async function updateArticleScore(
   }
 }
 
-  export async function getProductionOnboarding() {
-  const { data, error } = await backendApi.GET("/onboarding/production");
-
-  if (error) {
+export async function getProductionOnboarding() {
+  try {
+    const { data } = await onboardingApi.getProductionOnboarding();
+    return data;
+  } catch (error) {
     throw new Error("Failed to fetch production onboarding");
   }
-
-  return data;
 }

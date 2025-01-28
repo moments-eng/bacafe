@@ -1,14 +1,13 @@
 "use server";
 
-import { auth } from "@/auth";
 import connectDB from "@/lib/db/mongoose";
 import { type UserDTO, UserTransformer } from "@/lib/dtos/user.dto";
 import { type User, UserModel } from "@/lib/models/user.model";
-import { userService } from "@/lib/services/user-service";
 import type { UserRole } from "@/lib/types/user.types";
 import type { FilterQuery } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { withAdminAccess } from "../utils/auth";
+import { dailyDigestApi } from "@/lib/http-clients/backend/client";
 
 interface GetUsersOptions {
   page?: number;
@@ -120,7 +119,20 @@ async function updateUserRoleAction(userId: string, role: UserRole) {
   }
 }
 
+async function generateUserDailyDigestAction(userId: string) {
+  try {
+    await dailyDigestApi.triggerDailyDigest(userId);
+    return { success: true };
+  } catch (error) {
+    console.error("Error generating daily digest:", error);
+    throw error;
+  }
+}
+
 export const getUsers = withAdminAccess(getUsersAction);
 export const updateUserStatus = withAdminAccess(updateUserStatusAction);
 export const bulkUpdateUserStatus = withAdminAccess(bulkUpdateUserStatusAction);
 export const updateUserRole = withAdminAccess(updateUserRoleAction);
+export const generateUserDailyDigest = withAdminAccess(
+  generateUserDailyDigestAction
+);

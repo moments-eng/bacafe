@@ -1,42 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { components } from "@/lib/http-clients/backend/schema";
-import { createOnboarding } from "./actions";
-import { useToast } from "@/hooks/use-toast";
-import { Search } from "lucide-react";
 import {
-  DndContext,
+  ArticleDto,
+  OnboardingArticleDto as OnboardingArticleDtoType,
+} from "@/generated/http-clients/backend";
+import { useToast } from "@/hooks/use-toast";
+import {
   closestCenter,
+  DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { useQuery } from "@tanstack/react-query";
+import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { queryArticles } from "../articles/actions";
+import { createOnboarding } from "./actions";
 import { SortableArticleItem } from "./sortable-article-item";
 
-type ArticleDto = components["schemas"]["ArticleDto"];
-type OnboardingArticleDto = components["schemas"]["OnboardingArticleDto"] & {
+type OnboardingArticleDto = OnboardingArticleDtoType & {
   title: string;
 };
 
@@ -75,12 +78,9 @@ export function CreateOnboardingDialog({
   }, [open]);
 
   // Fetch articles with search query
-  const { data: articles = [] } = useQuery({
+  const { data: articles } = useQuery({
     queryKey: ["articles", searchQuery],
-    queryFn: async () => {
-      const response = await fetch(`/api/articles/search?q=${searchQuery}`);
-      return response.json();
-    },
+    queryFn: () => queryArticles({ filter: { title: searchQuery } }),
     enabled: open,
   });
 
@@ -173,7 +173,7 @@ export function CreateOnboardingDialog({
             </div>
             <ScrollArea className="h-[400px] mt-2 border rounded-md">
               <div className="p-4">
-                {articles.map((article: ArticleDto) => (
+                {articles?.items.map((article: ArticleDto) => (
                   <div
                     key={article.id}
                     className="p-3 border rounded-md mb-2 cursor-pointer hover:bg-muted"

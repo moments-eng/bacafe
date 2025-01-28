@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import type { Document, Types } from 'mongoose';
+import type { Document } from 'mongoose';
 
 export type ArticleDocument = Article & Document;
 
@@ -17,8 +17,7 @@ export class ArticleImage {
 
 @Schema({ timestamps: true })
 export class Article {
-  @ApiProperty({ description: 'Article ID' })
-  _id: Types.ObjectId;
+  _id: string;
 
   @Prop({ required: true })
   title: string;

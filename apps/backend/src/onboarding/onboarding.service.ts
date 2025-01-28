@@ -7,6 +7,7 @@ import type { CreateOnboardingDto, OnboardingArticleDto } from './dto/create-onb
 import { Onboarding } from './schemas/onboarding.schema';
 import { OnboardingDto } from './dto/onboarding.dto';
 import { PaginatedOnboardingDto } from './dto/paginated-onboarding.dto';
+import { ArticleDocument } from '../articles/schemas/article.schema';
 
 @Injectable()
 export class OnboardingService {
@@ -95,7 +96,7 @@ export class OnboardingService {
       const articleId =
         article.article instanceof Types.ObjectId
           ? article.article.toString()
-          : (article.article as { _id: Types.ObjectId })._id.toString();
+          : (article.article as ArticleDocument)._id.toString();
 
       const newPosition = positionMap.get(articleId);
 

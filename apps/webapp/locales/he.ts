@@ -240,4 +240,32 @@ export const hebrewContent = {
       "בקרו במאפייה שלנו בזמן ההמתנה",
     ],
   },
+
+  dailyDigest: {
+    title: "הדייג׳סט היומי שלך",
+    noDigestAvailable: "עדיין לא חישבנו את הדייג׳סט היומי שלך, אל דאגה, אנחנו על זה!",
+    progress: {
+      sectionsRead: "נושאים נקראו",
+      outOf: "מתוך",
+    },
+    section: {
+      highlights: "נקודות עיקריות",
+      readMore: "קרא עוד",
+      articleLinks: "קישורים נוספים",
+      article: "מאמר",
+      feedback: {
+        like: "אהבתי",
+        dislike: "פחות אהבתי",
+        markAsRead: "סיימתי לקרוא",
+        showDetails: "הצג פרטים",
+        hideDetails: "הסתר פרטים",
+      },
+      swipeInstructions:
+        "החלק ימינה לסימון כרלוונטי, שמאלה לסימון כלא רלוונטי",
+    },
+    completion: {
+      title: "כל הכבוד! 🎉",
+      message: "סיימת לקרוא את כל העדכונים להיום",
+    },
+  },
 };

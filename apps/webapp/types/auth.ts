@@ -5,6 +5,7 @@ export interface InternalUser {
 	isOnboardingDone?: boolean;
 	role?: UserRole;
 	approved?: boolean;
+	id: string;
 }
 
 declare module 'next-auth' {

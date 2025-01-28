@@ -1,6 +1,8 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -9,17 +11,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { components } from "@/lib/http-clients/backend/schema";
-import { getArticles } from "../articles/actions";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ArticleDto } from "@/generated/http-clients/backend";
+import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
+import { useState } from "react";
+import { queryArticles } from "../articles/actions";
 
-type ArticleDto = components["schemas"]["ArticleDto"];
 
 interface Props {
   open: boolean;
@@ -41,7 +40,7 @@ export function AddArticleDialog({
 
   const { data: articles } = useQuery({
     queryKey: ["articles"],
-    queryFn: () => getArticles({ page: 1, limit: 100 }),
+    queryFn: () => queryArticles({ page: 1, limit: 100 }),
   });
 
   const filteredArticles = articles?.items.filter((article) => {

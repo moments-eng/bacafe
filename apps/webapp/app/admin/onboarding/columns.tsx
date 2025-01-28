@@ -1,20 +1,18 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { components } from "@/lib/http-clients/backend/schema";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { OnboardingDto } from "@/generated/http-clients/backend";
+import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-type OnboardingDto = components["schemas"]["OnboardingDto"];
 
 interface OnboardingOperations {
   onPromote: (onboarding: OnboardingDto) => void;

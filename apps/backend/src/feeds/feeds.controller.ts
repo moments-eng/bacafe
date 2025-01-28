@@ -12,13 +12,13 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Error } from 'mongoose';
+import { extractErrorMessage } from 'src/utils/error';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { FeedDto } from './dto/feed.dto';
 import { UpdateFeedStatusDto } from './dto/update-feed-status.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
 import { FeedsService } from './feeds.service';
-import { Error } from 'mongoose';
-import { extractErrorMessage } from 'src/utils/error';
 
 @ApiTags('feeds')
 @Controller('feeds')
@@ -40,7 +40,7 @@ export class FeedsController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new feed from RSS URL' })
+  @ApiOperation({ summary: 'Create a new feed from RSS URL', operationId: 'createFeed' })
   @ApiResponse({ status: HttpStatus.CREATED, type: FeedDto })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
   @ApiResponse({ status: HttpStatus.CONFLICT })
@@ -53,7 +53,7 @@ export class FeedsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all feeds' })
+  @ApiOperation({ summary: 'Get all feeds', operationId: 'findAllFeeds' })
   @ApiResponse({ status: HttpStatus.OK, type: [FeedDto] })
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<FeedDto[]> {
@@ -61,7 +61,7 @@ export class FeedsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a feed by ID' })
+  @ApiOperation({ summary: 'Get a feed by ID', operationId: 'findFeedById' })
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.OK, type: FeedDto })
   @ApiResponse({ status: HttpStatus.NOT_FOUND })
@@ -75,7 +75,7 @@ export class FeedsController {
   }
 
   @Patch(':id/status')
-  @ApiOperation({ summary: 'Update feed status and scraping interval' })
+  @ApiOperation({ summary: 'Update feed status and scraping interval', operationId: 'updateFeedStatus' })
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.OK, type: FeedDto })
   @ApiResponse({ status: HttpStatus.NOT_FOUND })
@@ -94,7 +94,7 @@ export class FeedsController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a feed' })
+  @ApiOperation({ summary: 'Delete a feed', operationId: 'deleteFeed' })
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @ApiResponse({ status: HttpStatus.NOT_FOUND })
@@ -108,7 +108,7 @@ export class FeedsController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update feed properties' })
+  @ApiOperation({ summary: 'Update feed properties', operationId: 'updateFeed' })
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.OK, type: FeedDto })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST })
@@ -123,7 +123,7 @@ export class FeedsController {
   }
 
   @Post(':id/scrape')
-  @ApiOperation({ summary: 'Trigger immediate feed scraping' })
+  @ApiOperation({ summary: 'Trigger immediate feed scraping', operationId: 'scrapeFeedNow' })
   @ApiParam({ name: 'id' })
   @ApiResponse({ status: HttpStatus.ACCEPTED })
   @ApiResponse({ status: HttpStatus.NOT_FOUND })

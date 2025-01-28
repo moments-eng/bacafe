@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { extractErrorMessage } from 'src/utils/error';
 import { ArticlesService } from './articles.service';
 import { ArticleStatsDto } from './dto/article-stats.dto';
 import { ArticleDto } from './dto/article.dto';
@@ -7,7 +8,6 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { ListArticlesDto } from './dto/list-articles.dto';
 import { PaginatedArticlesDto } from './dto/paginated-articles.dto';
 import { QueryArticlesDto } from './dto/query-articles.dto';
-import { extractErrorMessage } from 'src/utils/error';
 
 @ApiTags('articles')
 @Controller('articles')
@@ -15,7 +15,7 @@ export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new article' })
+  @ApiOperation({ summary: 'Create a new article', operationId: 'createArticle' })
   @ApiBody({ type: CreateArticleDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -36,7 +36,7 @@ export class ArticlesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete article' })
+  @ApiOperation({ summary: 'Delete article', operationId: 'deleteArticle' })
   @ApiParam({ name: 'id', description: 'Article ID' })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
@@ -59,6 +59,7 @@ export class ArticlesController {
   @ApiOperation({
     summary: 'List articles with pagination',
     description: 'Returns articles sorted by creation date (newest first)',
+    operationId: 'listArticles',
   })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -85,6 +86,7 @@ export class ArticlesController {
   @ApiOperation({
     summary: 'Query articles with filters and sorting',
     description: 'Returns filtered and sorted articles with pagination',
+    operationId: 'queryArticles',
   })
   @ApiBody({ type: QueryArticlesDto })
   @ApiResponse({
@@ -113,6 +115,7 @@ export class ArticlesController {
   @ApiOperation({
     summary: 'Get article statistics',
     description: 'Returns aggregated statistics about articles',
+    operationId: 'getArticleStats',
   })
   @ApiResponse({
     status: HttpStatus.OK,

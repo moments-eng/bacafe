@@ -8,11 +8,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('News Scraper API')
-    .setDescription('The News Scraper API description')
+    .setTitle('Backend API')
     .setVersion('1.0')
-    .addTag('feeds')
-    .addTag('articles')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-identity',
+        in: 'header',
+      },
+      'x-identity',
+    )
+    .addTag('backend')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

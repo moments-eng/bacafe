@@ -1,16 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useContainerDimensions } from "@/hooks/use-container-dimensions";
 import { hebrewContent } from "@/locales/he";
 import { useOnboardingStore } from "@/stores/onboarding";
 import { motion } from "framer-motion";
-import { Loader2, Mail, MessageCircle, Sparkles, Clock } from "lucide-react";
+import { Clock, Loader2, Mail, MessageCircle, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
-import { updateUser, ingestReader } from "../actions";
-import { Progress } from "@/components/ui/progress";
+import { ingestReader, updateUser } from "../actions";
 
 const { success } = hebrewContent.onboarding;
 
@@ -46,7 +46,6 @@ export function SuccessStep() {
         const result = await ingestReader();
 
         if (result.success) {
-          console.log(result);
           setSummary(result.summary);
         } else {
           setError(result.error);

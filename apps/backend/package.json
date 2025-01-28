@@ -20,9 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "lint": "eslint 'src/**/*.ts' --fix",
     "format": "prettier --write 'src/**/*.ts'",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org moments-f1 --project bacafe-backend ./dist && sentry-cli sourcemaps upload --org moments-f1 --project bacafe-backend ./dist",
-    "generate:api": "openapi-codegen gen feeds",
-    "generate:api-types": "openapi-typescript http://localhost:3100/api-yaml -o lib/http-clients/feeds/schema.d.ts"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org moments-f1 --project bacafe-backend ./dist && sentry-cli sourcemaps upload --org moments-f1 --project bacafe-backend ./dist"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.1",
@@ -43,7 +41,8 @@
     "mongoose": "^8.9.5",
     "reflect-metadata": "^0.2.2",
     "rss-parser": "^3.13.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "ts-pattern": "^5.6.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",

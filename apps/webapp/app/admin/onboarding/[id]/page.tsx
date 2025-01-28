@@ -41,8 +41,8 @@ import {
   removeArticle,
   updateArticlePositions,
 } from "../actions";
-import { SortableArticleItem } from "../sortable-article-item";
 import { AddArticleDialog } from "../add-article-dialog";
+import { SortableArticleItem } from "../sortable-article-item";
 
 export default function EditOnboardingPage() {
   const params = useParams();
@@ -58,8 +58,6 @@ export default function EditOnboardingPage() {
   });
 
   const queryClient = useQueryClient();
-
-  console.log(onboarding);
 
   const sensors = useSensors(
     useSensor(PointerSensor),

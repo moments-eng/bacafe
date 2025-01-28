@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
+import connectDB from "@/lib/db/mongoose";
 import { userService } from "@/lib/services/user-service";
 
 export async function checkAdminAccess() {
+  await connectDB();
   const session = await auth();
   if (!session?.user?.email) {
     throw new Error("Unauthorized - Not logged in");

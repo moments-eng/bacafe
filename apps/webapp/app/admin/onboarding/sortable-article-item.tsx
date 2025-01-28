@@ -3,12 +3,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Trash2 } from "lucide-react";
-import { components } from "@/lib/http-clients/backend/schema";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-
-type ArticleDto = components["schemas"]["ArticleDto"];
+import { ArticleDto } from "@/generated/http-clients/backend";
 
 interface Props {
   article: ArticleDto;

@@ -2,8 +2,8 @@ import { IntervalDialog } from "@/components/admin/feeds/interval-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { FeedDto } from "@/generated/http-clients/backend";
 import { useToast } from "@/hooks/use-toast";
-import type { components } from "@/lib/http-clients/backend/schema";
 import { QUERY_KEYS } from "@/lib/queries";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -11,8 +11,6 @@ import { formatDistanceToNow } from "date-fns";
 import { Clock, Play, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { deleteFeed, triggerScrape, updateFeedStatus } from "./actions";
-
-type FeedDto = components["schemas"]["FeedDto"];
 
 export const columns: ColumnDef<FeedDto>[] = [
   {

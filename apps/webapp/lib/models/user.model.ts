@@ -13,9 +13,10 @@ import type {
 } from "@typegoose/typegoose/lib/types";
 import mongoose from "mongoose";
 
-import type { components } from "@/lib/http-clients/backend/schema";
+import { ArticleDto } from "@/generated/http-clients/backend";
+
 export type PreferredArticle = Pick<
-  components["schemas"]["ArticleDto"],
+  ArticleDto,
   | "title"
   | "subtitle"
   | "content"
@@ -52,6 +53,8 @@ enum UserRole {
 @index({ createdAt: 1 })
 @index({ role: 1 })
 export class User implements TimeStamps {
+  _id!: string;
+
   @prop({ required: true, unique: true })
   public email!: string;
 

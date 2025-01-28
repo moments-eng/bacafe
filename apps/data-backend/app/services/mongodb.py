@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional, Any
 from pymongo import MongoClient, ASCENDING, DESCENDING
+from bson import ObjectId
 import os
 from ..utils.logger import logger
 from flask import g
@@ -15,7 +16,7 @@ class MongoDBService:
         try:
             mongodb_url = os.getenv('MONGODB_URI', 'mongodb://localhost:27017')
             self.client = MongoClient(mongodb_url)
-            self.db = self.client[os.getenv('MONGODB_DB', 'articles_db')]
+            self.db = self.client[os.getenv('MONGODB_DB', 'bacafe')]
             logger.info("MongoDB connection initialized")
         except Exception as e:
             logger.error(f"MongoDB connection failed: {str(e)}")
@@ -131,6 +132,7 @@ class MongoDBService:
             reader = self.db.users.find_one({"_id": ObjectId(reader_id)})
             return reader
         except Exception as e:
+            print(e)
             logger.error(
                 "Failed to retrieve reader",
                 extra={

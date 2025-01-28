@@ -10,11 +10,10 @@ import {
 } from "@/components/ui/card";
 import {
   Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+  CollapsibleTrigger
 } from "@/components/ui/collapsible";
+import { ArticleDto } from "@/generated/http-clients/backend";
 import { cn } from "@/lib/utils";
-import type { components } from "@/lib/http-clients/backend/schema";
 import {
   ChevronDown,
   HeartOff,
@@ -25,8 +24,6 @@ import {
 import { useState } from "react";
 import { animated, useSpring } from "react-spring";
 import { useSwipeable } from "react-swipeable";
-
-type ArticleDto = components["schemas"]["ArticleDto"];
 
 interface ArticleCardProps {
   article: ArticleDto;

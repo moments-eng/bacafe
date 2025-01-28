@@ -24,7 +24,7 @@ export interface UserDTO {
 }
 
 export const UserTransformer = {
-	toDTO(user: User & { _id: Types.ObjectId }): UserDTO {
+	toDTO(user: User): UserDTO {
 		return {
 			id: user._id.toString(),
 			email: user.email,
