@@ -2,8 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { hebrewContent } from "@/locales/he";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
+import "./error.css";
 
 export default function ErrorPage({
   error,
@@ -17,38 +19,60 @@ export default function ErrorPage({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-2xl text-center space-y-8">
-        <h1 className="text-5xl font-bold mb-4">
-          {hebrewContent.errors.generic.title}
-        </h1>
+    <div className="error-container">
+      <div className="error-content">
+        <div className="error-image-container">
+          <Image
+            src="/sad-pony.png"
+            alt={hebrewContent.errors.generic.altText}
+            fill
+            priority
+            className="object-contain"
+          />
+        </div>
 
-        <p className="text-xl mb-8 max-w-md mx-auto leading-relaxed">
-          {hebrewContent.errors.generic.description}
-        </p>
+        <div>
+          <h1 className="error-title font-heebo">
+            {hebrewContent.errors.generic.title}
+          </h1>
+          <p className="error-description font-heebo">
+            {hebrewContent.errors.generic.description}
+          </p>
+        </div>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button onClick={reset}>
+        <div className="error-actions">
+          <Button
+            size="lg"
+            onClick={reset}
+            className="w-full font-medium font-heebo"
+          >
             {hebrewContent.errors.generic.buttonText}
           </Button>
 
-          <Link href="/">
-            {hebrewContent.navigation.menu.dailyDigest}
+          <Link href="/" className="w-full">
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full font-medium font-heebo"
+            >
+              {hebrewContent.navigation.menu.dailyDigest}
+            </Button>
           </Link>
         </div>
 
-        <div className="mt-16 border-t pt-8 space-y-6">
-          <h3 className="text-2xl font-semibold">
+        <div className="error-divider" />
+
+        <div className="error-help">
+          <h3 className="error-help-title font-heebo">
             {hebrewContent.errors.coffeeThemedMessage}
           </h3>
-          <ul className="space-y-4 text-lg">
+          <ul className="error-help-list font-heebo">
             {hebrewContent.errors.options.map((option, index) => (
               <li
                 key={index}
-                className="flex items-center justify-center gap-2 animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="error-help-item"
+                style={{ animationDelay: `${(index + 1) * 0.1}s` }}
               >
-                <span>•</span>
                 {option}
               </li>
             ))}

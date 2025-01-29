@@ -1,60 +1,72 @@
-import { auth } from '@/auth';
-import { Button } from '@/components/ui/button';
-import { hebrewContent } from '@/locales/he';
-import { Bona_Nova_SC } from 'next/font/google';
-import Link from 'next/link';
-import './page.css';
+import { auth } from "@/auth";
+import { Button } from "@/components/ui/button";
+import { hebrewContent } from "@/locales/he";
+import { Bona_Nova_SC } from "next/font/google";
+import Image from "next/image";
+import Link from "next/link";
+import "./page.css";
 
 const titleFont = Bona_Nova_SC({
-	subsets: ['hebrew'],
-	weight: ['400'],
+  subsets: ["hebrew"],
+  weight: ["400"],
 });
 
 async function getStartHereUrl() {
-	const session = await auth();
-	return session?.user ? '/dashboard' : '/login';
+  const session = await auth();
+  return session?.user ? "/dashboard" : "/login";
 }
 
 export default async function Home() {
-	const startHereUrl = await getStartHereUrl();
-	return (
-		<div>
-			<h1 className={`${titleFont.className} brand-title`}>
-				{hebrewContent.companyName} <span>☕</span>
-			</h1>
+  const startHereUrl = await getStartHereUrl();
+  return (
+    <main className="min-h-[100dvh] flex items-center">
+      <div className="w-full px-3">
+        <h1 className={`${titleFont.className} brand-title`}>
+          {hebrewContent.companyName}
+        </h1>
 
-			<p className="text-center text-muted-foreground mt-2 font-medium font-heebo">
-				{hebrewContent.tagline}
-			</p>
+        <p className="text-center text-sm text-muted-foreground mt-0.5 font-medium font-heebo">
+          {hebrewContent.tagline}
+        </p>
 
-			<div className="mt-12 space-y-6 text-center">
-				<h2 className="text-4xl font-bold tracking-tight text-foreground font-heebo">
-					{hebrewContent.mainTitle}
-					<span className="text-primary block mt-1">
-						{hebrewContent.mainTitleHighlight}
-					</span>
-				</h2>
+        <div className="hero-section">
+          <Image
+            src="/logo.png"
+            alt="Friendly Mascot"
+            width={120}
+            height={120}
+            className="hero-mascot"
+            priority
+          />
 
-				<p className="text-muted-foreground max-w-[42rem] mx-auto leading-relaxed text-lg font-heebo">
-					{hebrewContent.description}
-				</p>
+          <h2 className="hero-title font-heebo">
+            {hebrewContent.mainTitle}
+            <span className="hero-highlight">
+              {hebrewContent.mainTitleHighlight}
+            </span>
+          </h2>
 
-				<div className="flex flex-col gap-4 px-4">
-					<Link href={startHereUrl}>
-						<Button size="lg" className="w-full font-medium font-heebo">
-							{hebrewContent.startButton}
-						</Button>
-					</Link>
+          <p className="hero-description font-heebo">
+            {hebrewContent.description}
+          </p>
 
-					<Button
-						size="lg"
-						variant="outline"
-						className="w-full font-medium font-heebo"
-					>
-						{hebrewContent.learnMore}
-					</Button>
-				</div>
-			</div>
-		</div>
-	);
+          <div className="cta-container">
+            <Link href={startHereUrl} className="w-full">
+              <Button size="default" className="w-full font-medium font-heebo">
+                {hebrewContent.startButton}
+              </Button>
+            </Link>
+
+            <Button
+              variant="outline"
+              size="default"
+              className="w-full font-medium font-heebo"
+            >
+              {hebrewContent.learnMore}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
 }
