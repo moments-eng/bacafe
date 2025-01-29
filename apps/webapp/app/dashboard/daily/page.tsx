@@ -25,7 +25,6 @@ export default function DailyPage() {
     progress,
     toggleSection,
     markAsComplete,
-    handleSwipe,
   } = useDailyDigest(digest?.sections.length ?? 0);
 
   if (isLoading) {
@@ -65,7 +64,6 @@ export default function DailyPage() {
                   key={section.title}
                   section={section}
                   index={index}
-                  onSwipe={handleSwipe}
                   onComplete={markAsComplete}
                   isExpanded={expandedSections.has(index)}
                   onToggle={toggleSection}
@@ -79,13 +77,6 @@ export default function DailyPage() {
           <DigestCompletionMessage />
         )}
       </div>
-
-      {/* Optional: Add swipe instruction tooltip for first-time users */}
-      {digest.sections.length > 0 && !completedSections.size && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-card px-4 py-2 rounded-full shadow-lg text-sm text-muted-foreground">
-          {dailyDigest.section.swipeInstructions}
-        </div>
-      )}
     </div>
   );
 }

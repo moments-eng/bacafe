@@ -1,13 +1,11 @@
 export interface Section {
-  category: string;
   title: string;
   teaser: string;
-  highlights: string[];
   body: string[];
+  highlights: string[];
   articleLinks: string[];
-  imageUrl: string;
-  readTime?: number;
-  mood?: "positive" | "negative" | "neutral";
+  category: string;
+  imageUrl?: string;
 }
 
 export interface DailyDigest {
@@ -25,6 +23,4 @@ export interface DigestState {
 export interface DigestActions {
   toggleSection: (index: number) => void;
   markAsComplete: (index: number) => void;
-  handleFeedback: (type: "like" | "dislike", sectionIndex: number) => void;
-  handleSwipe: (index: number, direction: "Left" | "Right") => void;
 }

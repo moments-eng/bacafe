@@ -243,7 +243,8 @@ export const hebrewContent = {
 
   dailyDigest: {
     title: "הדייג׳סט היומי שלך",
-    noDigestAvailable: "עדיין לא חישבנו את הדייג׳סט היומי שלך, אל דאגה, אנחנו על זה!",
+    noDigestAvailable:
+      "עדיין לא חישבנו את הדייג׳סט היומי שלך, אל דאגה, אנחנו על זה!",
     progress: {
       sectionsRead: "נושאים נקראו",
       outOf: "מתוך",
@@ -257,11 +258,10 @@ export const hebrewContent = {
         like: "אהבתי",
         dislike: "פחות אהבתי",
         markAsRead: "סיימתי לקרוא",
-        showDetails: "הצג פרטים",
-        hideDetails: "הסתר פרטים",
+        readMore: "קרא עוד",
+        readLess: "קרא פחות",
       },
-      swipeInstructions:
-        "החלק ימינה לסימון כרלוונטי, שמאלה לסימון כלא רלוונטי",
+      swipeInstructions: "החלק ימינה לסימון כרלוונטי, שמאלה לסימון כלא רלוונטי",
     },
     completion: {
       title: "כל הכבוד! 🎉",

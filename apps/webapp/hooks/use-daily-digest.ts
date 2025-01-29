@@ -35,27 +35,11 @@ export function useDailyDigest(
     updateProgress(expandedSections, newCompleted);
   };
 
-  const handleFeedback = (type: "like" | "dislike", sectionIndex: number) => {
-    // TODO: Implement API call for feedback
-    console.log(`Feedback ${type} for section ${sectionIndex}`);
-  };
-
-  const handleSwipe = (index: number, direction: "Left" | "Right") => {
-    if (direction === "Right") {
-      handleFeedback("like", index);
-    } else {
-      handleFeedback("dislike", index);
-    }
-    markAsComplete(index);
-  };
-
   return {
     expandedSections,
     completedSections,
     progress,
     toggleSection,
     markAsComplete,
-    handleFeedback,
-    handleSwipe,
   };
 }
