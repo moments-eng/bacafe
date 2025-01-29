@@ -97,8 +97,11 @@ export class User implements TimeStamps {
   @prop({ default: Date.now })
   public updatedAt!: Date;
 
-  @prop({ required: true, default: "email" })
+  @prop({ required: true, default: "whatsapp" })
   public digestChannel!: "email" | "whatsapp";
+
+  @prop({ match: /^05\d{8}$/ })
+  public phoneNumber?: string;
 }
 
 export const UserModel =

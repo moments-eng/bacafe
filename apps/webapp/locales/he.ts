@@ -38,11 +38,22 @@ export const hebrewContent = {
             title: "📧 אימייל יומי",
             description: "ישלח למייל שלך כל יום בשעה שבחרת",
             icon: "Envelope",
+            comingSoon: "(בקרוב)",
           },
           whatsapp: {
             title: "💬 ווטסאפ",
             description: "נשלח ישירות לצ'אט הפרטי שלך בווטסאפ",
             icon: "MessageCircle",
+            phoneNumber: {
+              label: "מספר טלפון",
+              placeholder: "מספר טלפון (לדוגמה: 0522532979)",
+              error: {
+                required: "מספר טלפון נדרש עבור WhatsApp",
+                invalid:
+                  "מספר טלפון חייב להתחיל ב-05 ולהכיל 10 ספרות בלבד, ללא רווחים או סימנים",
+              },
+              hint: "יש להזין ספרות בלבד, ללא מקף או רווחים",
+            },
           },
         },
         error: "יש לבחור ערוץ קבלה",

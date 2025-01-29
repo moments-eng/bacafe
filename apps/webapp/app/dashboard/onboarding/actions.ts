@@ -25,6 +25,10 @@ const userUpdateSchema = z.object({
     )
     .optional(),
   digestChannel: z.enum(["email", "whatsapp"]).optional(),
+  phoneNumber: z
+    .string()
+    .regex(/^05\d{8}$/)
+    .optional(),
 });
 
 type UserUpdateData = z.infer<typeof userUpdateSchema>;
