@@ -79,8 +79,11 @@
 	* {
 		@apply border-border;
 	}
+	html {
+		@apply overflow-x-hidden;
+	}
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-background text-foreground overflow-x-hidden;
 	}
 }
 
@@ -102,6 +105,8 @@
 	font-family: "Heebo", sans-serif;
 	direction: rtl;
 	isolation: isolate;
+	overflow-x: hidden;
+	width: 100%;
 }
 
 @media (min-width: 500px) {

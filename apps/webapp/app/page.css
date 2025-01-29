@@ -1,7 +1,7 @@
 .brand-title {
 	font-weight: 600;
 	font-style: normal;
-	font-size: 2rem;
+	font-size: 1.75rem;
 	color: hsl(var(--primary));
 	text-align: center;
 	margin: 0;
@@ -11,13 +11,16 @@
 	gap: 0.5rem;
 	letter-spacing: -0.5px;
 	padding: 0.5rem 0 0.25rem;
+	max-width: 100%;
+	overflow-wrap: break-word;
 }
 
 .brand-logo {
-	width: 32px;
-	height: 32px;
+	width: 28px;
+	height: 28px;
 	object-fit: contain;
 	margin-top: -2px;
+	flex-shrink: 0;
 }
 
 .hero-mascot {
@@ -27,11 +30,13 @@
 	margin: 0.5rem auto;
 	display: block;
 	animation: float 6s ease-in-out infinite;
+	flex-shrink: 0;
 }
 
 .hero-section {
 	text-align: center;
-	padding: 0 0.5rem;
+	padding: 0;
+	width: 100%;
 	max-width: 42rem;
 	margin: 0 auto;
 	display: flex;
@@ -45,12 +50,17 @@
 	color: hsl(var(--foreground));
 	margin: 0.5rem 0 0.25rem;
 	line-height: 1.2;
+	max-width: 100%;
+	overflow-wrap: break-word;
+	padding: 0 0.5rem;
 }
 
 .hero-highlight {
 	color: hsl(var(--primary));
 	display: block;
 	margin-top: 0.25rem;
+	max-width: 100%;
+	overflow-wrap: break-word;
 }
 
 .hero-description {
@@ -58,7 +68,9 @@
 	font-size: 1rem;
 	line-height: 1.4;
 	margin-bottom: 1rem;
-	padding: 0 0.5rem;
+	padding: 0 1rem;
+	max-width: 100%;
+	overflow-wrap: break-word;
 }
 
 .cta-container {
@@ -68,7 +80,7 @@
 	width: 100%;
 	max-width: 18rem;
 	margin: 0 auto;
-	padding-bottom: 1rem;
+	padding: 0 1rem 1rem;
 }
 
 body {
@@ -81,14 +93,18 @@ body {
 	);
 	min-height: 100vh;
 	min-height: 100dvh;
+	overflow-x: hidden;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
+	width: 100%;
 }
 
 /* Remove the fixed position and overflow hidden from html */
 html {
 	height: 100%;
 	background-color: hsl(var(--background));
+	overflow-x: hidden;
+	width: 100%;
 }
 
 @keyframes float {
