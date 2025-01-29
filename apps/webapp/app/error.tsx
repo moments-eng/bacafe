@@ -61,23 +61,6 @@ export default function ErrorPage({
         </div>
 
         <div className="error-divider" />
-
-        <div className="error-help">
-          <h3 className="error-help-title font-heebo">
-            {hebrewContent.errors.coffeeThemedMessage}
-          </h3>
-          <ul className="error-help-list font-heebo">
-            {hebrewContent.errors.options.map((option, index) => (
-              <li
-                key={index}
-                className="error-help-item"
-                style={{ animationDelay: `${(index + 1) * 0.1}s` }}
-              >
-                {option}
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     </div>
   );

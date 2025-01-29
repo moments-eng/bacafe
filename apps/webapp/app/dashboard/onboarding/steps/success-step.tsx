@@ -7,6 +7,7 @@ import { hebrewContent } from "@/locales/he";
 import { useOnboardingStore } from "@/stores/onboarding";
 import { motion } from "framer-motion";
 import { Clock, Loader2, Mail, MessageCircle, Sparkles } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
@@ -16,13 +17,14 @@ const { success } = hebrewContent.onboarding;
 
 export function SuccessStep() {
   const router = useRouter();
-  const { name, digestTime, digestChannel } = useOnboardingStore();
+  const { digestTime, digestChannel } = useOnboardingStore();
   const { width, height } = useContainerDimensions();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [summary, setSummary] = useState<string>();
   const [isLoadingIngest, setIsLoadingIngest] = useState(true);
   const [progress, setProgress] = useState(0);
+  const session = useSession();
 
   useEffect(() => {
     const simulateProgress = () => {
@@ -43,6 +45,8 @@ export function SuccessStep() {
     async function completeOnboarding() {
       try {
         await updateUser({ isOnboardingDone: true });
+        session.update({ user: { isOnboardingDone: true } });
+
         const result = await ingestReader();
 
         if (result.success) {

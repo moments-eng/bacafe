@@ -7,7 +7,7 @@ import MongoDBClient from "./lib/db/db";
 import { userService } from "./lib/services/user-service";
 import { UserRole } from "./lib/types/user.types";
 
-const jwtTrigger = ["signUp", "signIn"];
+const jwtTrigger = ["signUp", "signIn", "update"];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: MongoDBAdapter(MongoDBClient.getInstance()),
@@ -46,19 +46,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt: async ({ token, trigger }) => {
+    jwt: async ({ token, trigger, session }) => {
       if (jwtTrigger.includes(trigger || "") && token.email) {
         const user = await userService.getUser(token.email);
-        token.role = user?.role;
-        token.approved = user?.approved;
-        token.id = user?._id.toString()
+        if (!user) return null;
+        token.role = user.role;
+        token.approved = user.approved;
+        token.id = user._id.toString();
+        token.isOnboardingDone = user.isOnboardingDone;
       }
       return token;
     },
     session: async ({ session, token }) => {
-      session.user.role = token.role as UserRole;
-      session.user.approved = token.approved as boolean;
-      session.user.id = token.id as string;
+      session.user.role = token.role;
+      session.user.approved = token.approved;
+      session.user.id = token.id;
+      session.user.isOnboardingDone = token.isOnboardingDone;
       return session;
     },
   },

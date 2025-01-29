@@ -5,10 +5,10 @@ import { hebrewContent } from "@/locales/he";
 import { useOnboardingStore } from "@/stores/onboarding";
 import { AnimatePresence, motion } from "framer-motion";
 import { ContentMatchingStep } from "./steps/content-matching-step";
+import { DigestChannelStep } from "./steps/digest-channel-step";
 import { PersonalDetailsStep } from "./steps/personal-details-step";
 import { SuccessStep } from "./steps/success-step";
 import { TimePreferenceStep } from "./steps/time-preference-step";
-import { DigestChannelStep } from "./steps/digest-channel-step";
 
 const { onboarding } = hebrewContent;
 

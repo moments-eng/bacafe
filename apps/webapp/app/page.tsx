@@ -19,8 +19,8 @@ async function getStartHereUrl() {
 export default async function Home() {
   const startHereUrl = await getStartHereUrl();
   return (
-    <main className="min-h-[100dvh] flex items-center">
-      <div className="w-full px-3">
+    <main className="min-h-[100dvh]">
+      <div className="w-full">
         <h1 className={`${titleFont.className} brand-title`}>
           {hebrewContent.companyName}
         </h1>

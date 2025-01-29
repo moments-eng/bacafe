@@ -1,12 +1,13 @@
 import { auth } from "@/auth";
 import { AdminSidebar } from "@/components/admin/sidebar/sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { ToastProvider } from "@/components/ui/toast";
+import { userService } from "@/lib/services/user-service";
 import { SessionProvider } from "next-auth/react";
 import { redirect } from "next/navigation";
 import "./admin-globals.css";
 import "./admin.css";
-import { ToastProvider } from "@/components/ui/toast";
-import { userService } from "@/lib/services/user-service";
+import AdminProviders from "./admin-providers";
 
 export default async function AdminLayout({
   children,
@@ -25,14 +26,12 @@ export default async function AdminLayout({
 
   return (
     <SidebarProvider>
-      <SessionProvider>
-        <ToastProvider>
-          <AdminSidebar />
-          <SidebarInset>
-            <div className="p-6 md:p-8 lg:p-10">{children}</div>
-          </SidebarInset>
-        </ToastProvider>
-      </SessionProvider>
+      <AdminProviders>
+        <AdminSidebar />
+        <SidebarInset>
+          <div className="p-6 md:p-8 lg:p-10">{children}</div>
+        </SidebarInset>
+      </AdminProviders>
     </SidebarProvider>
   );
 }

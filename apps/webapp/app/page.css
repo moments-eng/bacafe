@@ -1,7 +1,7 @@
 .brand-title {
 	font-weight: 600;
 	font-style: normal;
-	font-size: 1.75rem;
+	font-size: 2.25rem;
 	color: hsl(var(--primary));
 	text-align: center;
 	margin: 0;
@@ -10,7 +10,7 @@
 	justify-content: center;
 	gap: 0.5rem;
 	letter-spacing: -0.5px;
-	padding: 0.5rem 0 0.25rem;
+	padding: 2rem 0 0.5rem;
 	max-width: 100%;
 	overflow-wrap: break-word;
 }
@@ -24,12 +24,11 @@
 }
 
 .hero-mascot {
-	width: 120px;
-	height: 120px;
+	width: 160px;
+	height: 160px;
 	object-fit: contain;
-	margin: 0.5rem auto;
+	margin: 0.75rem auto;
 	display: block;
-	animation: float 6s ease-in-out infinite;
 	flex-shrink: 0;
 }
 
@@ -45,10 +44,10 @@
 }
 
 .hero-title {
-	font-size: 1.75rem;
+	font-size: 2rem;
 	font-weight: bold;
 	color: hsl(var(--foreground));
-	margin: 0.5rem 0 0.25rem;
+	margin: 0.5rem 0 0.5rem;
 	line-height: 1.2;
 	max-width: 100%;
 	overflow-wrap: break-word;
@@ -65,9 +64,9 @@
 
 .hero-description {
 	color: hsl(var(--muted-foreground));
-	font-size: 1rem;
-	line-height: 1.4;
-	margin-bottom: 1rem;
+	font-size: 1.125rem;
+	line-height: 1.5;
+	margin-bottom: 1.5rem;
 	padding: 0 1rem;
 	max-width: 100%;
 	overflow-wrap: break-word;
