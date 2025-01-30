@@ -129,6 +129,16 @@ async function generateUserDailyDigestAction(userId: string) {
   }
 }
 
+async function deliverUserDailyDigestAction(userId: string) {
+  try {
+    await dailyDigestApi.deliverDailyDigest(userId);
+    return { success: true };
+  } catch (error) {
+    console.error("Error delivering daily digest:", error);
+    throw error;
+  }
+}
+
 export const getUsers = withAdminAccess(getUsersAction);
 export const updateUserStatus = withAdminAccess(updateUserStatusAction);
 export const bulkUpdateUserStatus = withAdminAccess(bulkUpdateUserStatusAction);
@@ -136,17 +146,6 @@ export const updateUserRole = withAdminAccess(updateUserRoleAction);
 export const generateUserDailyDigest = withAdminAccess(
   generateUserDailyDigestAction
 );
-
-export async function deliverUserDailyDigest(
-  userId: string
-): Promise<{ success: boolean }> {
-  const response = await fetch(`/api/daily-digest/deliver/${userId}`, {
-    method: "POST",
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to deliver daily digest");
-  }
-
-  return { success: true };
-}
+export const deliverUserDailyDigest = withAdminAccess(
+  deliverUserDailyDigestAction
+);

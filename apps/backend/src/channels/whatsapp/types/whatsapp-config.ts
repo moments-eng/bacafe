@@ -1,5 +1,4 @@
 export interface WhatsAppConfig {
-  wabaId: string;
   phoneNumberId: string;
   accessToken: string;
   baseUrl: string;

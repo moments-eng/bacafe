@@ -12,7 +12,6 @@ import { WhatsAppService } from './whatsapp.service';
       provide: WHATSAPP_CONFIG,
       inject: [ConfigService],
       useFactory: (configService: ConfigService): WhatsAppConfig => ({
-        wabaId: configService.getOrThrow<string>('WHATSAPP_WABA_ID'),
         phoneNumberId: configService.getOrThrow<string>('WHATSAPP_PHONE_NUMBER_ID'),
         accessToken: configService.getOrThrow<string>('WHATSAPP_ACCESS_TOKEN'),
         baseUrl: 'https://graph.facebook.com/v20.0',

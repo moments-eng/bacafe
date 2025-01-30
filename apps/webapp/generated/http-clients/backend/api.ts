@@ -1360,6 +1360,40 @@ export class ArticlesApi extends BaseAPI {
 export const DailyDigestApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Admin-only endpoint to manually trigger daily digest delivery for testing purposes
+         * @summary Deliver latest daily digest for a user
+         * @param {string} userId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deliverDailyDigest: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('deliverDailyDigest', 'userId', userId)
+            const localVarPath = `/daily-digest/deliver/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Retrieves the most recent daily digest for the specified user from today
          * @summary Get latest daily digest for a user
          * @param {string} userId 
@@ -1438,6 +1472,19 @@ export const DailyDigestApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DailyDigestApiAxiosParamCreator(configuration)
     return {
         /**
+         * Admin-only endpoint to manually trigger daily digest delivery for testing purposes
+         * @summary Deliver latest daily digest for a user
+         * @param {string} userId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deliverDailyDigest(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deliverDailyDigest(userId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DailyDigestApi.deliverDailyDigest']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Retrieves the most recent daily digest for the specified user from today
          * @summary Get latest daily digest for a user
          * @param {string} userId 
@@ -1474,6 +1521,16 @@ export const DailyDigestApiFactory = function (configuration?: Configuration, ba
     const localVarFp = DailyDigestApiFp(configuration)
     return {
         /**
+         * Admin-only endpoint to manually trigger daily digest delivery for testing purposes
+         * @summary Deliver latest daily digest for a user
+         * @param {string} userId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deliverDailyDigest(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deliverDailyDigest(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves the most recent daily digest for the specified user from today
          * @summary Get latest daily digest for a user
          * @param {string} userId 
@@ -1503,6 +1560,18 @@ export const DailyDigestApiFactory = function (configuration?: Configuration, ba
  * @extends {BaseAPI}
  */
 export class DailyDigestApi extends BaseAPI {
+    /**
+     * Admin-only endpoint to manually trigger daily digest delivery for testing purposes
+     * @summary Deliver latest daily digest for a user
+     * @param {string} userId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DailyDigestApi
+     */
+    public deliverDailyDigest(userId: string, options?: RawAxiosRequestConfig) {
+        return DailyDigestApiFp(this.configuration).deliverDailyDigest(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Retrieves the most recent daily digest for the specified user from today
      * @summary Get latest daily digest for a user
