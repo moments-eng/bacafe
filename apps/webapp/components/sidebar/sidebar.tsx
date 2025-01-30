@@ -6,19 +6,19 @@ import { UserProfile } from "./user-profile";
 
 export function Sidebar() {
   return (
-    <div className="flex h-full flex-col">
-      <UserProfile />
+    <div className="flex h-full flex-col bg-gradient-to-b from-primary/10 via-background to-background ">
+      <div className="border-b mt-12">
+        <UserProfile />
+      </div>
 
       <div className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
         <Navigation items={mainMenuItems} />
       </div>
 
-      <div className="shrink-0 px-4">
-        <Separator className="mb-4" />
-        <div className="space-y-1">
+      <div className="shrink-0 border-t">
+        <div className="px-4 py-4">
           <Navigation items={bottomMenuItems} variant="muted" />
-        </div>
-        <div className="p-4">
+          <Separator className="my-4" />
           <LogoutButton />
         </div>
       </div>

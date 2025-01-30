@@ -20,10 +20,10 @@ const titleFont = Bona_Nova_SC({
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b backdrop-blur ">
+    <header className="sticky top-0 z-50 w-full border-b backdrop-blur px-4">
       <div className="container flex h-14 max-w-screen-md items-center justify-between">
         <div
-          className={`${titleFont.className} text-xl flex items-center gap-1`}
+          className={`${titleFont.className} text-xl flex items-center gap-2`}
         >
           {hebrewContent.companyName}
           <Image
@@ -34,7 +34,7 @@ export function Header() {
             priority
           />
         </div>
-        <Sheet> 
+        <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Toggle Menu">
               <Menu className="h-5 w-5" />
@@ -42,9 +42,9 @@ export function Header() {
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="flex w-[85vw] flex-col gap-0 overflow-hidden p-0 sm:max-w-sm [&_*]:text-right"
+            className="flex w-[85vw] flex-col p-0 sm:max-w-sm [&_*]:text-right"
           >
-            <SheetTitle hidden>בול בפוני</SheetTitle>
+            <SheetTitle hidden>Menu</SheetTitle>
             <Sidebar />
           </SheetContent>
         </Sheet>
