@@ -12,6 +12,7 @@ export default auth(async (req) => {
   if (req.method === "GET" && path === "/health") {
     return NextResponse.json({ message: "OK" });
   }
+
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET,

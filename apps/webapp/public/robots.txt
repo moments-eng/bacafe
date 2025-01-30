@@ -1,0 +1,14 @@
+# https://www.bapony.info robots.txt
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+Allow: /login
+
+# Disallow protected routes
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://www.bapony.info/sitemap.xml 
