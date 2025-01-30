@@ -6,6 +6,8 @@ import { UsersService } from '../../users/users.service';
 import { DailyDigestService } from '../daily-digest.service';
 import { DeliverUserDigestJobData, DigestDeliveryJobData, DigestDeliveryJobType } from '../types/queue.types';
 import { DigestStatus } from '../schemas/daily-digest.schema';
+import { WhatsAppService } from '../../channels/whatsapp/whatsapp.service';
+import { BodyComponent, TemplateComponent } from '../../channels/whatsapp/types/message-types';
 
 @Processor('daily-digest-delivery')
 export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModuleInit {
@@ -15,12 +17,12 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
     @InjectQueue('daily-digest-delivery') private readonly deliveryQueue: Queue<DigestDeliveryJobData>,
     private readonly dailyDigestService: DailyDigestService,
     private readonly usersService: UsersService,
+    private readonly whatsappService: WhatsAppService,
   ) {
     super();
   }
 
   async onModuleInit() {
-    await this.deliveryQueue.obliterate();
     await this.deliveryQueue.upsertJobScheduler(
       'hourly-digest-delivery',
       { pattern: '0 * * * *' },
@@ -85,6 +87,30 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
       }
 
       const user = await this.usersService.findOne(userId);
+
+      if (user.digestChannel === 'whatsapp' && user.phoneNumber) {
+        try {
+          const components: TemplateComponent[] = [
+            {
+              type: 'body',
+              parameters: [{ type: 'text', text: digest.content.teaser || '...' }],
+            } as BodyComponent,
+          ];
+
+          await this.whatsappService.sendTemplate(user.phoneNumber, 'daily_digest', components);
+          await this.dailyDigestService.markDigestAsSent(digest._id.toString(), 'whatsapp');
+          this.logger.debug(`Successfully delivered WhatsApp digest to user ${userId}`);
+          return;
+        } catch (error) {
+          this.logger.error(
+            `Failed to send WhatsApp digest to user ${userId}`,
+            error instanceof Error ? error.stack : undefined,
+          );
+          throw error;
+        }
+      }
+
+      // Handle other channels here...
       await this.dailyDigestService.markDigestAsSent(digest._id.toString(), user.digestChannel);
       this.logger.debug(`Successfully delivered digest to user ${userId}`);
     } catch (error) {

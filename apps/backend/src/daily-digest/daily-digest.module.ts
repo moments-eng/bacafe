@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from '../users/users.module';
+import { ChannelsModule } from '../channels/channels.module';
 import { DailyDigestController } from './daily-digest.controller';
 import { DailyDigestService } from './daily-digest.service';
 import { DailyDigestDeliveryProcessor } from './processors/daily-digest-delivery.processor';
@@ -23,6 +24,7 @@ import { DataService } from './services/data.service';
     ),
     UsersModule,
     ConfigModule,
+    ChannelsModule,
   ],
   controllers: [DailyDigestController],
   providers: [DailyDigestService, DailyDigestGeneratorProcessor, DailyDigestDeliveryProcessor, DataService],

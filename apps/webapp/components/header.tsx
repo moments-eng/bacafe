@@ -34,7 +34,7 @@ export function Header() {
             priority
           />
         </div>
-        <Sheet>
+        <Sheet> 
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Toggle Menu">
               <Menu className="h-5 w-5" />

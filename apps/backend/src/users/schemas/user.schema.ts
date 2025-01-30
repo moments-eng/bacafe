@@ -61,8 +61,11 @@ export class User {
   @Prop({ type: [Number], default: [] })
   embeddings: number[];
 
-  @Prop({ required: true, default: 'email' })
+  @Prop({ required: true, default: 'whatsapp' })
   digestChannel: 'email' | 'whatsapp';
+
+  @Prop({ match: /^05\d{8}$/ })
+  phoneNumber?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
