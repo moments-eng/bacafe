@@ -31,7 +31,6 @@ export function Header() {
             alt="Friendly Mascot"
             width={36}
             height={36}
-            className="hero-mascot"
             priority
           />
         </div>

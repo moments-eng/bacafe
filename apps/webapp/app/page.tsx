@@ -19,8 +19,8 @@ async function getStartHereUrl() {
 export default async function Home() {
   const startHereUrl = await getStartHereUrl();
   return (
-    <main className="min-h-[100dvh]">
-      <div className="w-full">
+    <main className="flex flex-col min-h-full">
+      <div className="flex-1">
         <h1 className={`${titleFont.className} brand-title`}>
           {hebrewContent.companyName}
         </h1>
@@ -67,6 +67,31 @@ export default async function Home() {
           </div>
         </div>
       </div>
+
+      <footer className="mt-auto border-t border-border/40">
+        <div className="py-4">
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-sm text-muted-foreground font-heebo">
+              {hebrewContent.footer.allRightsReserved}
+            </p>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/privacy"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors font-heebo"
+              >
+                {hebrewContent.footer.privacyPolicy}
+              </Link>
+              <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+              <Link
+                href="/terms"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors font-heebo"
+              >
+                {hebrewContent.footer.termsAndConditions}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

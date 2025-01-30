@@ -136,3 +136,17 @@ export const updateUserRole = withAdminAccess(updateUserRoleAction);
 export const generateUserDailyDigest = withAdminAccess(
   generateUserDailyDigestAction
 );
+
+export async function deliverUserDailyDigest(
+  userId: string
+): Promise<{ success: boolean }> {
+  const response = await fetch(`/api/daily-digest/deliver/${userId}`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to deliver daily digest");
+  }
+
+  return { success: true };
+}

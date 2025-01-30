@@ -4,6 +4,7 @@ import {
   updateUserRole,
   updateUserStatus,
   generateUserDailyDigest,
+  deliverUserDailyDigest,
 } from "@/app/admin/users/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +28,13 @@ import {
 } from "@/lib/types/user.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, UserCheck, UserX, Newspaper } from "lucide-react";
+import {
+  MoreHorizontal,
+  UserCheck,
+  UserX,
+  Newspaper,
+  Send,
+} from "lucide-react";
 
 export const columns: ColumnDef<UserResponse>[] = [
   {
@@ -214,9 +221,30 @@ export const columns: ColumnDef<UserResponse>[] = [
         },
       });
 
+      const { mutate: deliverDigest } = useMutation({
+        mutationFn: () => deliverUserDailyDigest(user.id),
+        onSuccess: () => {
+          toast({
+            title: "Success",
+            description: "Daily digest delivery triggered successfully",
+          });
+        },
+        onError: (error) => {
+          toast({
+            title: "Error",
+            description:
+              error instanceof Error
+                ? error.message
+                : "Failed to deliver daily digest",
+            variant: "destructive",
+          });
+        },
+      });
+
       const handleStatusUpdate = (approved: boolean) => updateStatus(approved);
       const handleRoleUpdate = (role: UserRole) => updateRole(role);
       const handleGenerateDigest = () => generateDigest();
+      const handleDeliverDigest = () => deliverDigest();
 
       return (
         <DropdownMenu>
@@ -253,6 +281,9 @@ export const columns: ColumnDef<UserResponse>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleGenerateDigest}>
               <Newspaper className="mr-2 h-4 w-4" /> Generate Daily Digest
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDeliverDigest}>
+              <Send className="mr-2 h-4 w-4" /> Deliver Daily Digest
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

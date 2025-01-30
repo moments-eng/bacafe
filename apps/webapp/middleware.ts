@@ -6,14 +6,17 @@ import authConfig from "./auth.config";
 const { auth } = NextAuth(authConfig);
 
 export default auth(async (req) => {
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+  // Skip auth check for health check and auth endpoints
   const url = new URL(req.url || "");
   const path = url.pathname;
-
-  // Skip auth check for health check and auth endpoints
   if (req.method === "GET" && path === "/health") {
     return NextResponse.json({ message: "OK" });
   }
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,
+    secureCookie: !!process.env.AUTH_URL,
+  });
 
   // Skip auth check for auth-related endpoints
   if (path.startsWith("/api/auth")) {

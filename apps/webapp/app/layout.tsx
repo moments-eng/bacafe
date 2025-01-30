@@ -22,9 +22,7 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl" className="overflow-x-hidden">
       <body className={`${heebo.className} mobile-container`}>
-        <Providers>
-          <main>{children}</main>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

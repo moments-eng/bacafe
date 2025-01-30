@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { isApproved } from "./actions";
 
-export default async function ApprovalPendingPage() {
+export default function ApprovalPendingPage() {
   const session = useSession();
 
   useEffect(() => {

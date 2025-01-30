@@ -91,7 +91,8 @@ export const hebrewContent = {
           love: "מאוד מעניין",
           like: "אהבתי",
           dislike: "פחות מעניין",
-          hate: "לא מעוניין בכלל",
+          // Changed 'hate' to 'notInterested' and reworded
+          notInterested: "לא מעוניין",
         },
       },
       timePreference: {
@@ -278,5 +279,11 @@ export const hebrewContent = {
       title: "עדכונים נבחרו",
       message: "מעולה! סיימתם לעיין בכל החדשות החשובות להיום",
     },
+  },
+
+  footer: {
+    allRightsReserved: "© 2024 בול בפוני. כל הזכויות שמורות",
+    privacyPolicy: "מדיניות פרטיות",
+    termsAndConditions: "תנאי שימוש",
   },
 } as const;
