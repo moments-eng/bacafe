@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUrl, ValidateNested, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ArticleUpdateBaseDto } from './article-update.base.dto';
 
 export class UpdateArticleImageDto {
   @ApiProperty()
@@ -13,14 +14,19 @@ export class UpdateArticleImageDto {
   credit?: string;
 }
 
-export class UpdateArticleDto {
+export class UpdateArticleDto extends ArticleUpdateBaseDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   content?: string;
 
-  @ApiProperty({ required: false, type: Object })
+  @ApiProperty({
+    description: 'Article enrichment data',
+    required: false,
+    type: Object,
+  })
   @IsOptional()
+  @IsObject()
   enrichment?: Record<string, unknown>;
 
   @ApiProperty({ required: false, type: [String] })

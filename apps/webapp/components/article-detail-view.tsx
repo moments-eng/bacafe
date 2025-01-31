@@ -42,7 +42,7 @@ export function ArticleDetailView({
 
               <div className="space-y-2">
                 <h3 className="font-semibold">Published Date</h3>
-                <p>{new Date(article.publishedAt).toLocaleDateString()}</p>
+                <p>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : 'N/A'}</p>
               </div>
 
               <div className="space-y-2">

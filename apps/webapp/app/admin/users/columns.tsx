@@ -1,10 +1,11 @@
 "use client";
 
 import {
+  approveUser,
+  deliverUserDailyDigest,
+  generateUserDailyDigest,
   updateUserRole,
   updateUserStatus,
-  generateUserDailyDigest,
-  deliverUserDailyDigest,
 } from "@/app/admin/users/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -29,11 +30,15 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
+  Copy,
+  Eye,
   MoreHorizontal,
-  UserCheck,
-  UserX,
   Newspaper,
   Send,
+  Shield,
+  UserCheck,
+  User as UserIcon,
+  UserX,
 } from "lucide-react";
 
 export const columns: ColumnDef<UserResponse>[] = [
@@ -162,7 +167,16 @@ export const columns: ColumnDef<UserResponse>[] = [
       const queryClient = useQueryClient();
 
       const { mutate: updateStatus } = useMutation({
-        mutationFn: (approved: boolean) => updateUserStatus(user.id, approved),
+        mutationFn: async (approved: boolean) => {
+          if (approved) {
+            const response = await approveUser(user.id);
+            return { success: true, data: response.success };
+          } else {
+            // Keep existing disapprove logic for now
+            const response = await updateUserStatus(user.id, false);
+            return response;
+          }
+        },
         onSuccess: (data) => {
           queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USERS] });
           toast({
@@ -246,6 +260,9 @@ export const columns: ColumnDef<UserResponse>[] = [
       const handleGenerateDigest = () => generateDigest();
       const handleDeliverDigest = () => deliverDigest();
 
+      const isAdmin = user.role === UserRole.ADMIN;
+      const isApproved = user.status === "approved";
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -254,30 +271,49 @@ export const columns: ColumnDef<UserResponse>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-56">
+            {/* User Info Actions */}
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
-              Copy user ID
+              <Copy className="mr-2 h-4 w-4" /> Copy user ID
             </DropdownMenuItem>
-            <DropdownMenuItem>View user details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleStatusUpdate(true)}>
-              <UserCheck className="mr-2 h-4 w-4" /> Approve user
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleStatusUpdate(false)}
-              className="text-destructive"
-            >
-              <UserX className="mr-2 h-4 w-4" /> Disapprove user
+            <DropdownMenuItem>
+              <Eye className="mr-2 h-4 w-4" /> View user details
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleRoleUpdate(UserRole.ADMIN)}>
-              Make admin
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRoleUpdate(UserRole.USER)}>
-              Make user
-            </DropdownMenuItem>
+
+            {/* Status Management */}
+            {!isApproved && (
+              <DropdownMenuItem onClick={() => handleStatusUpdate(true)}>
+                <UserCheck className="mr-2 h-4 w-4" /> Approve user
+              </DropdownMenuItem>
+            )}
+            {isApproved && (
+              <DropdownMenuItem
+                onClick={() => handleStatusUpdate(false)}
+                className="text-destructive"
+              >
+                <UserX className="mr-2 h-4 w-4" /> Disapprove user
+              </DropdownMenuItem>
+            )}
+
+            {/* Role Management */}
+            <DropdownMenuSeparator />
+            {!isAdmin && (
+              <DropdownMenuItem
+                onClick={() => handleRoleUpdate(UserRole.ADMIN)}
+              >
+                <Shield className="mr-2 h-4 w-4" /> Make admin
+              </DropdownMenuItem>
+            )}
+            {isAdmin && (
+              <DropdownMenuItem onClick={() => handleRoleUpdate(UserRole.USER)}>
+                <UserIcon className="mr-2 h-4 w-4" /> Remove admin
+              </DropdownMenuItem>
+            )}
+
+            {/* Digest Actions */}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleGenerateDigest}>
               <Newspaper className="mr-2 h-4 w-4" /> Generate Daily Digest

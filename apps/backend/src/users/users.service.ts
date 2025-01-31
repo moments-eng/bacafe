@@ -3,10 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Cursor, Model, QueryOptions, Unpacked } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
+import { EmailQueueService } from '../emails/email-queue.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly emailQueueService: EmailQueueService,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const createdUser = new this.userModel(createUserDto);
@@ -71,5 +75,28 @@ export class UsersService {
 
   getUserCursor(): Cursor<Unpacked<UserDocument>, QueryOptions<UserDocument>> {
     return this.userModel.find().cursor();
+  }
+
+  /**
+   * Approves a user and sends them an approval email
+   * @param userId The ID of the user to approve
+   * @returns The approved user
+   */
+  public async approveUser(userId: string): Promise<User> {
+    const user = await this.userModel.findByIdAndUpdate(userId, { $set: { approved: true } }, { new: true });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await this.emailQueueService.addEmailJob({
+      type: 'user-approved',
+      to: user.email,
+      data: {
+        username: user.name,
+      },
+    });
+
+    return user;
   }
 }

@@ -18,7 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { useState } from "react";
 import { queryArticles } from "../articles/actions";
-
+import { useDebounce } from "@/hooks/use-debounce";
 
 interface Props {
   open: boolean;
@@ -38,19 +38,23 @@ export function AddArticleDialog({
   );
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: articles } = useQuery({
-    queryKey: ["articles"],
-    queryFn: () => queryArticles({ page: 1, limit: 100 }),
-  });
+  useDebounce(
+    () => {
+      refetch();
+    },
+    [searchQuery],
+    500
+  );
 
-  const filteredArticles = articles?.items.filter((article) => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      article.title.toLowerCase().includes(searchLower) ||
-      article.source.toLowerCase().includes(searchLower) ||
-      (article.description?.toLowerCase() || "").includes(searchLower) ||
-      (article.author?.toLowerCase() || "").includes(searchLower)
-    );
+  const { data: articles, refetch } = useQuery({
+    queryKey: ["articles", searchQuery],
+    queryFn: () =>
+      queryArticles({
+        page: 1,
+        limit: 100,
+        filter: searchQuery ? { title: searchQuery } : undefined,
+        sort: { createdAt: "desc" },
+      }),
   });
 
   return (
@@ -66,7 +70,7 @@ export function AddArticleDialog({
         <div className="relative mb-4">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search articles by title, source, or description..."
+            placeholder="Search articles by title..."
             className="pl-9"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -75,7 +79,7 @@ export function AddArticleDialog({
 
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-4">
-            {filteredArticles?.map((article) => (
+            {articles?.items.map((article) => (
               <Card
                 key={article.id}
                 className={`cursor-pointer transition-colors hover:bg-muted/50 ${
@@ -99,7 +103,7 @@ export function AddArticleDialog({
                 </CardContent>
               </Card>
             ))}
-            {filteredArticles?.length === 0 && (
+            {articles?.items.length === 0 && (
               <div className="text-center text-muted-foreground py-8">
                 No articles found matching your search.
               </div>

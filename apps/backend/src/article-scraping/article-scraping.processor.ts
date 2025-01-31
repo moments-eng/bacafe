@@ -1,13 +1,14 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { ArticlesService } from '../articles/articles.service';
-import { ArticleScrapingJobData, ArticleScrapingResult } from './types/article-scraping.types';
-import { ScraperFactory } from './scrapers/scraper.factory';
-import { EnrichmentService } from './enrichment.service';
 import { extractErrorMessage } from 'src/utils/error';
+import { QUEUE_NAMES } from '../article-queue/constants';
+import { ArticleQueueJobData, ArticleQueueResult } from '../article-queue/types/article-queue.types';
+import { ArticlesService } from '../articles/articles.service';
+import { EnrichmentService } from './enrichment.service';
+import { ScraperFactory } from './scrapers/scraper.factory';
 
-@Processor('article-scraping')
+@Processor(QUEUE_NAMES.ARTICLE_SCRAPING)
 export class ArticleScrapingProcessor extends WorkerHost {
   private readonly logger = new Logger(ArticleScrapingProcessor.name);
 
@@ -19,7 +20,7 @@ export class ArticleScrapingProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: Job<ArticleScrapingJobData>): Promise<ArticleScrapingResult> {
+  async process(job: Job<ArticleQueueJobData>): Promise<ArticleQueueResult> {
     const { articleId, url } = job.data;
 
     try {
@@ -33,22 +34,31 @@ export class ArticleScrapingProcessor extends WorkerHost {
 
       // Update article with scraped content
       await this.articlesService.update(articleId, {
+        title: scrapingResult.title,
+        subtitle: scrapingResult.subtitle,
         content: scrapingResult.content,
         author: scrapingResult.author,
         image: scrapingResult.image,
       });
 
-      const enrichmentData = await this.enrichmentService.enrichArticle({
-        title: article.title,
-        subtitle: article.subtitle,
-        content: scrapingResult.content,
-      });
+      if (scrapingResult.title && scrapingResult.subtitle && scrapingResult.content) {
+        const enrichmentData = await this.enrichmentService.enrichArticle({
+          title: scrapingResult.title,
+          subtitle: scrapingResult.subtitle,
+          content: scrapingResult.content,
+        });
 
-      const { embeddings, ...rest } = enrichmentData;
-      await this.articlesService.update(articleId, {
-        enrichment: rest,
-        embeddings: embeddings as number[],
-      });
+        const { embeddings, ...rest } = enrichmentData;
+        await this.articlesService.update(articleId, {
+          enrichment: rest,
+          embeddings: embeddings as number[],
+        });
+      } else {
+        this.logger.warn(`Skipping enrichment for article ${articleId} due to missing data`, {
+          article,
+          scrapingResult,
+        });
+      }
 
       return {
         success: true,

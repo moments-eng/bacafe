@@ -6,7 +6,9 @@ import { DataTableColumnHeader } from "@/components/ui/data-table-column-header"
 import { ArticleDto } from "@/generated/http-clients/backend";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ArrowUpDown, ExternalLink } from "lucide-react";
+import { ArrowUpDown, ExternalLink, RefreshCw } from "lucide-react";
+import { scrapeArticle } from "./actions";
+import { useToast } from "@/hooks/use-toast";
 
 export const columns: ColumnDef<ArticleDto>[] = [
   {
@@ -108,6 +110,49 @@ export const columns: ColumnDef<ArticleDto>[] = [
           <ExternalLink className="h-4 w-4" />
         </a>
       );
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const { toast } = useToast();
+      const article = row.original;
+
+      const handleScrape = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        try {
+          await scrapeArticle({
+            url: article.url,
+            provider: article.source,
+          });
+          toast({
+            title: "Success",
+            description: "Article queued for scraping",
+          });
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to queue article for scraping",
+            variant: "destructive",
+          });
+        }
+      };
+
+      if (!article.content) {
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleScrape}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Scrape
+          </Button>
+        );
+      }
+
+      return null;
     },
   },
 ];

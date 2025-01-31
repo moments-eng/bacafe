@@ -1,5 +1,5 @@
 import { hebrewContent } from "@/locales/he";
-import { Providers } from "@/providers";
+import { Providers } from "@/app/providers";
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
 import "./globals.css";

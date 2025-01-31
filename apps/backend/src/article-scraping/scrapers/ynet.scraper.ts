@@ -46,6 +46,8 @@ export class YnetScraper extends BaseArticleScraper {
       this.logger.debug(`Successfully scraped article from ${url} (${jsonData.articleBody.length} chars)`);
 
       return {
+        title: jsonData.headline,
+        subtitle: jsonData.description,
         content: jsonData.articleBody,
         author: this.parseAuthor(jsonData.author),
         image: imageUrl ? { url: imageUrl, credit: imageCredit } : undefined,

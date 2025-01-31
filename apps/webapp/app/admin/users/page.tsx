@@ -1,6 +1,6 @@
 "use client";
 
-import { columns } from "@/components/admin/users/columns";
+import { columns } from "@/app/admin/users/columns";
 import { UsersTableToolbar } from "@/components/admin/users/toolbar";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";

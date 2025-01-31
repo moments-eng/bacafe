@@ -7,7 +7,7 @@ import type { UserRole } from "@/lib/types/user.types";
 import type { FilterQuery } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { withAdminAccess } from "../utils/auth";
-import { dailyDigestApi } from "@/lib/http-clients/backend/client";
+import { dailyDigestApi, usersApi } from "@/lib/http-clients/backend/client";
 
 interface GetUsersOptions {
   page?: number;
@@ -89,6 +89,17 @@ async function updateUserStatusAction(userId: string, approved: boolean) {
   }
 }
 
+async function approveUserAction(userId: string) {
+  try {
+    await usersApi.approveUser(userId);
+    revalidatePath("/admin/users");
+    return { success: true };
+  } catch (error) {
+    console.error("Error approving user:", error);
+    throw error;
+  }
+}
+
 async function bulkUpdateUserStatusAction(
   userIds: string[],
   approved: boolean
@@ -149,3 +160,4 @@ export const generateUserDailyDigest = withAdminAccess(
 export const deliverUserDailyDigest = withAdminAccess(
   deliverUserDailyDigestAction
 );
+export const approveUser = withAdminAccess(approveUserAction);

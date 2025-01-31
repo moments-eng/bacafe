@@ -3,7 +3,6 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import * as Parser from 'rss-parser';
 import { extractErrorMessage } from 'src/utils/error';
-import { ArticleScrapingService } from '../article-scraping/article-scraping.service';
 import { ArticlesService } from '../articles/articles.service';
 import { FeedChannelRepository } from '../feed-channel/feed-channel.repository';
 import { FeedScrapingJobData, FeedScrapingResult } from './types/feed-scraping.types';
@@ -16,7 +15,6 @@ export class FeedScrapingProcessor extends WorkerHost {
   constructor(
     private readonly articlesService: ArticlesService,
     private readonly feedChannelRepository: FeedChannelRepository,
-    private readonly articleScrapingService: ArticleScrapingService,
   ) {
     super();
   }
@@ -33,26 +31,23 @@ export class FeedScrapingProcessor extends WorkerHost {
         processedArticles++;
         const externalId = `${provider}-${item.guid || item.link}`;
 
-        if (!(await this.articlesService.exists(externalId))) {
-          const article = await this.articlesService.create({
-            title: item.title,
-            subtitle: item.contentSnippet || '',
-            content: '',
-            url: item.link || '',
-            source: provider,
-            publishedAt: new Date(item.pubDate || new Date()),
-            externalId,
-          });
-
-          // Add the new article to the scraping queue
-          await this.articleScrapingService.addArticleToScrapeQueue(article._id.toString(), article.url);
-
-          newArticles++;
+        // Skip if article already exists
+        if (await this.articlesService.exists(externalId)) {
+          this.logger.debug(`Skipping existing article with externalId: ${externalId}`);
+          continue;
         }
+
+        // Create new article (queueing is handled by ArticlesService)
+        await this.articlesService.create({
+          url: item.link || '',
+          source: provider,
+          externalId,
+        });
+        newArticles++;
       }
 
       await this.feedChannelRepository.updateLastScrapedAt(feedId);
-      this.logger.log(`Successfully scraped feed ${feedId}`);
+      this.logger.log(`Successfully scraped feed ${feedId}: ${processedArticles} processed, ${newArticles} new`);
 
       return {
         processedArticles,

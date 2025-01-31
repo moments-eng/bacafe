@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { User } from './schemas/user.schema';
 
 @Controller('users')
 export class UsersController {
@@ -23,6 +24,25 @@ export class UsersController {
   @ApiOperation({ operationId: 'findUserById' })
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
+  }
+
+  @Patch(':id/approve')
+  @ApiOperation({
+    operationId: 'approveUser',
+    summary: 'Approve a user',
+    description: 'Approves a user and sends them an approval email notification',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User has been approved successfully',
+    type: User,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  approveUser(@Param('id') id: string): Promise<User> {
+    return this.usersService.approveUser(id);
   }
 
   @Patch(':id/preferences')

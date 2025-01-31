@@ -1,21 +1,22 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import { ArticleScrapingJobData, ArticleScrapingResult } from './types/article-scraping.types';
 import { extractErrorMessage } from 'src/utils/error';
+import { QUEUE_NAMES, JOB_NAMES } from './constants';
+import { ArticleQueueJobData } from './types/article-queue.types';
 
 @Injectable()
-export class ArticleScrapingService {
-  private readonly logger = new Logger(ArticleScrapingService.name);
+export class ArticleQueueService {
+  private readonly logger = new Logger(ArticleQueueService.name);
 
   constructor(
-    @InjectQueue('article-scraping')
-    private readonly articleScrapingQueue: Queue<ArticleScrapingJobData, ArticleScrapingResult>,
+    @InjectQueue(QUEUE_NAMES.ARTICLE_SCRAPING)
+    private readonly articleScrapingQueue: Queue<ArticleQueueJobData>,
   ) {}
 
-  async addArticleToScrapeQueue(articleId: string, url: string): Promise<void> {
+  async queueArticleForScraping(articleId: string, url: string): Promise<void> {
     try {
-      await this.articleScrapingQueue.add('scrape-article', {
+      await this.articleScrapingQueue.add(JOB_NAMES.SCRAPE_ARTICLE, {
         articleId,
         url,
       });

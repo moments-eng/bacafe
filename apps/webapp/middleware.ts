@@ -16,7 +16,9 @@ export default auth(async (req) => {
   const token = await getToken({
     req,
     secret: process.env.AUTH_SECRET,
-    secureCookie: !!process.env.AUTH_URL,
+    secureCookie: process.env.AUTH_URL
+      ? new URL(process.env.AUTH_URL).protocol === "https:"
+      : false,
   });
 
   // Skip auth check for auth-related endpoints

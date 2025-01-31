@@ -5,18 +5,25 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { isApproved } from "./actions";
+import { useRouter } from "next/navigation";
 
 export default function ApprovalPendingPage() {
-  const session = useSession();
+  const { data, update, status } = useSession();
+
+  const router = useRouter();
+
+  async function updateSession() {
+    await update({ user: { ...data?.user, approved: true } });
+    router.push("/dashboard");
+  }
 
   useEffect(() => {
     isApproved().then((approved) => {
       if (approved) {
-        session.update({ user: { ...session.data?.user, approved: true } });
-        redirect("/dashboard");
+        updateSession();
       }
     });
-  }, []);
+  }, [data, status]);
 
   const { approvalPending } = hebrewContent.app;
 

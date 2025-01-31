@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Article, ArticleDocument, ArticleImage } from '../schemas/article.schema';
+import { ArticleDocument, ArticleImage } from '../schemas/article.schema';
 
 export class ArticleImageDto {
   @ApiProperty()
@@ -48,8 +48,8 @@ export class ArticleDto {
   @ApiProperty({ type: [String] })
   categories: string[];
 
-  @ApiProperty()
-  publishedAt: Date;
+  @ApiProperty({ required: false })
+  publishedAt?: Date;
 
   @ApiProperty()
   externalId: string;
@@ -66,8 +66,8 @@ export class ArticleDto {
   static fromSchema(article: ArticleDocument): ArticleDto {
     return {
       id: article._id.toString(),
-      title: article.title,
-      subtitle: article.subtitle,
+      title: article.title || '',
+      subtitle: article.subtitle || '',
       content: article.content,
       url: article.url,
       source: article.source,

@@ -1,13 +1,14 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-	output: 'standalone',
-	eslint: {
-		ignoreDuringBuilds: true,
-	},
-	experimental: {
-		authInterrupts: true,
-	},
+  output: "standalone",
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  experimental: {
+    authInterrupts: true,
+  },
 };
 
 export default nextConfig;

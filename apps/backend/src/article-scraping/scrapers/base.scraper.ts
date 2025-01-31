@@ -6,9 +6,12 @@ export interface ScrapedImage {
 }
 
 export interface ScrapingResult {
+  title: string;
+  subtitle: string;
   content: string;
   author?: string;
   image?: ScrapedImage;
+  categories?: string[];
 }
 
 export abstract class BaseArticleScraper {

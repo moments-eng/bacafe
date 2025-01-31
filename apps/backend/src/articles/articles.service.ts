@@ -1,23 +1,88 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
-import { Article, type ArticleDocument } from './schemas/article.schema';
+import { Article, type ArticleDocument, ArticleScrapingStatus } from './schemas/article.schema';
 import { ArticleFilterDto, ArticleSortDto } from './dto/query-articles.dto';
 import { ArticleStatsDto } from './dto/article-stats.dto';
 import { extractErrorMessage } from 'src/utils/error';
+import { CreateArticleDto } from './dto/create-article.dto';
+import { ArticleQueueService } from '../article-queue/article-queue.service';
 
 @Injectable()
 export class ArticlesService {
   private readonly logger = new Logger(ArticlesService.name);
 
-  constructor(@InjectModel(Article.name) private articleModel: Model<ArticleDocument>) {}
+  constructor(
+    @InjectModel(Article.name) private articleModel: Model<ArticleDocument>,
+    private readonly articleQueueService: ArticleQueueService,
+  ) {}
 
-  async create(article: Partial<Article>): Promise<ArticleDocument> {
+  async findByUrl(url: string): Promise<ArticleDocument | null> {
+    if (!url) {
+      throw new BadRequestException('URL is required');
+    }
+    return this.articleModel.findOne({ url }).exec();
+  }
+
+  async create(createArticleDto: CreateArticleDto): Promise<ArticleDocument> {
     try {
-      const newArticle = new this.articleModel(article);
-      return await newArticle.save();
+      const { url, source, externalId, forceScrape } = createArticleDto;
+
+      // Check if article exists by URL
+      const existingArticle = await this.findByUrl(url);
+
+      if (existingArticle) {
+        if (!forceScrape) {
+          throw new ConflictException('Article with this URL already exists');
+        }
+
+        // Update scraping status for re-scraping
+        existingArticle.scrapingStatus = ArticleScrapingStatus.PENDING;
+        existingArticle.scrapingError = undefined;
+        const savedArticle = await existingArticle.save();
+
+        // Queue for re-scraping
+        await this.queueForScraping(savedArticle);
+        return savedArticle;
+      }
+
+      // Generate a deterministic externalId if not provided
+      const finalExternalId = externalId || `${source}-${Buffer.from(url).toString('base64')}`;
+
+      // Create new article
+      const newArticle = new this.articleModel({
+        url,
+        source,
+        externalId: finalExternalId,
+        scrapingStatus: ArticleScrapingStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const savedArticle = await newArticle.save();
+
+      // Queue for initial scraping
+      await this.queueForScraping(savedArticle);
+
+      this.logger.log(`Created new article with ID: ${savedArticle._id}`);
+      return savedArticle;
     } catch (error) {
-      this.logger.error(`Failed to create article: ${error}`);
+      if (error instanceof BadRequestException || error instanceof ConflictException) {
+        throw error;
+      }
+      this.logger.error(`Failed to create article: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error('Failed to create article');
+    }
+  }
+
+  private async queueForScraping(article: ArticleDocument): Promise<void> {
+    try {
+      await this.articleQueueService.queueArticleForScraping(article._id.toString(), article.url);
+    } catch (error) {
+      // If queueing fails, mark the article as failed
+      article.scrapingStatus = ArticleScrapingStatus.FAILED;
+      article.scrapingError = error instanceof Error ? error.message : 'Failed to queue for scraping';
+      await article.save();
       throw error;
     }
   }
@@ -118,7 +183,6 @@ export class ArticlesService {
     }
 
     const skip = (page - 1) * limit;
-
     try {
       const [items, total] = await Promise.all([
         this.articleModel.find(query).sort(sortCriteria).skip(skip).limit(limit).exec(),
@@ -162,5 +226,38 @@ export class ArticlesService {
       scrapedCount,
       enrichedCount,
     };
+  }
+
+  async findByDateRange(startDate: Date, endDate: Date): Promise<ArticleDocument[]> {
+    interface DateRangeQuery {
+      createdAt: {
+        $gte: Date;
+        $lte: Date;
+      };
+    }
+
+    const query: FilterQuery<DateRangeQuery> = {
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    };
+
+    return this.articleModel.find(query).exec();
+  }
+
+  async updateScrapingStatus(id: string, status: ArticleScrapingStatus, error?: string): Promise<ArticleDocument> {
+    const article = await this.articleModel.findById(id);
+    if (!article) {
+      throw new Error(`Article not found with id: ${id}`);
+    }
+
+    article.scrapingStatus = status;
+    article.lastScrapedAt = new Date();
+    if (error) {
+      article.scrapingError = error;
+    }
+
+    return article.save();
   }
 }

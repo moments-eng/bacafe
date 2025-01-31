@@ -34,7 +34,7 @@ export default function ArticlesPage() {
   const [selectedArticle, setSelectedArticle] = useState<ArticleDto>();
   const [detailOpen, setDetailOpen] = useState(false);
   const [filters, setFilters] = useState<ArticleFilterDto>({});
-  const [sorting, setSorting] = useState<ArticleSortDto>({});
+  const [sorting, setSorting] = useState<ArticleSortDto>({ createdAt: "desc" });
 
   const { data, isLoading } = useQuery({
     queryKey: [

@@ -1,4 +1,6 @@
 import { Header } from "@/components/header";
+import { Providers } from "../providers";
+import { SessionProvider } from "next-auth/react";
 
 export default async function DashboardLayout({
   children,
@@ -6,11 +8,11 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <SessionProvider>
       <Header />
       <div className="relative flex min-h-screen flex-col">
         <main className="flex-1">{children}</main>
       </div>
-    </div>
+    </SessionProvider>
   );
 }

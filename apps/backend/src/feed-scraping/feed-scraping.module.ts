@@ -1,8 +1,8 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
+import { ArticleQueueModule } from '../article-queue/article-queue.module';
 import { ArticlesModule } from '../articles/articles.module';
 import { FeedChannelModule } from '../feed-channel/feed-channel.module';
-import { ArticleScrapingModule } from '../article-scraping/article-scraping.module';
 import { FeedScrapingProcessor } from './feed-scraping.processor';
 import { FeedScrapingService } from './feed-scraping.service';
 
@@ -13,7 +13,7 @@ import { FeedScrapingService } from './feed-scraping.service';
     }),
     ArticlesModule,
     FeedChannelModule,
-    ArticleScrapingModule,
+    ArticleQueueModule,
   ],
   providers: [FeedScrapingService, FeedScrapingProcessor],
   exports: [FeedScrapingService],

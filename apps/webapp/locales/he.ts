@@ -83,7 +83,7 @@ export const hebrewContent = {
         },
       },
       interests: {
-        title: "מה מעניין אתכם?",
+        title: "מה מעניין אתכם",
         description: "החליקו ימינה לתוכן שמעניין אתכם, ושמאלה למה שפחות",
         readMore: "מידע נוסף",
         showLess: "הצג פחות",

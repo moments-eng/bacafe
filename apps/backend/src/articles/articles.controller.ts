@@ -1,6 +1,19 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { extractErrorMessage } from 'src/utils/error';
+import { ArticleQueueService } from '../article-queue/article-queue.service';
 import { ArticlesService } from './articles.service';
 import { ArticleStatsDto } from './dto/article-stats.dto';
 import { ArticleDto } from './dto/article.dto';
@@ -8,14 +21,24 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { ListArticlesDto } from './dto/list-articles.dto';
 import { PaginatedArticlesDto } from './dto/paginated-articles.dto';
 import { QueryArticlesDto } from './dto/query-articles.dto';
+import { UpdateArticleDto } from './dto/update-article.dto';
+import { UpdateScrapingResultDto } from './dto/update-scraping-result.dto';
 
 @ApiTags('articles')
 @Controller('articles')
 export class ArticlesController {
-  constructor(private readonly articlesService: ArticlesService) {}
+  constructor(
+    private readonly articlesService: ArticlesService,
+    private readonly articleQueueService: ArticleQueueService,
+  ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new article', operationId: 'createArticle' })
+  @ApiOperation({
+    summary: 'Create a new article',
+    description:
+      'Creates a new article and queues it for scraping. If the article exists and forceScrape is true, it will be re-scraped.',
+    operationId: 'createArticle',
+  })
   @ApiBody({ type: CreateArticleDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -25,6 +48,10 @@ export class ArticlesController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid article data.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'Article with this URL already exists.',
   })
   async create(@Body() createArticleDto: CreateArticleDto): Promise<ArticleDto> {
     try {
@@ -36,8 +63,16 @@ export class ArticlesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete article', operationId: 'deleteArticle' })
-  @ApiParam({ name: 'id', description: 'Article ID' })
+  @ApiOperation({
+    summary: 'Delete article',
+    description: 'Permanently deletes an article by its ID',
+    operationId: 'deleteArticle',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Article ID',
+    example: '507f1f77bcf86cd799439011',
+  })
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'The article has been deleted',
@@ -124,5 +159,71 @@ export class ArticlesController {
   })
   async getStats(): Promise<ArticleStatsDto> {
     return this.articlesService.getArticleStats();
+  }
+
+  @Put(':id')
+  @ApiOperation({
+    summary: 'Update article metadata',
+    description: 'Updates article metadata and enrichment data',
+    operationId: 'updateArticle',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Article ID',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiBody({ type: UpdateArticleDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The article has been updated',
+    type: ArticleDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Article not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid update data',
+  })
+  async update(@Param('id') id: string, @Body() updateDto: UpdateArticleDto): Promise<ArticleDto> {
+    const article = await this.articlesService.update(id, updateDto);
+    if (!article) {
+      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+    }
+    return ArticleDto.fromSchema(article);
+  }
+
+  @Put(':id/scraping-result')
+  @ApiOperation({
+    summary: 'Update article with scraping results',
+    description: 'Updates an article with the results from scraping, including content and status',
+    operationId: 'updateScrapingResult',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Article ID',
+    example: '507f1f77bcf86cd799439011',
+  })
+  @ApiBody({ type: UpdateScrapingResultDto })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The article has been updated with scraping results',
+    type: ArticleDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Article not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid scraping result data',
+  })
+  async updateScrapingResult(@Param('id') id: string, @Body() updateDto: UpdateScrapingResultDto): Promise<ArticleDto> {
+    const article = await this.articlesService.update(id, updateDto);
+    if (!article) {
+      throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+    }
+    return ArticleDto.fromSchema(article);
   }
 }

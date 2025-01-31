@@ -22,6 +22,9 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, FilterX } from "lucide-react";
+import { AddArticleDialog } from "./add-article-dialog";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useState } from "react";
 
 interface ArticlesTableToolbarProps {
   filters: ArticleFilterDto;
@@ -39,6 +42,15 @@ export function ArticlesTableToolbar({
   onReset,
 }: ArticlesTableToolbarProps) {
   const hasFilters = Object.keys(filters).length > 0;
+  const [searchValue, setSearchValue] = useState(filters.title || "");
+
+  useDebounce(
+    () => {
+      onFilterChange({ ...filters, title: searchValue });
+    },
+    [searchValue],
+    500
+  );
 
   const getSortValue = () => {
     const [field, direction] = Object.entries(sorting)[0] || [];
@@ -50,10 +62,8 @@ export function ArticlesTableToolbar({
       <div className="flex items-center gap-4">
         <Input
           placeholder="Search titles..."
-          value={filters.title || ""}
-          onChange={(e) =>
-            onFilterChange({ ...filters, title: e.target.value })
-          }
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
           className="max-w-xs"
         />
 
@@ -173,6 +183,8 @@ export function ArticlesTableToolbar({
           ))}
         </div>
       )}
+
+      <AddArticleDialog />
     </div>
   );
 }

@@ -113,7 +113,7 @@ export interface ArticleDto {
      * @type {string}
      * @memberof ArticleDto
      */
-    'publishedAt': string;
+    'publishedAt'?: string;
     /**
      * 
      * @type {string}
@@ -315,67 +315,73 @@ export interface ArticleStatsDto {
  */
 export interface CreateArticleDto {
     /**
-     * 
-     * @type {string}
-     * @memberof CreateArticleDto
-     */
-    'title': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateArticleDto
-     */
-    'subtitle': string;
-    /**
-     * 
+     * The URL of the article to scrape
      * @type {string}
      * @memberof CreateArticleDto
      */
     'url': string;
     /**
-     * 
+     * The source/provider of the article
      * @type {string}
      * @memberof CreateArticleDto
      */
     'source': string;
     /**
-     * 
+     * Optional external ID for the article
      * @type {string}
      * @memberof CreateArticleDto
      */
-    'publishedAt': string;
+    'externalId'?: string;
     /**
-     * 
+     * Whether to force rescraping if the article already exists
+     * @type {boolean}
+     * @memberof CreateArticleDto
+     */
+    'forceScrape'?: boolean;
+    /**
+     * Article title
      * @type {string}
      * @memberof CreateArticleDto
      */
-    'externalId': string;
+    'title'?: string;
     /**
-     * 
+     * Article subtitle
+     * @type {string}
+     * @memberof CreateArticleDto
+     */
+    'subtitle'?: string;
+    /**
+     * Article content
      * @type {string}
      * @memberof CreateArticleDto
      */
     'content'?: string;
     /**
-     * 
+     * Article author
      * @type {string}
      * @memberof CreateArticleDto
      */
     'author'?: string;
     /**
-     * 
+     * Article description
      * @type {string}
      * @memberof CreateArticleDto
      */
     'description'?: string;
     /**
-     * 
+     * Publication date
+     * @type {string}
+     * @memberof CreateArticleDto
+     */
+    'publishedAt'?: string;
+    /**
+     * Article image
      * @type {CreateArticleImageDto}
      * @memberof CreateArticleDto
      */
     'image'?: CreateArticleImageDto;
     /**
-     * 
+     * Article categories
      * @type {Array<string>}
      * @memberof CreateArticleDto
      */
@@ -388,13 +394,13 @@ export interface CreateArticleDto {
  */
 export interface CreateArticleImageDto {
     /**
-     * 
+     * URL of the article image
      * @type {string}
      * @memberof CreateArticleImageDto
      */
     'url': string;
     /**
-     * 
+     * Image credit/attribution
      * @type {string}
      * @memberof CreateArticleImageDto
      */
@@ -801,6 +807,80 @@ export type SectionDtoMoodEnum = typeof SectionDtoMoodEnum[keyof typeof SectionD
 /**
  * 
  * @export
+ * @interface UpdateArticleDto
+ */
+export interface UpdateArticleDto {
+    /**
+     * Article title
+     * @type {string}
+     * @memberof UpdateArticleDto
+     */
+    'title'?: string;
+    /**
+     * Article subtitle
+     * @type {string}
+     * @memberof UpdateArticleDto
+     */
+    'subtitle'?: string;
+    /**
+     * Article description
+     * @type {string}
+     * @memberof UpdateArticleDto
+     */
+    'description'?: string;
+    /**
+     * Article author
+     * @type {string}
+     * @memberof UpdateArticleDto
+     */
+    'author'?: string;
+    /**
+     * Article image information
+     * @type {UpdateArticleImageDto}
+     * @memberof UpdateArticleDto
+     */
+    'image'?: UpdateArticleImageDto;
+    /**
+     * Article categories
+     * @type {Array<string>}
+     * @memberof UpdateArticleDto
+     */
+    'categories'?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateArticleDto
+     */
+    'content'?: string;
+    /**
+     * Article enrichment data
+     * @type {object}
+     * @memberof UpdateArticleDto
+     */
+    'enrichment'?: object;
+}
+/**
+ * 
+ * @export
+ * @interface UpdateArticleImageDto
+ */
+export interface UpdateArticleImageDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateArticleImageDto
+     */
+    'url': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateArticleImageDto
+     */
+    'credit'?: string;
+}
+/**
+ * 
+ * @export
  * @interface UpdateArticlePositionsDto
  */
 export interface UpdateArticlePositionsDto {
@@ -860,6 +940,96 @@ export interface UpdateFeedStatusDto {
      * @memberof UpdateFeedStatusDto
      */
     'scrapingInterval'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface UpdateScrapingResultDto
+ */
+export interface UpdateScrapingResultDto {
+    /**
+     * The scraped title of the article
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'title'?: string;
+    /**
+     * The scraped subtitle/description of the article
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'subtitle'?: string;
+    /**
+     * Article description
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'description'?: string;
+    /**
+     * The author of the article
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'author'?: string;
+    /**
+     * The scraped image information
+     * @type {CreateArticleImageDto}
+     * @memberof UpdateScrapingResultDto
+     */
+    'image'?: CreateArticleImageDto;
+    /**
+     * Article categories
+     * @type {Array<string>}
+     * @memberof UpdateScrapingResultDto
+     */
+    'categories'?: Array<string>;
+    /**
+     * The scraped content of the article
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'content': string;
+    /**
+     * The publication date of the article
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'publishedAt': string;
+    /**
+     * The scraping status of the article
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'scrapingStatus': UpdateScrapingResultDtoScrapingStatusEnum;
+    /**
+     * Error message if scraping failed
+     * @type {string}
+     * @memberof UpdateScrapingResultDto
+     */
+    'scrapingError'?: string;
+}
+
+export const UpdateScrapingResultDtoScrapingStatusEnum = {
+    Pending: 'PENDING',
+    InProgress: 'IN_PROGRESS',
+    Completed: 'COMPLETED',
+    Failed: 'FAILED'
+} as const;
+
+export type UpdateScrapingResultDtoScrapingStatusEnum = typeof UpdateScrapingResultDtoScrapingStatusEnum[keyof typeof UpdateScrapingResultDtoScrapingStatusEnum];
+
+/**
+ * 
+ * @export
+ * @interface User
+ */
+export interface User {
+    /**
+     * User ID
+     * @type {object}
+     * @memberof User
+     */
+    '_id': object;
 }
 
 /**
@@ -970,7 +1140,7 @@ export class AppApi extends BaseAPI {
 export const ArticlesApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * 
+         * Creates a new article and queues it for scraping. If the article exists and forceScrape is true, it will be re-scraped.
          * @summary Create a new article
          * @param {CreateArticleDto} createArticleDto 
          * @param {*} [options] Override http request option.
@@ -1006,7 +1176,7 @@ export const ArticlesApiAxiosParamCreator = function (configuration?: Configurat
             };
         },
         /**
-         * 
+         * Permanently deletes an article by its ID
          * @summary Delete article
          * @param {string} id Article ID
          * @param {*} [options] Override http request option.
@@ -1145,6 +1315,86 @@ export const ArticlesApiAxiosParamCreator = function (configuration?: Configurat
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Updates article metadata and enrichment data
+         * @summary Update article metadata
+         * @param {string} id Article ID
+         * @param {UpdateArticleDto} updateArticleDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateArticle: async (id: string, updateArticleDto: UpdateArticleDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateArticle', 'id', id)
+            // verify required parameter 'updateArticleDto' is not null or undefined
+            assertParamExists('updateArticle', 'updateArticleDto', updateArticleDto)
+            const localVarPath = `/articles/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateArticleDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Updates an article with the results from scraping, including content and status
+         * @summary Update article with scraping results
+         * @param {string} id Article ID
+         * @param {UpdateScrapingResultDto} updateScrapingResultDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateScrapingResult: async (id: string, updateScrapingResultDto: UpdateScrapingResultDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateScrapingResult', 'id', id)
+            // verify required parameter 'updateScrapingResultDto' is not null or undefined
+            assertParamExists('updateScrapingResult', 'updateScrapingResultDto', updateScrapingResultDto)
+            const localVarPath = `/articles/{id}/scraping-result`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateScrapingResultDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -1156,7 +1406,7 @@ export const ArticlesApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = ArticlesApiAxiosParamCreator(configuration)
     return {
         /**
-         * 
+         * Creates a new article and queues it for scraping. If the article exists and forceScrape is true, it will be re-scraped.
          * @summary Create a new article
          * @param {CreateArticleDto} createArticleDto 
          * @param {*} [options] Override http request option.
@@ -1169,7 +1419,7 @@ export const ArticlesApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * Permanently deletes an article by its ID
          * @summary Delete article
          * @param {string} id Article ID
          * @param {*} [options] Override http request option.
@@ -1220,6 +1470,34 @@ export const ArticlesApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['ArticlesApi.queryArticles']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * Updates article metadata and enrichment data
+         * @summary Update article metadata
+         * @param {string} id Article ID
+         * @param {UpdateArticleDto} updateArticleDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateArticle(id: string, updateArticleDto: UpdateArticleDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ArticleDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateArticle(id, updateArticleDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ArticlesApi.updateArticle']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Updates an article with the results from scraping, including content and status
+         * @summary Update article with scraping results
+         * @param {string} id Article ID
+         * @param {UpdateScrapingResultDto} updateScrapingResultDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateScrapingResult(id: string, updateScrapingResultDto: UpdateScrapingResultDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ArticleDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateScrapingResult(id, updateScrapingResultDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ArticlesApi.updateScrapingResult']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -1231,7 +1509,7 @@ export const ArticlesApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = ArticlesApiFp(configuration)
     return {
         /**
-         * 
+         * Creates a new article and queues it for scraping. If the article exists and forceScrape is true, it will be re-scraped.
          * @summary Create a new article
          * @param {CreateArticleDto} createArticleDto 
          * @param {*} [options] Override http request option.
@@ -1241,7 +1519,7 @@ export const ArticlesApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.createArticle(createArticleDto, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Permanently deletes an article by its ID
          * @summary Delete article
          * @param {string} id Article ID
          * @param {*} [options] Override http request option.
@@ -1280,6 +1558,28 @@ export const ArticlesApiFactory = function (configuration?: Configuration, baseP
         queryArticles(queryArticlesDto: QueryArticlesDto, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedArticlesDto> {
             return localVarFp.queryArticles(queryArticlesDto, options).then((request) => request(axios, basePath));
         },
+        /**
+         * Updates article metadata and enrichment data
+         * @summary Update article metadata
+         * @param {string} id Article ID
+         * @param {UpdateArticleDto} updateArticleDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateArticle(id: string, updateArticleDto: UpdateArticleDto, options?: RawAxiosRequestConfig): AxiosPromise<ArticleDto> {
+            return localVarFp.updateArticle(id, updateArticleDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Updates an article with the results from scraping, including content and status
+         * @summary Update article with scraping results
+         * @param {string} id Article ID
+         * @param {UpdateScrapingResultDto} updateScrapingResultDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateScrapingResult(id: string, updateScrapingResultDto: UpdateScrapingResultDto, options?: RawAxiosRequestConfig): AxiosPromise<ArticleDto> {
+            return localVarFp.updateScrapingResult(id, updateScrapingResultDto, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -1291,7 +1591,7 @@ export const ArticlesApiFactory = function (configuration?: Configuration, baseP
  */
 export class ArticlesApi extends BaseAPI {
     /**
-     * 
+     * Creates a new article and queues it for scraping. If the article exists and forceScrape is true, it will be re-scraped.
      * @summary Create a new article
      * @param {CreateArticleDto} createArticleDto 
      * @param {*} [options] Override http request option.
@@ -1303,7 +1603,7 @@ export class ArticlesApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Permanently deletes an article by its ID
      * @summary Delete article
      * @param {string} id Article ID
      * @param {*} [options] Override http request option.
@@ -1348,6 +1648,32 @@ export class ArticlesApi extends BaseAPI {
      */
     public queryArticles(queryArticlesDto: QueryArticlesDto, options?: RawAxiosRequestConfig) {
         return ArticlesApiFp(this.configuration).queryArticles(queryArticlesDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Updates article metadata and enrichment data
+     * @summary Update article metadata
+     * @param {string} id Article ID
+     * @param {UpdateArticleDto} updateArticleDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ArticlesApi
+     */
+    public updateArticle(id: string, updateArticleDto: UpdateArticleDto, options?: RawAxiosRequestConfig) {
+        return ArticlesApiFp(this.configuration).updateArticle(id, updateArticleDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Updates an article with the results from scraping, including content and status
+     * @summary Update article with scraping results
+     * @param {string} id Article ID
+     * @param {UpdateScrapingResultDto} updateScrapingResultDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ArticlesApi
+     */
+    public updateScrapingResult(id: string, updateScrapingResultDto: UpdateScrapingResultDto, options?: RawAxiosRequestConfig) {
+        return ArticlesApiFp(this.configuration).updateScrapingResult(id, updateScrapingResultDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -2830,6 +3156,40 @@ export class OnboardingApi extends BaseAPI {
 export const UsersApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Approves a user and sends them an approval email notification
+         * @summary Approve a user
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        approveUser: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('approveUser', 'id', id)
+            const localVarPath = `/users/{id}/approve`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary 
          * @param {object} body 
@@ -3046,6 +3406,19 @@ export const UsersApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = UsersApiAxiosParamCreator(configuration)
     return {
         /**
+         * Approves a user and sends them an approval email notification
+         * @summary Approve a user
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async approveUser(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.approveUser(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UsersApi.approveUser']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * 
          * @summary 
          * @param {object} body 
@@ -3134,6 +3507,16 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
     const localVarFp = UsersApiFp(configuration)
     return {
         /**
+         * Approves a user and sends them an approval email notification
+         * @summary Approve a user
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        approveUser(id: string, options?: RawAxiosRequestConfig): AxiosPromise<User> {
+            return localVarFp.approveUser(id, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary 
          * @param {object} body 
@@ -3203,6 +3586,18 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
  * @extends {BaseAPI}
  */
 export class UsersApi extends BaseAPI {
+    /**
+     * Approves a user and sends them an approval email notification
+     * @summary Approve a user
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UsersApi
+     */
+    public approveUser(id: string, options?: RawAxiosRequestConfig) {
+        return UsersApiFp(this.configuration).approveUser(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary 
