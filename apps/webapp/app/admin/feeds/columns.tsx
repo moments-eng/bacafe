@@ -1,3 +1,5 @@
+"use client";
+
 import { IntervalDialog } from "@/components/admin/feeds/interval-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Clock, Play, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { deleteFeed, triggerScrape, updateFeedStatus } from "./actions";
+import { deleteFeed, triggerScrape, updateFeedStatus } from "./client-actions";
 
 export const columns: ColumnDef<FeedDto>[] = [
   {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { FeedChannel, FeedChannelDocument } from '../feeds/schemas/feed-channel.schema';
 import { UpdateFeedDto } from '../feeds/dto/update-feed.dto';
 
@@ -8,7 +8,7 @@ import { UpdateFeedDto } from '../feeds/dto/update-feed.dto';
 export class FeedChannelRepository {
   constructor(
     @InjectModel(FeedChannel.name)
-    private feedChannelModel: Model<FeedChannelDocument>,
+    private readonly feedChannelModel: Model<FeedChannel>,
   ) {}
 
   async create(feedChannel: Partial<FeedChannel>): Promise<FeedChannel> {
@@ -20,8 +20,21 @@ export class FeedChannelRepository {
     return this.feedChannelModel.find().exec();
   }
 
+  async findWithQuery(
+    query: FilterQuery<FeedChannel>,
+    sort: Record<string, 1 | -1>,
+    skip: number,
+    limit: number,
+  ): Promise<FeedChannel[]> {
+    return this.feedChannelModel.find(query).sort(sort).skip(skip).limit(limit).exec();
+  }
+
+  async countWithQuery(query: FilterQuery<FeedChannel>): Promise<number> {
+    return this.feedChannelModel.countDocuments(query).exec();
+  }
+
   async findByProvider(provider: string): Promise<FeedChannel[]> {
-    return this.feedChannelModel.find({ provider, isActive: true }).exec();
+    return this.feedChannelModel.find({ provider }).exec();
   }
 
   async updateLastScrapedAt(id: string): Promise<void> {

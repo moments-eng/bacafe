@@ -409,6 +409,31 @@ export interface CreateArticleImageDto {
 /**
  * 
  * @export
+ * @interface CreateBulkFeedsDto
+ */
+export interface CreateBulkFeedsDto {
+    /**
+     * Provider name for all feeds
+     * @type {string}
+     * @memberof CreateBulkFeedsDto
+     */
+    'provider': string;
+    /**
+     * Comma-separated list of RSS feed URLs
+     * @type {string}
+     * @memberof CreateBulkFeedsDto
+     */
+    'urls': string;
+    /**
+     * Categories for all feeds
+     * @type {Array<string>}
+     * @memberof CreateBulkFeedsDto
+     */
+    'categories'?: Array<string>;
+}
+/**
+ * 
+ * @export
  * @interface CreateFeedDto
  */
 export interface CreateFeedDto {
@@ -545,6 +570,106 @@ export interface FeedDto {
 /**
  * 
  * @export
+ * @interface FeedFilterDto
+ */
+export interface FeedFilterDto {
+    /**
+     * Filter by feed name
+     * @type {string}
+     * @memberof FeedFilterDto
+     */
+    'name'?: string;
+    /**
+     * Filter by feed URL
+     * @type {string}
+     * @memberof FeedFilterDto
+     */
+    'url'?: string;
+    /**
+     * Filter by provider
+     * @type {string}
+     * @memberof FeedFilterDto
+     */
+    'provider'?: string;
+    /**
+     * Filter by language
+     * @type {string}
+     * @memberof FeedFilterDto
+     */
+    'language'?: string;
+    /**
+     * Filter by active status
+     * @type {boolean}
+     * @memberof FeedFilterDto
+     */
+    'isActive'?: boolean;
+    /**
+     * Filter by categories
+     * @type {Array<string>}
+     * @memberof FeedFilterDto
+     */
+    'categories'?: Array<string>;
+}
+/**
+ * 
+ * @export
+ * @interface FeedSortDto
+ */
+export interface FeedSortDto {
+    /**
+     * Sort by name
+     * @type {string}
+     * @memberof FeedSortDto
+     */
+    'name'?: FeedSortDtoNameEnum;
+    /**
+     * Sort by provider
+     * @type {string}
+     * @memberof FeedSortDto
+     */
+    'provider'?: FeedSortDtoProviderEnum;
+    /**
+     * Sort by last scraped date
+     * @type {string}
+     * @memberof FeedSortDto
+     */
+    'lastScrapedAt'?: FeedSortDtoLastScrapedAtEnum;
+    /**
+     * Sort by creation date
+     * @type {string}
+     * @memberof FeedSortDto
+     */
+    'createdAt'?: FeedSortDtoCreatedAtEnum;
+}
+
+export const FeedSortDtoNameEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+
+export type FeedSortDtoNameEnum = typeof FeedSortDtoNameEnum[keyof typeof FeedSortDtoNameEnum];
+export const FeedSortDtoProviderEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+
+export type FeedSortDtoProviderEnum = typeof FeedSortDtoProviderEnum[keyof typeof FeedSortDtoProviderEnum];
+export const FeedSortDtoLastScrapedAtEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+
+export type FeedSortDtoLastScrapedAtEnum = typeof FeedSortDtoLastScrapedAtEnum[keyof typeof FeedSortDtoLastScrapedAtEnum];
+export const FeedSortDtoCreatedAtEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+
+export type FeedSortDtoCreatedAtEnum = typeof FeedSortDtoCreatedAtEnum[keyof typeof FeedSortDtoCreatedAtEnum];
+
+/**
+ * 
+ * @export
  * @interface OnboardingArticleDto
  */
 export interface OnboardingArticleDto {
@@ -663,6 +788,49 @@ export interface PaginatedArticlesDto {
 /**
  * 
  * @export
+ * @interface PaginatedFeedsDto
+ */
+export interface PaginatedFeedsDto {
+    /**
+     * List of feeds
+     * @type {Array<FeedDto>}
+     * @memberof PaginatedFeedsDto
+     */
+    'items': Array<FeedDto>;
+    /**
+     * Total number of items
+     * @type {number}
+     * @memberof PaginatedFeedsDto
+     */
+    'total': number;
+    /**
+     * Current page number
+     * @type {number}
+     * @memberof PaginatedFeedsDto
+     */
+    'page': number;
+    /**
+     * Total number of pages
+     * @type {number}
+     * @memberof PaginatedFeedsDto
+     */
+    'totalPages': number;
+    /**
+     * Whether there is a next page
+     * @type {boolean}
+     * @memberof PaginatedFeedsDto
+     */
+    'hasNextPage': boolean;
+    /**
+     * Whether there is a previous page
+     * @type {boolean}
+     * @memberof PaginatedFeedsDto
+     */
+    'hasPreviousPage': boolean;
+}
+/**
+ * 
+ * @export
  * @interface PaginatedOnboardingDto
  */
 export interface PaginatedOnboardingDto {
@@ -731,6 +899,37 @@ export interface QueryArticlesDto {
      * 
      * @type {number}
      * @memberof QueryArticlesDto
+     */
+    'limit'?: number;
+}
+/**
+ * 
+ * @export
+ * @interface QueryFeedsDto
+ */
+export interface QueryFeedsDto {
+    /**
+     * Filter criteria
+     * @type {FeedFilterDto}
+     * @memberof QueryFeedsDto
+     */
+    'filter'?: FeedFilterDto;
+    /**
+     * Sort criteria
+     * @type {FeedSortDto}
+     * @memberof QueryFeedsDto
+     */
+    'sort'?: FeedSortDto;
+    /**
+     * Page number (1-based)
+     * @type {number}
+     * @memberof QueryFeedsDto
+     */
+    'page'?: number;
+    /**
+     * Number of items per page
+     * @type {number}
+     * @memberof QueryFeedsDto
      */
     'limit'?: number;
 }
@@ -1933,6 +2132,42 @@ export const FeedsApiAxiosParamCreator = function (configuration?: Configuration
     return {
         /**
          * 
+         * @summary Create multiple feeds for a provider from comma-separated URLs
+         * @param {CreateBulkFeedsDto} createBulkFeedsDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createBulkFeeds: async (createBulkFeedsDto: CreateBulkFeedsDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createBulkFeedsDto' is not null or undefined
+            assertParamExists('createBulkFeeds', 'createBulkFeedsDto', createBulkFeedsDto)
+            const localVarPath = `/feeds/bulk`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createBulkFeedsDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Create a new feed from RSS URL
          * @param {CreateFeedDto} createFeedDto 
          * @param {*} [options] Override http request option.
@@ -2003,36 +2238,6 @@ export const FeedsApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Get all feeds
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        findAllFeeds: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/feeds`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary Get a feed by ID
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -2059,6 +2264,76 @@ export const FeedsApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get feeds by provider
+         * @param {string} provider Provider name
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        findFeedsByProvider: async (provider: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('findFeedsByProvider', 'provider', provider)
+            const localVarPath = `/feeds/provider/{provider}`
+                .replace(`{${"provider"}}`, encodeURIComponent(String(provider)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Returns filtered and paginated list of feeds based on provided criteria
+         * @summary Query feeds with filters and pagination
+         * @param {QueryFeedsDto} queryFeedsDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        queryFeeds: async (queryFeedsDto: QueryFeedsDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'queryFeedsDto' is not null or undefined
+            assertParamExists('queryFeeds', 'queryFeedsDto', queryFeedsDto)
+            const localVarPath = `/feeds/query`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(queryFeedsDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2191,6 +2466,19 @@ export const FeedsApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Create multiple feeds for a provider from comma-separated URLs
+         * @param {CreateBulkFeedsDto} createBulkFeedsDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createBulkFeeds(createBulkFeedsDto: CreateBulkFeedsDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FeedDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createBulkFeeds(createBulkFeedsDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FeedsApi.createBulkFeeds']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Create a new feed from RSS URL
          * @param {CreateFeedDto} createFeedDto 
          * @param {*} [options] Override http request option.
@@ -2217,18 +2505,6 @@ export const FeedsApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get all feeds
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async findAllFeeds(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FeedDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.findAllFeeds(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['FeedsApi.findAllFeeds']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @summary Get a feed by ID
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -2238,6 +2514,32 @@ export const FeedsApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.findFeedById(id, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FeedsApi.findFeedById']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Get feeds by provider
+         * @param {string} provider Provider name
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async findFeedsByProvider(provider: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FeedDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.findFeedsByProvider(provider, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FeedsApi.findFeedsByProvider']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Returns filtered and paginated list of feeds based on provided criteria
+         * @summary Query feeds with filters and pagination
+         * @param {QueryFeedsDto} queryFeedsDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async queryFeeds(queryFeedsDto: QueryFeedsDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedFeedsDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.queryFeeds(queryFeedsDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FeedsApi.queryFeeds']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2293,6 +2595,16 @@ export const FeedsApiFactory = function (configuration?: Configuration, basePath
     return {
         /**
          * 
+         * @summary Create multiple feeds for a provider from comma-separated URLs
+         * @param {CreateBulkFeedsDto} createBulkFeedsDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createBulkFeeds(createBulkFeedsDto: CreateBulkFeedsDto, options?: RawAxiosRequestConfig): AxiosPromise<Array<FeedDto>> {
+            return localVarFp.createBulkFeeds(createBulkFeedsDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Create a new feed from RSS URL
          * @param {CreateFeedDto} createFeedDto 
          * @param {*} [options] Override http request option.
@@ -2313,15 +2625,6 @@ export const FeedsApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @summary Get all feeds
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        findAllFeeds(options?: RawAxiosRequestConfig): AxiosPromise<Array<FeedDto>> {
-            return localVarFp.findAllFeeds(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary Get a feed by ID
          * @param {string} id 
          * @param {*} [options] Override http request option.
@@ -2329,6 +2632,26 @@ export const FeedsApiFactory = function (configuration?: Configuration, basePath
          */
         findFeedById(id: string, options?: RawAxiosRequestConfig): AxiosPromise<FeedDto> {
             return localVarFp.findFeedById(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get feeds by provider
+         * @param {string} provider Provider name
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        findFeedsByProvider(provider: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<FeedDto>> {
+            return localVarFp.findFeedsByProvider(provider, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Returns filtered and paginated list of feeds based on provided criteria
+         * @summary Query feeds with filters and pagination
+         * @param {QueryFeedsDto} queryFeedsDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        queryFeeds(queryFeedsDto: QueryFeedsDto, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedFeedsDto> {
+            return localVarFp.queryFeeds(queryFeedsDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2374,6 +2697,18 @@ export const FeedsApiFactory = function (configuration?: Configuration, basePath
 export class FeedsApi extends BaseAPI {
     /**
      * 
+     * @summary Create multiple feeds for a provider from comma-separated URLs
+     * @param {CreateBulkFeedsDto} createBulkFeedsDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FeedsApi
+     */
+    public createBulkFeeds(createBulkFeedsDto: CreateBulkFeedsDto, options?: RawAxiosRequestConfig) {
+        return FeedsApiFp(this.configuration).createBulkFeeds(createBulkFeedsDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Create a new feed from RSS URL
      * @param {CreateFeedDto} createFeedDto 
      * @param {*} [options] Override http request option.
@@ -2398,17 +2733,6 @@ export class FeedsApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get all feeds
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof FeedsApi
-     */
-    public findAllFeeds(options?: RawAxiosRequestConfig) {
-        return FeedsApiFp(this.configuration).findAllFeeds(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @summary Get a feed by ID
      * @param {string} id 
      * @param {*} [options] Override http request option.
@@ -2417,6 +2741,30 @@ export class FeedsApi extends BaseAPI {
      */
     public findFeedById(id: string, options?: RawAxiosRequestConfig) {
         return FeedsApiFp(this.configuration).findFeedById(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get feeds by provider
+     * @param {string} provider Provider name
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FeedsApi
+     */
+    public findFeedsByProvider(provider: string, options?: RawAxiosRequestConfig) {
+        return FeedsApiFp(this.configuration).findFeedsByProvider(provider, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns filtered and paginated list of feeds based on provided criteria
+     * @summary Query feeds with filters and pagination
+     * @param {QueryFeedsDto} queryFeedsDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FeedsApi
+     */
+    public queryFeeds(queryFeedsDto: QueryFeedsDto, options?: RawAxiosRequestConfig) {
+        return FeedsApiFp(this.configuration).queryFeeds(queryFeedsDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

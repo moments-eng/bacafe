@@ -14,8 +14,11 @@ import {
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Error } from 'mongoose';
 import { extractErrorMessage } from 'src/utils/error';
+import { CreateBulkFeedsDto } from './dto/create-bulk-feeds.dto';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { FeedDto } from './dto/feed.dto';
+import { PaginatedFeedsDto } from './dto/paginated-feeds.dto';
+import { QueryFeedsDto } from './dto/query-feeds.dto';
 import { UpdateFeedStatusDto } from './dto/update-feed-status.dto';
 import { UpdateFeedDto } from './dto/update-feed.dto';
 import { FeedsService } from './feeds.service';
@@ -52,12 +55,60 @@ export class FeedsController {
     }
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Get all feeds', operationId: 'findAllFeeds' })
+  @Post('bulk')
+  @ApiOperation({
+    summary: 'Create multiple feeds for a provider from comma-separated URLs',
+    operationId: 'createBulkFeeds',
+  })
+  @ApiResponse({ status: HttpStatus.CREATED, type: [FeedDto] })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST })
+  async createBulk(@Body() createBulkFeedsDto: CreateBulkFeedsDto): Promise<FeedDto[]> {
+    try {
+      return await this.feedsService.createBulkFeeds(createBulkFeedsDto);
+    } catch (error) {
+      this.handleServiceError(error, 'BulkFeedCreation');
+    }
+  }
+
+  @Post('query')
+  @ApiOperation({
+    summary: 'Query feeds with filters and pagination',
+    description: 'Returns filtered and paginated list of feeds based on provided criteria',
+    operationId: 'queryFeeds',
+  })
+  @ApiBody({ type: QueryFeedsDto })
+  @ApiResponse({ status: HttpStatus.OK, type: PaginatedFeedsDto })
+  @HttpCode(HttpStatus.OK)
+  async queryFeeds(@Body() queryDto: QueryFeedsDto): Promise<PaginatedFeedsDto> {
+    try {
+      const { filter, sort, page = 1, limit = 10 } = queryDto;
+      const { items, total } = await this.feedsService.queryFeeds(filter, sort, page, limit);
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        items,
+        total,
+        page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      };
+    } catch (error) {
+      this.handleServiceError(error, 'FeedQuery');
+    }
+  }
+
+  @Get('provider/:provider')
+  @ApiOperation({ summary: 'Get feeds by provider', operationId: 'findFeedsByProvider' })
+  @ApiParam({ name: 'provider', description: 'Provider name' })
   @ApiResponse({ status: HttpStatus.OK, type: [FeedDto] })
   @HttpCode(HttpStatus.OK)
-  async findAll(): Promise<FeedDto[]> {
-    return this.feedsService.findAll();
+  async findByProvider(@Param('provider') provider: string): Promise<FeedDto[]> {
+    try {
+      return await this.feedsService.findByProvider(provider);
+    } catch (error) {
+      this.handleServiceError(error, 'ProviderFeedsFetch');
+    }
   }
 
   @Get(':id')

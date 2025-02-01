@@ -2,12 +2,20 @@
 
 import {
   CreateFeedDto,
-  QueryFeedsDto
+  UpdateFeedStatusDto,
 } from "@/generated/http-clients/backend/api";
 import { feedsApi } from "@/lib/http-clients/backend/client";
 import { revalidatePath } from "next/cache";
 import { withAdminAccess } from "../utils/auth";
 
+async function getFeedsAction() {
+  try {
+    const { data } = await feedsApi.queryFeeds({});
+    return data;
+  } catch (error) {
+    throw new Error("Failed to fetch feeds");
+  }
+}
 
 async function createFeedAction(formData: FormData) {
   const payload: CreateFeedDto = {
@@ -43,48 +51,46 @@ async function toggleFeedStatusAction(id: string, isActive: boolean) {
   }
 }
 
-
-
-
-async function getFeedsAction(query: QueryFeedsDto) {
-  const { data } = await feedsApi.queryFeeds(query);
-  return data;
+async function deleteFeedAction(id: string) {
+  try {
+    await feedsApi.deleteFeed(id);
+    revalidatePath("/admin/feeds");
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete feed",
+    };
+  }
 }
 
-async function createBulkFeedsAction(params: {
-  provider: string;
-  urls: string;
-  categories?: string[];
-}) {
-  const { data } = await feedsApi.createBulkFeeds({
-    provider: params.provider,
-    urls: params.urls,
-    categories: params.categories,
-  });
-  return data;
+async function triggerScrapeAction(id: string) {
+  try {
+    const { data } = await feedsApi.scrapeFeedNow(id);
+    revalidatePath("/admin/feeds");
+    return { success: true, data };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to trigger scrape",
+    };
+  }
 }
 
 async function updateFeedStatusAction(
   id: string,
-  params: { isActive: boolean; scrapingInterval?: number }
+  payload: UpdateFeedStatusDto
 ) {
-  const { data } = await feedsApi.updateFeedStatus(id, params);
-  return data;
+  try {
+    const { data } = await feedsApi.updateFeed(id, payload);
+    revalidatePath("/admin/feeds");
+    return { success: true, data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update status",
+    };
+  }
 }
 
-async function deleteFeedAction(id: string) {
-  await feedsApi.deleteFeed(id);
-}
-
-async function triggerScrapeAction(id: string) {
-  await feedsApi.scrapeFeedNow(id);
-}
-
-
-export const createFeed = withAdminAccess(createFeedAction);
-export const toggleFeedStatus = withAdminAccess(toggleFeedStatusAction);
-export const getFeeds = withAdminAccess(getFeedsAction);
-export const deleteFeed = withAdminAccess(deleteFeedAction);
-export const triggerScrape = withAdminAccess(triggerScrapeAction);
-export const updateFeedStatus = withAdminAccess(updateFeedStatusAction);
-export const createBulkFeeds = withAdminAccess(createBulkFeedsAction);
