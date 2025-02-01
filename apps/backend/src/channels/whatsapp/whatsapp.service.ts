@@ -10,9 +10,9 @@ export class WhatsAppService {
 
   public async sendTemplate(phoneNumber: string, templateName: string, components: TemplateComponent[] = []) {
     try {
-      this.logger.debug(`Sending WhatsApp template ${templateName} to ${phoneNumber}`);
+      this.logger.log(`Sending WhatsApp template ${templateName} to ${phoneNumber}`);
       await this.whatsappClient.sendTemplate(phoneNumber, templateName, 'he', components);
-      this.logger.debug(`Successfully sent WhatsApp template ${templateName} to ${phoneNumber}`);
+      this.logger.log(`Successfully sent WhatsApp template ${templateName} to ${phoneNumber}`);
     } catch (error) {
       this.logger.error(
         `Failed to send WhatsApp template ${templateName} to ${phoneNumber}`,

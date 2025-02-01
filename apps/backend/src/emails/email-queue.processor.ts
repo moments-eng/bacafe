@@ -17,7 +17,7 @@ export class EmailQueueProcessor extends WorkerHost {
 
   async process(job: Job<EmailJob>): Promise<void> {
     const { data } = job;
-    this.logger.debug(`Processing email job: ${job.id} of type: ${data.type}`);
+    this.logger.log(`Processing email job: ${job.id} of type: ${data.type}`);
 
     try {
       const emailContent = match(data)

@@ -44,7 +44,7 @@ export class GeektimeJsonLdParser {
 
       return this.parseArticleData(article, jsonLd['@graph']);
     } catch (error: unknown) {
-      this.logger.debug(`Failed to parse Geektime JSON-LD data: ${extractErrorMessage(error)}`);
+      this.logger.log(`Failed to parse Geektime JSON-LD data: ${extractErrorMessage(error)}`);
       return undefined;
     }
   }

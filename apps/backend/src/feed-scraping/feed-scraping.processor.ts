@@ -33,7 +33,7 @@ export class FeedScrapingProcessor extends WorkerHost {
 
         // Skip if article already exists
         if (await this.articlesService.exists(externalId)) {
-          this.logger.debug(`Skipping existing article with externalId: ${externalId}`);
+          this.logger.log(`Skipping existing article with externalId: ${externalId}`);
           continue;
         }
 

@@ -18,7 +18,7 @@ export class DailyDigestService {
   ) {}
 
   async create(createDailyDigestDto: CreateDailyDigestDto): Promise<DailyDigest> {
-    this.logger.debug('Creating new daily digest', createDailyDigestDto);
+    this.logger.log('Creating new daily digest', createDailyDigestDto);
     const createdDigest = new this.dailyDigestModel(createDailyDigestDto);
     return createdDigest.save();
   }
@@ -102,7 +102,7 @@ export class DailyDigestService {
   }
 
   async generateDigestForUser(userId: string): Promise<void> {
-    this.logger.debug(`Queuing digest generation for user ${userId}`);
+    this.logger.log(`Queuing digest generation for user ${userId}`);
     const jobData: ProcessUserDigestJobData = {
       type: DigestGenerationJobType.ProcessUserDigest,
       userId,

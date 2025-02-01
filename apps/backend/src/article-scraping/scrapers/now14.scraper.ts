@@ -65,7 +65,7 @@ export class Now14Scraper extends BaseArticleScraper {
         categories,
       };
 
-      this.logger.debug(`Successfully scraped now14 article from ${url}`);
+      this.logger.log(`Successfully scraped now14 article from ${url}`);
       return result;
     } catch (error: unknown) {
       this.logger.error(`Failed to scrape now14 article at ${url}: ${extractErrorMessage(error)}`);
@@ -88,7 +88,7 @@ export class Now14Scraper extends BaseArticleScraper {
           // We only care about NewsArticle items
           if (item['@type'] === 'NewsArticle') {
             newsArticleData = item;
-            this.logger.debug('Found valid NewsArticle JSON-LD data for now14');
+            this.logger.log('Found valid NewsArticle JSON-LD data for now14');
             return false; // Cheerio's way to break out of .each
           }
         }
@@ -98,7 +98,7 @@ export class Now14Scraper extends BaseArticleScraper {
     });
 
     if (!newsArticleData) {
-      this.logger.debug('No valid NewsArticle data found in JSON-LD. Using fallback logic.');
+      this.logger.log('No valid NewsArticle data found in JSON-LD. Using fallback logic.');
       return null;
     }
 

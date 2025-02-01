@@ -35,7 +35,7 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
   }
 
   async process(job: Job<DigestDeliveryJobData>): Promise<void> {
-    this.logger.debug(`Processing job ${job.name} with data:`, job.data);
+    this.logger.log(`Processing job ${job.name} with data:`, job.data);
 
     await match(job.data)
       .with({ type: DigestDeliveryJobType.QueueHourlyDeliveries }, this.handleHourlyDeliveryQueue)
@@ -59,7 +59,7 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
     try {
       for await (const digest of digestCursor) {
         if (!digest.userId) continue;
-        this.logger.debug(`Processing digest ${digest._id} for user ${digest.userId.email}`);
+        this.logger.log(`Processing digest ${digest._id} for user ${digest.userId.email}`);
 
         const deliveryJob: DeliverUserDigestJobData = {
           type: DigestDeliveryJobType.DeliverUserDigest,
@@ -82,17 +82,17 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
 
   private handleUserDigestDelivery = async (data: DeliverUserDigestJobData): Promise<void> => {
     const { userId } = data;
-    this.logger.debug(`Processing digest delivery for user ${userId}`);
+    this.logger.log(`Processing digest delivery for user ${userId}`);
 
     try {
       const digest = await this.dailyDigestService.getLatestDigestForUser(userId);
       if (!digest) {
-        this.logger.debug(`No digest found for user ${userId}`);
+        this.logger.log(`No digest found for user ${userId}`);
         return;
       }
 
       if (digest.status !== DigestStatus.PENDING) {
-        this.logger.debug(`Digest for user ${userId} is not in pending status`);
+        this.logger.log(`Digest for user ${userId} is not in pending status`);
         return;
       }
 
@@ -109,7 +109,7 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
 
           await this.whatsappService.sendTemplate(user.phoneNumber, 'daily_digest', components);
           await this.dailyDigestService.markDigestAsSent(digest._id.toString(), 'whatsapp');
-          this.logger.debug(`Successfully delivered WhatsApp digest to user ${userId}`);
+          this.logger.log(`Successfully delivered WhatsApp digest to user ${userId}`);
           return;
         } catch (error) {
           this.logger.error(
@@ -122,7 +122,7 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
 
       // Handle other channels here...
       await this.dailyDigestService.markDigestAsSent(digest._id.toString(), user.digestChannel);
-      this.logger.debug(`Successfully delivered digest to user ${userId}`);
+      this.logger.log(`Successfully delivered digest to user ${userId}`);
     } catch (error) {
       this.logger.error(
         `Failed to deliver digest for user ${userId}`,

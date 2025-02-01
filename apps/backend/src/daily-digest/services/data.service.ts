@@ -17,11 +17,11 @@ export class DataService {
     }
 
     try {
-      this.logger.debug(`Generating daily digest for reader ${readerId}`);
+      this.logger.log(`Generating daily digest for reader ${readerId}`);
       const response = await axios.post<DigestGenerationResponse>(`${dataBackendUrl}/api/daily-digest`, {
         reader_id: readerId,
       });
-      this.logger.debug(`Successfully generated daily digest for reader ${readerId}`);
+      this.logger.log(`Successfully generated daily digest for reader ${readerId}`);
       return response.data;
     } catch (error) {
       this.logger.error(

@@ -43,7 +43,7 @@ export class YnetScraper extends BaseArticleScraper {
       const imageUrl = $('meta[property="vr:image"]').attr('content');
       const imageCredit = $('meta[property="vr:image_credit"]').attr('content');
 
-      this.logger.debug(`Successfully scraped article from ${url} (${jsonData.articleBody.length} chars)`);
+      this.logger.log(`Successfully scraped article from ${url} (${jsonData.articleBody.length} chars)`);
 
       return {
         title: jsonData.headline,
@@ -80,7 +80,7 @@ export class YnetScraper extends BaseArticleScraper {
               articleBody: item.articleBody,
               author: item.author,
             };
-            this.logger.debug('Found valid NewsArticle JSON-LD data');
+            this.logger.log('Found valid NewsArticle JSON-LD data');
             return false; // Break Cheerio loop
           }
         }
@@ -97,7 +97,7 @@ export class YnetScraper extends BaseArticleScraper {
 
   private parseAuthor(authorData: YnetNewsArticle['author']): string | undefined {
     if (!authorData) {
-      this.logger.debug('No author information found in JSON-LD');
+      this.logger.log('No author information found in JSON-LD');
       return undefined;
     }
 

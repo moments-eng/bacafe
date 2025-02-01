@@ -32,7 +32,7 @@ export class DailyDigestGeneratorProcessor extends WorkerHost implements OnModul
   }
 
   async process(job: Job<DailyDigestJobData>): Promise<void> {
-    this.logger.debug(`Processing job ${job.name} with data:`, job.data);
+    this.logger.log(`Processing job ${job.name} with data:`, job.data);
 
     await match(job.data)
       .with({ type: DigestGenerationJobType.GenerateDailyDigest }, this.handleDailyDigestGeneration)
@@ -70,12 +70,12 @@ export class DailyDigestGeneratorProcessor extends WorkerHost implements OnModul
 
   private handleUserDigestGeneration = async (data: ProcessUserDigestJobData): Promise<void> => {
     const { userId } = data;
-    this.logger.debug(`Processing digest generation for user ${userId}`);
+    this.logger.log(`Processing digest generation for user ${userId}`);
 
     try {
       const existingDigest = await this.dailyDigestService.getLatestDigestForUser(userId);
       if (existingDigest) {
-        this.logger.debug(`Digest already exists for user ${userId}`);
+        this.logger.log(`Digest already exists for user ${userId}`);
         return;
       }
 
@@ -87,7 +87,7 @@ export class DailyDigestGeneratorProcessor extends WorkerHost implements OnModul
         content: digestContent,
       });
 
-      this.logger.debug(`Successfully created digest for user ${userId}`);
+      this.logger.log(`Successfully created digest for user ${userId}`);
     } catch (error) {
       this.logger.error(
         `Failed to generate digest for user ${userId}`,
