@@ -8,6 +8,7 @@ import { DeliverUserDigestJobData, DigestDeliveryJobData, DigestDeliveryJobType 
 import { DigestStatus } from '../schemas/daily-digest.schema';
 import { WhatsAppService } from '../../channels/whatsapp/whatsapp.service';
 import { BodyComponent, TemplateComponent } from '../../channels/whatsapp/types/message-types';
+import { format, utcToZonedTime } from 'date-fns-tz';
 
 @Processor('daily-digest-delivery')
 export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModuleInit {
@@ -42,14 +43,23 @@ export class DailyDigestDeliveryProcessor extends WorkerHost implements OnModule
       .exhaustive();
   }
 
+  private getHour(): string {
+    const now = new Date();
+    const timeZone = 'Asia/Jerusalem';
+    const israelDate = utcToZonedTime(now, timeZone);
+
+    return format(israelDate, 'HH', { timeZone });
+  }
+
   private handleHourlyDeliveryQueue = async (): Promise<void> => {
-    const currentHour = new Date().getHours().toString().padStart(2, '0');
+    const currentHour = this.getHour();
     this.logger.log(`Starting digest delivery queue for hour ${currentHour}`);
     const digestCursor = this.dailyDigestService.getPendingDigestsCursor(currentHour);
 
     try {
       for await (const digest of digestCursor) {
         if (!digest.userId) continue;
+        this.logger.debug(`Processing digest ${digest._id} for user ${digest.userId.email}`);
 
         const deliveryJob: DeliverUserDigestJobData = {
           type: DigestDeliveryJobType.DeliverUserDigest,
