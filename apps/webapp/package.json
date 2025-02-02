@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3200 --turbopack",
+    "dev": "next dev -p 3200",
     "build": "next build",
     "start": "next start",
     "lint": "biome lint .",
@@ -40,6 +40,7 @@
     "@radix-ui/react-toast": "^1.2.5",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@react-spring/web": "^9.7.5",
+    "@sentry/nextjs": "^8.53.0",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-table": "^8.20.6",
     "@typegoose/typegoose": "^12.10.1",
