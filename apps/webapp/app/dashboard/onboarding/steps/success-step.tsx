@@ -24,7 +24,7 @@ export function SuccessStep() {
   const [summary, setSummary] = useState<string>();
   const [isLoadingIngest, setIsLoadingIngest] = useState(true);
   const [progress, setProgress] = useState(0);
-  const session = useSession();
+  const { update } = useSession();
 
   useEffect(() => {
     const simulateProgress = () => {
@@ -41,30 +41,27 @@ export function SuccessStep() {
     }
   }, [isLoadingIngest]);
 
-  useEffect(() => {
-    async function completeOnboarding() {
-      try {
-        await updateUser({ isOnboardingDone: true });
-        session.update({ user: { isOnboardingDone: true } });
+  const completeOnboarding = async () => {
+    try {
+      await updateUser({ isOnboardingDone: true });
+      await update({ user: { isOnboardingDone: true } });
+      const result = await ingestReader();
 
-        const result = await ingestReader();
-
-        if (result.success) {
-          setSummary(result.summary);
-        } else {
-          setError(result.error);
-        }
-      } catch (error) {
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to complete onboarding"
-        );
-      } finally {
-        setIsLoadingIngest(false);
+      if (result.success) {
+        setSummary(result.summary);
+      } else {
+        setError(result.error);
       }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to complete onboarding"
+      );
+    } finally {
+      setIsLoadingIngest(false);
     }
+  };
 
+  useEffect(() => {
     completeOnboarding();
   }, []);
 
