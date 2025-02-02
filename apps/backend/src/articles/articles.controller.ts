@@ -131,11 +131,9 @@ export class ArticlesController {
   })
   async queryArticles(@Body() queryDto: QueryArticlesDto): Promise<PaginatedArticlesDto> {
     const { filter, sort, page = 1, limit = 10 } = queryDto;
-
     const { items, total } = await this.articlesService.queryArticles(filter, sort, page, limit);
 
     const totalPages = Math.ceil(total / limit);
-
     return {
       items: items.map((article) => ArticleDto.fromSchema(article)),
       total,

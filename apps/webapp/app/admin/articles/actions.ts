@@ -7,6 +7,7 @@ import {
 } from "@/generated/http-clients/backend/api";
 import { articlesApi } from "@/lib/http-clients/backend/client";
 import { withAdminAccess } from "../utils/auth";
+import Logger from "../../../logger/logger";
 
 /**
  * Query articles with filters, sorting, and pagination
@@ -15,11 +16,15 @@ import { withAdminAccess } from "../utils/auth";
  */
 async function queryArticlesAction(params: QueryArticlesDto) {
   try {
-    console.log(`[Articles] Querying articles with params:`, params);
+    Logger.getInstance().info("[Articles] Querying articles with params", {
+      params,
+    });
     const { data } = await articlesApi.queryArticles(params);
     return data;
   } catch (error) {
-    console.error(`[Articles] Failed to fetch articles:`, error);
+    Logger.getInstance().error("[Articles] Failed to fetch articles", {
+      error,
+    });
     throw new Error("Failed to fetch articles");
   }
 }
@@ -30,11 +35,14 @@ async function queryArticlesAction(params: QueryArticlesDto) {
  */
 async function getArticleStatsAction(): Promise<ArticleStatsDto> {
   try {
-    console.log("[Articles] Fetching article statistics");
+    Logger.getInstance().info("[Articles] Fetching article statistics");
     const { data } = await articlesApi.getArticleStats();
     return data;
   } catch (error) {
-    console.error("[Articles] Failed to fetch article statistics:", error);
+    Logger.getInstance().error(
+      "[Articles] Failed to fetch article statistics",
+      { error }
+    );
     throw new Error("Failed to fetch article statistics");
   }
 }
@@ -45,10 +53,13 @@ async function getArticleStatsAction(): Promise<ArticleStatsDto> {
  */
 async function deleteArticleAction(id: string) {
   try {
-    console.log(`[Articles] Deleting article with ID: ${id}`);
+    Logger.getInstance().info("[Articles] Deleting article", { id });
     await articlesApi.deleteArticle(id);
   } catch (error) {
-    console.error(`[Articles] Failed to delete article ${id}:`, error);
+    Logger.getInstance().error("[Articles] Failed to delete article", {
+      id,
+      error,
+    });
     throw new Error("Failed to delete article");
   }
 }
@@ -60,9 +71,10 @@ async function deleteArticleAction(id: string) {
  */
 async function scrapeArticleAction(data: { url: string; provider: string }) {
   try {
-    console.log(
-      `[Articles] Creating article from URL: ${data.url} with provider: ${data.provider}`
-    );
+    Logger.getInstance().info("[Articles] Creating article from URL", {
+      url: data.url,
+      provider: data.provider,
+    });
     const createArticleDto: CreateArticleDto = {
       url: data.url,
       source: data.provider,
@@ -72,10 +84,10 @@ async function scrapeArticleAction(data: { url: string; provider: string }) {
     const { data: article } = await articlesApi.createArticle(createArticleDto);
     return article;
   } catch (error) {
-    console.error(
-      `[Articles] Failed to create article from URL ${data.url}:`,
-      error
-    );
+    Logger.getInstance().error("[Articles] Failed to create article from URL", {
+      url: data.url,
+      error,
+    });
     throw new Error("Failed to scrape article");
   }
 }

@@ -7,6 +7,7 @@ import { userService } from "@/lib/services/user-service";
 import { UserGender } from "@/lib/types/user.types";
 import { unauthorized } from "next/navigation";
 import { z } from "zod";
+import Logger from "../../../logger/logger";
 
 const userUpdateSchema = z.object({
   name: z.string().min(2).max(50).optional(),
@@ -90,7 +91,7 @@ export async function ingestReader(): Promise<UpdateUserResponse> {
       summary: rest.summary,
     };
   } catch (error) {
-    console.error("Error ingesting reader:", error);
+    Logger.getInstance().error("Error ingesting reader", { error });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to ingest reader",
@@ -106,18 +107,20 @@ export async function updateUser(
     return unauthorized();
   }
 
-  console.log("Starting updateUser with data:", data);
+  Logger.getInstance().info("Starting updateUser with data", { data });
 
   const userEmail = session.user.email;
 
-  console.log("Processing update for userId:", userEmail);
+  Logger.getInstance().info("Processing update for userId", { userEmail });
 
   try {
     const validatedFields = userUpdateSchema.safeParse(data);
-    console.log("Validation result:", validatedFields);
+    Logger.getInstance().info("Validation result", { validatedFields });
 
     if (!validatedFields.success) {
-      console.log("Validation failed:", validatedFields.error);
+      Logger.getInstance().error("Validation failed", {
+        error: validatedFields.error,
+      });
       return {
         success: false,
         error: "Invalid data provided",
@@ -125,13 +128,13 @@ export async function updateUser(
     }
 
     await userService.updateUser(userEmail, { $set: validatedFields.data });
-    console.log("User updated successfully");
+    Logger.getInstance().info("User updated successfully");
 
     return {
       success: true,
     };
   } catch (error) {
-    console.error("Error updating user:", error);
+    Logger.getInstance().error("Error updating user", { error });
     return {
       success: false,
       error: "Failed to update user",
@@ -157,7 +160,7 @@ export async function updateArticleScore(
       success: true,
     };
   } catch (error) {
-    console.error("Error updating article score:", error);
+    Logger.getInstance().error("Error updating article score", { error });
     return {
       success: false,
       error: "Failed to update article score",

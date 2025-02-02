@@ -8,6 +8,7 @@ import type { FilterQuery } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { withAdminAccess } from "../utils/auth";
 import { dailyDigestApi, usersApi } from "@/lib/http-clients/backend/client";
+import Logger from "../../../logger/logger";
 
 interface GetUsersOptions {
   page?: number;
@@ -72,7 +73,7 @@ async function getUsersAction({
       pageCount: Math.ceil(total / limit),
     };
   } catch (error) {
-    console.error("Error fetching users:", error);
+    Logger.getInstance().error("Error fetching users", { error });
     throw error;
   }
 }
@@ -84,7 +85,7 @@ async function updateUserStatusAction(userId: string, approved: boolean) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating user status:", error);
+    Logger.getInstance().error("Error updating user status", { error });
     throw error;
   }
 }
@@ -95,7 +96,7 @@ async function approveUserAction(userId: string) {
     revalidatePath("/admin/users");
     return { success: true };
   } catch (error) {
-    console.error("Error approving user:", error);
+    Logger.getInstance().error("Error approving user", { error });
     throw error;
   }
 }
@@ -113,7 +114,7 @@ async function bulkUpdateUserStatusAction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error bulk updating users:", error);
+    Logger.getInstance().error("Error bulk updating users", { error });
     throw error;
   }
 }
@@ -125,7 +126,7 @@ async function updateUserRoleAction(userId: string, role: UserRole) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating user role:", error);
+    Logger.getInstance().error("Error updating user role", { error });
     throw error;
   }
 }
@@ -135,7 +136,7 @@ async function generateUserDailyDigestAction(userId: string) {
     await dailyDigestApi.triggerDailyDigest(userId);
     return { success: true };
   } catch (error) {
-    console.error("Error generating daily digest:", error);
+    Logger.getInstance().error("Error generating daily digest", { error });
     throw error;
   }
 }
@@ -145,7 +146,7 @@ async function deliverUserDailyDigestAction(userId: string) {
     await dailyDigestApi.deliverDailyDigest(userId);
     return { success: true };
   } catch (error) {
-    console.error("Error delivering daily digest:", error);
+    Logger.getInstance().error("Error delivering daily digest", { error });
     throw error;
   }
 }

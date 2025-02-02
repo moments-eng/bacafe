@@ -46,8 +46,11 @@ export function ArticlesTableToolbar({
   const debouncedSearch = useDebounce(searchValue, 500);
 
   useEffect(() => {
-    onFilterChange({ ...filters, title: debouncedSearch });
-  }, [debouncedSearch, filters, onFilterChange]);
+    const currentTitle = filters.title ?? "";
+    if (currentTitle !== debouncedSearch) {
+      onFilterChange({ ...filters, title: debouncedSearch });
+    }
+  }, [debouncedSearch, filters.title, onFilterChange, filters]);
 
   const getSortValue = () => {
     const [field, direction] = Object.entries(sorting)[0] || [];
@@ -75,8 +78,11 @@ export function ArticlesTableToolbar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="ynet">Ynet</SelectItem>
-            <SelectItem value="mako">Mako</SelectItem>
-            <SelectItem value="techcrunch">TechCrunch</SelectItem>
+            <SelectItem value="walla">Walla</SelectItem>
+            <SelectItem value="calcalist">Calcalist</SelectItem>
+            <SelectItem value="now14">Now14</SelectItem>
+            <SelectItem value="geektime">Geektime</SelectItem>
+            <SelectItem value="i24news">i24news</SelectItem>
           </SelectContent>
         </Select>
 

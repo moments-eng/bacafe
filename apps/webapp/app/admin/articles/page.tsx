@@ -14,13 +14,14 @@ import { QUERY_KEYS } from "@/lib/queries";
 import { useQuery } from "@tanstack/react-query";
 import {
   type PaginationState,
+  type SortingState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { getArticleStats, queryArticles } from "./actions";
 import { columns } from "./columns";
 import { ArticlesTableToolbar } from "./toolbar";
@@ -58,6 +59,32 @@ export default function ArticlesPage() {
     queryFn: () => getArticleStats(),
   });
 
+  const tableSorting = useMemo(
+    () =>
+      Object.entries(sorting).map(([id, dir]) => ({
+        id,
+        desc: dir === "desc",
+      })),
+    [sorting]
+  );
+
+  const handleSortingChange = useCallback(
+    (updaterOrValue: SortingState | ((old: SortingState) => SortingState)) => {
+      const newSorting =
+        typeof updaterOrValue === "function"
+          ? updaterOrValue(tableSorting)
+          : updaterOrValue;
+      const sortState = Array.isArray(newSorting) ? newSorting[0] : undefined;
+      const newSortObject = sortState
+        ? { [sortState.id]: sortState.desc ? "desc" : "asc" }
+        : {};
+      if (JSON.stringify(newSortObject) !== JSON.stringify(sorting)) {
+        setSorting(newSortObject);
+      }
+    },
+    [sorting, tableSorting]
+  );
+
   const table = useReactTable<ArticleDto>({
     data: data?.items || [],
     columns,
@@ -65,17 +92,11 @@ export default function ArticlesPage() {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: (newSorting) => {
-      const sortState = Array.isArray(newSorting) ? newSorting[0] : undefined;
-      setSorting(
-        sortState ? { [sortState.id]: sortState.desc ? "desc" : "asc" } : {}
-      );
-      table.setSorting(newSorting);
-    },
+    onSortingChange: handleSortingChange,
     onPaginationChange: setPagination,
     pageCount: data?.totalPages ?? -1,
     state: {
-      sorting: [],
+      sorting: tableSorting,
       pagination,
     },
     manualPagination: true,
@@ -85,7 +106,6 @@ export default function ArticlesPage() {
   const handleResetFilters = () => {
     setFilters({});
     setSorting({});
-    table.resetSorting();
   };
 
   return (
@@ -148,7 +168,11 @@ export default function ArticlesPage() {
             }}
           />
         </div>
-        <DataTablePagination table={table} isLoading={isLoading} totalItems={data?.total || 0} />
+        <DataTablePagination
+          table={table}
+          isLoading={isLoading}
+          totalItems={data?.total || 0}
+        />
       </div>
 
       <ArticleDetailView

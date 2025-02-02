@@ -97,7 +97,7 @@ export class DailyDigestService {
       })
       .populate({
         path: 'userId',
-        match: { digestTime: { $regex: hour } },
+        match: { digestTime: `${hour}:00` },
         select: '_id digestTime digestChannel email',
       })
       .cursor();
