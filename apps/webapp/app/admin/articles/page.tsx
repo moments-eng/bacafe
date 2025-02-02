@@ -148,7 +148,7 @@ export default function ArticlesPage() {
             }}
           />
         </div>
-        <DataTablePagination table={table} isLoading={isLoading} />
+        <DataTablePagination table={table} isLoading={isLoading} totalItems={data?.total || 0} />
       </div>
 
       <ArticleDetailView

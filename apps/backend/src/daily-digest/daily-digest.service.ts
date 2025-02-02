@@ -7,6 +7,7 @@ import { CreateDailyDigestDto } from './dto/create-daily-digest.dto';
 import { UpdateDailyDigestDto } from './dto/update-daily-digest.dto';
 import { DailyDigest, DailyDigestDocument, DigestStatus } from './schemas/daily-digest.schema';
 import { DigestGenerationJobType, ProcessUserDigestJobData } from './types/queue.types';
+import { format, utcToZonedTime } from 'date-fns-tz';
 
 @Injectable()
 export class DailyDigestService {
@@ -85,6 +86,7 @@ export class DailyDigestService {
   getPendingDigestsCursor(hour: string): Cursor<Unpacked<DailyDigestDocument>, QueryOptions<DailyDigestDocument>> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    this.logger.log(`Getting pending digests for hour ${hour}`);
 
     return this.dailyDigestModel
       .find({
@@ -95,8 +97,8 @@ export class DailyDigestService {
       })
       .populate({
         path: 'userId',
-        match: { digestTime: hour },
-        select: '_id digestTime digestChannel',
+        match: { digestTime: { $regex: hour } },
+        select: '_id digestTime digestChannel email',
       })
       .cursor();
   }

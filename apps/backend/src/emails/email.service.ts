@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
 import type { ReactElement } from 'react';
+import { Resend } from 'resend';
 
 export interface SendEmailOptions {
   to: string;
@@ -12,6 +12,7 @@ export interface SendEmailOptions {
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   private readonly defaultFromEmail: string;
 
   constructor(
@@ -27,7 +28,7 @@ export class EmailService {
    * @returns A promise that resolves with the send result
    */
   public async sendEmail(options: SendEmailOptions) {
-    console.log('Sending email', options);
+    this.logger.log('Sending email', options);
     return this.resend.emails.send({
       from: 'Team Bapony <team@bapony.info>',
       to: options.to,

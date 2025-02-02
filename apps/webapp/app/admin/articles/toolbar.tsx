@@ -24,7 +24,7 @@ import { format } from "date-fns";
 import { CalendarIcon, FilterX } from "lucide-react";
 import { AddArticleDialog } from "./add-article-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ArticlesTableToolbarProps {
   filters: ArticleFilterDto;
@@ -43,14 +43,11 @@ export function ArticlesTableToolbar({
 }: ArticlesTableToolbarProps) {
   const hasFilters = Object.keys(filters).length > 0;
   const [searchValue, setSearchValue] = useState(filters.title || "");
+  const debouncedSearch = useDebounce(searchValue, 500);
 
-  useDebounce(
-    () => {
-      onFilterChange({ ...filters, title: searchValue });
-    },
-    [searchValue],
-    500
-  );
+  useEffect(() => {
+    onFilterChange({ ...filters, title: debouncedSearch });
+  }, [debouncedSearch, filters, onFilterChange]);
 
   const getSortValue = () => {
     const [field, direction] = Object.entries(sorting)[0] || [];

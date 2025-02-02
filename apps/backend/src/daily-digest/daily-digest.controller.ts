@@ -1,16 +1,18 @@
-import { Controller, Get, HttpStatus, NotFoundException, Param, Post } from '@nestjs/common';
+import { Controller, Get, HttpStatus, NotFoundException, Param, Post, BadRequestException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DailyDigestService } from './daily-digest.service';
 import { DigestContentDto } from './dto/digest-content.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { DigestDeliveryJobData, DigestDeliveryJobType } from './types/queue.types';
+import { UsersService } from '../users/users.service';
 
 @ApiTags('Daily Digest')
 @Controller('daily-digest')
 export class DailyDigestController {
   constructor(
     private readonly dailyDigestService: DailyDigestService,
+    private readonly usersService: UsersService,
     @InjectQueue('daily-digest-delivery') private readonly deliveryQueue: Queue<DigestDeliveryJobData>,
   ) {}
 

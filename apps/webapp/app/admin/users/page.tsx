@@ -123,7 +123,11 @@ export default function UsersPage() {
           emptyMessage="No users found"
           isLoading={isLoading}
         />
-        <DataTablePagination table={table} isLoading={isLoading} />
+        <DataTablePagination
+          table={table}
+          isLoading={isLoading}
+          totalItems={data?.total || 0}
+        />
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArticleDto } from "@/generated/http-clients/backend";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { queryArticles } from "../articles/actions";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -37,25 +37,24 @@ export function AddArticleDialog({
     null
   );
   const [searchQuery, setSearchQuery] = useState("");
-
-  useDebounce(
-    () => {
-      refetch();
-    },
-    [searchQuery],
-    500
-  );
+  const debouncedSearch = useDebounce(searchQuery, 500);
 
   const { data: articles, refetch } = useQuery({
-    queryKey: ["articles", searchQuery],
+    queryKey: ["articles", debouncedSearch],
     queryFn: () =>
       queryArticles({
         page: 1,
         limit: 100,
-        filter: searchQuery ? { title: searchQuery } : undefined,
+        filter: debouncedSearch ? { title: debouncedSearch } : undefined,
         sort: { createdAt: "desc" },
       }),
   });
+
+  useEffect(() => {
+    if (open) {
+      refetch();
+    }
+  }, [open, refetch]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
