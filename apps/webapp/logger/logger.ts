@@ -1,5 +1,4 @@
 import * as winston from "winston";
-import "winston-daily-rotate-file";
 
 /**
  * Parameters required for Coralogix transport configuration.
@@ -10,19 +9,6 @@ interface LoggerParams {
 }
 
 const isProduction: boolean = process.env.NODE_ENV === "production";
-
-const dailyRotateFileTransports: winston.transport[] = isProduction
-  ? [
-      new winston.transports.DailyRotateFile({
-        filename: "logs/%DATE%.log",
-        datePattern: "YYYY-MM-DD",
-        zippedArchive: true,
-        maxSize: "20m",
-        maxFiles: "14d",
-        format: winston.format.json(),
-      }),
-    ]
-  : [];
 
 const createCoralogixTransport = ({
   coralogixApiKey,
@@ -110,9 +96,6 @@ class Logger {
         })
       );
     }
-
-    // Daily rotate file transport
-    transports.push(...dailyRotateFileTransports);
 
     this.logger = winston.createLogger({
       level: "info",

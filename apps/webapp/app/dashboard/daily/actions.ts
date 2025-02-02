@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import type { DigestContentDto } from "@/generated/http-clients/backend";
 import { dailyDigestApi } from "@/lib/http-clients/backend/client";
-import { Logger } from "@/lib/logger";
+import Logger from "@/logger/logger";
 
 export async function getLatestDailyDigest(): Promise<DigestContentDto> {
   const session = await auth();
