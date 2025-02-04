@@ -15,15 +15,17 @@ import mongoose from "mongoose";
 
 import { ArticleDto } from "@/generated/http-clients/backend";
 
-export type PreferredArticle = Pick<
-  ArticleDto,
-  | "title"
-  | "subtitle"
-  | "content"
-  | "enrichment"
-  | "description"
-  | "categories"
-  | "author"
+export type PreferredArticle = Required<
+  Pick<
+    ArticleDto,
+    | "title"
+    | "subtitle"
+    | "content"
+    | "enrichment"
+    | "description"
+    | "categories"
+    | "author"
+  >
 >;
 
 enum UserGender {

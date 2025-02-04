@@ -4,14 +4,12 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { hebrewContent } from "@/locales/he";
-import { useOnboardingStore } from "@/stores/onboarding";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Mail, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { updateUser } from "../actions";
+import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import {
   FormControl,
@@ -20,14 +18,15 @@ import {
   FormMessage,
   Form,
 } from "@/components/ui/form";
-import { useScrollTop } from "../hooks/use-scroll-top";
+import { useOnboardingStore, OnboardingStep } from "../store/onboarding-store";
 
 const { onboarding } = hebrewContent;
-const { channels } = onboarding.steps[4];
+const step = onboarding.steps.digestChannel;
+const { channels } = step;
 
 const formSchema = z.object({
   channel: z.enum(["email", "whatsapp"], {
-    required_error: onboarding.steps[4].error,
+    required_error: step.error,
   }),
   phoneNumber: z
     .string()
@@ -44,12 +43,13 @@ const formSchema = z.object({
     .optional(),
 });
 
+type DigestChannelForm = z.infer<typeof formSchema>;
+
 export function DigestChannelStep() {
-  useScrollTop();
-  const { digestChannel, setDigestChannel, nextStep } = useOnboardingStore();
+  const { updateDigestChannel, setStep } = useOnboardingStore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<DigestChannelForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       channel: "whatsapp",
@@ -57,20 +57,11 @@ export function DigestChannelStep() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: DigestChannelForm) => {
     setIsLoading(true);
     try {
-      const result = await updateUser({
-        digestChannel: values.channel,
-        ...(values.channel === "whatsapp" && {
-          phoneNumber: values.phoneNumber,
-        }),
-      });
-
-      if (result.success) {
-        setDigestChannel(values.channel);
-        nextStep();
-      }
+      updateDigestChannel(values.channel, values.phoneNumber);
+      setStep(OnboardingStep.Login);
     } finally {
       setIsLoading(false);
     }
@@ -79,10 +70,8 @@ export function DigestChannelStep() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold">{onboarding.steps[4].header}</h2>
-        <p className="text-sm text-muted-foreground">
-          {onboarding.steps[4].subheader}
-        </p>
+        <h2 className="text-lg font-semibold">{step.title}</h2>
+        <p className="text-sm text-muted-foreground">{step.subtitle}</p>
       </div>
 
       <Form {...form}>
@@ -205,10 +194,10 @@ export function DigestChannelStep() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {onboarding.buttons.loading}
+                {onboarding.loading.title}
               </>
             ) : (
-              onboarding.buttons.continue
+              step.nextButton
             )}
           </Button>
         </form>

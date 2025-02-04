@@ -2,24 +2,27 @@
 
 import ArticleCard from "@/components/article-card";
 import { Progress } from "@/components/ui/progress";
-import { hebrewContent } from "@/locales/he";
-import { useOnboardingStore } from "@/stores/onboarding";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { getProductionOnboarding, updateArticleScore } from "../actions";
 import { PreferredArticle } from "@/lib/models/user.model";
+import { hebrewContent } from "@/locales/he";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { useScrollTop } from "../hooks/use-scroll-top";
+import { useState } from "react";
+import { getProductionOnboarding } from "../actions";
+import { useOnboardingStore, OnboardingStep } from "../store/onboarding-store";
 
 const { onboarding } = hebrewContent;
+const step = onboarding.steps.contentMatching;
 
 export function ContentMatchingStep() {
-  useScrollTop();
-  const { name, nextStep } = useOnboardingStore();
+  const { setStep, updateArticlePreferences } = useOnboardingStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedArticles, setSelectedArticles] = useState<PreferredArticle[]>(
+    []
+  );
 
-  const { data: onboardingData, isLoading } = useQuery({
+  const { data: onboardingData, isLoading: queryLoading } = useQuery({
     queryKey: ["onboarding", "production"],
     queryFn: () => getProductionOnboarding(),
     select: (data) => ({
@@ -37,20 +40,19 @@ export function ContentMatchingStep() {
     const article: PreferredArticle = {
       title: currentArticle.title,
       subtitle: currentArticle.subtitle,
-      content: currentArticle.content,
-      enrichment: currentArticle.enrichment,
-      description: currentArticle.description,
-      categories: currentArticle.categories,
-      author: currentArticle.author,
+      content: currentArticle.content || "",
+      description: currentArticle.description || "",
+      categories: currentArticle.categories || [],
+      author: currentArticle.author || "",
+      enrichment: currentArticle.enrichment || {},
     };
-    if (direction === "right") {
-      updateArticleScore(article);
-    }
+
+    setSelectedArticles((prev) => [...prev, article]);
 
     if (currentIndex >= onboardingData.articles.length - 1) {
       setTimeout(() => {
         setIsAnimating(false);
-        nextStep();
+        setStep(OnboardingStep.PersonalDetails);
       }, 100);
     } else {
       setTimeout(() => {
@@ -60,7 +62,7 @@ export function ContentMatchingStep() {
     }
   };
 
-  if (isLoading) {
+  if (queryLoading) {
     return (
       <div className="min-h-[450px] flex items-center justify-center">
         <motion.div
@@ -112,12 +114,8 @@ export function ContentMatchingStep() {
     >
       <div className="w-full max-w-md space-y-6">
         <div className="space-y-2">
-          <h3 className="font-medium text-lg">
-            {onboarding.steps.interests.title} {name}?
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {onboarding.steps.interests.description}
-          </p>
+          <h3 className="font-medium text-lg">{step.title}</h3>
+          <p className="text-sm text-muted-foreground">{step.subtitle}</p>
         </div>
 
         <Progress value={progress} className="w-full" />

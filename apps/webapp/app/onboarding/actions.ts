@@ -2,12 +2,11 @@
 
 import { auth } from "@/auth";
 import { onboardingApi } from "@/lib/http-clients/backend/client";
-import { PreferredArticle } from "@/lib/models/user.model";
 import { userService } from "@/lib/services/user-service";
 import { UserGender } from "@/lib/types/user.types";
+import Logger from "@/logger/logger";
 import { unauthorized } from "next/navigation";
 import { z } from "zod";
-import Logger from "../../../logger/logger";
 
 const userUpdateSchema = z.object({
   name: z.string().min(2).max(50).optional(),
@@ -17,14 +16,17 @@ const userUpdateSchema = z.object({
     .optional(),
   isOnboardingDone: z.boolean().optional(),
   digestTime: z.string().optional(),
-  articleScores: z
-    .array(
-      z.object({
-        articleId: z.number(),
-        score: z.union([z.literal(-1), z.literal(1)]),
-      })
-    )
-    .optional(),
+  preferences: z.array(
+    z.object({
+      title: z.string(),
+      subtitle: z.string(),
+      content: z.string(),
+      description: z.string(),
+      categories: z.array(z.string()),
+      enrichment: z.object({}),
+      author: z.string(),
+    })
+  ),
   digestChannel: z.enum(["email", "whatsapp"]).optional(),
   phoneNumber: z
     .string()
@@ -38,6 +40,63 @@ interface UpdateUserResponse {
   success: boolean;
   summary?: string;
   error?: string;
+}
+
+export async function updateUser(
+  data: UserUpdateData
+): Promise<UpdateUserResponse> {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return unauthorized();
+  }
+
+  Logger.getInstance().info("Starting updateUser with data", { data });
+
+  const userEmail = session.user.email;
+
+  Logger.getInstance().info("Processing update for userId", { userEmail });
+
+  try {
+    const validatedFields = userUpdateSchema.safeParse(data);
+    Logger.getInstance().info("Validation result", { validatedFields });
+
+    if (!validatedFields.success) {
+      Logger.getInstance().error("Validation failed", {
+        error: validatedFields.error,
+      });
+      return {
+        success: false,
+        error: "Invalid data provided",
+      };
+    }
+
+    await userService.updateUser(userEmail, {
+      $set: {
+        ...validatedFields.data,
+        isOnboardingDone: true,
+      },
+    });
+    Logger.getInstance().info("User updated successfully");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    Logger.getInstance().error("Error updating user", { error });
+    return {
+      success: false,
+      error: "Failed to update user",
+    };
+  }
+}
+
+export async function getProductionOnboarding() {
+  try {
+    const { data } = await onboardingApi.getProductionOnboarding();
+    return data;
+  } catch (error) {
+    throw new Error("Failed to fetch production onboarding");
+  }
 }
 
 export async function ingestReader(): Promise<UpdateUserResponse> {
@@ -99,80 +158,41 @@ export async function ingestReader(): Promise<UpdateUserResponse> {
   }
 }
 
-export async function updateUser(
-  data: UserUpdateData
-): Promise<UpdateUserResponse> {
+export async function getUserInformation() {
   const session = await auth();
   if (!session?.user?.email) {
     return unauthorized();
   }
 
-  Logger.getInstance().info("Starting updateUser with data", { data });
-
-  const userEmail = session.user.email;
-
-  Logger.getInstance().info("Processing update for userId", { userEmail });
-
   try {
-    const validatedFields = userUpdateSchema.safeParse(data);
-    Logger.getInstance().info("Validation result", { validatedFields });
-
-    if (!validatedFields.success) {
-      Logger.getInstance().error("Validation failed", {
-        error: validatedFields.error,
-      });
+    const user = await userService.getUser(session.user.email);
+    if (!user) {
       return {
         success: false,
-        error: "Invalid data provided",
+        error: "User not found",
       };
     }
 
-    await userService.updateUser(userEmail, { $set: validatedFields.data });
-    Logger.getInstance().info("User updated successfully");
-
     return {
       success: true,
+      data: {
+        name: user.name,
+        gender: user.gender,
+        digestTime: user.digestTime,
+        digestChannel: user.digestChannel,
+        preferences: user.preferences,
+        enrichment: user.enrichment,
+        age: user.age,
+      },
     };
   } catch (error) {
-    Logger.getInstance().error("Error updating user", { error });
+    Logger.getInstance().error("Error fetching user information", { error });
     return {
       success: false,
-      error: "Failed to update user",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch user information",
     };
-  }
-}
-
-export async function updateArticleScore(
-  preferredArticle: PreferredArticle
-): Promise<UpdateUserResponse> {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return unauthorized();
-  }
-  const userEmail = session.user.email;
-
-  try {
-    await userService.updateUser(userEmail, {
-      $push: { preferences: preferredArticle },
-    });
-
-    return {
-      success: true,
-    };
-  } catch (error) {
-    Logger.getInstance().error("Error updating article score", { error });
-    return {
-      success: false,
-      error: "Failed to update article score",
-    };
-  }
-}
-
-export async function getProductionOnboarding() {
-  try {
-    const { data } = await onboardingApi.getProductionOnboarding();
-    return data;
-  } catch (error) {
-    throw new Error("Failed to fetch production onboarding");
   }
 }

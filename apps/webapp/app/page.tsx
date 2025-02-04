@@ -12,12 +12,10 @@ const titleFont = Bona_Nova_SC({
 });
 
 async function getStartHereUrl() {
-  const session = await auth();
-  return session?.user ? "/dashboard" : "/login";
+  return "/onboarding";
 }
 
 export default async function Home() {
-  const startHereUrl = await getStartHereUrl();
   return (
     <main className="flex flex-col min-h-full">
       <div className="flex-1">
@@ -51,19 +49,21 @@ export default async function Home() {
           </p>
 
           <div className="cta-container">
-            <Link href={startHereUrl} className="w-full">
+            <Link href="/onboarding" className="w-full">
               <Button size="default" className="w-full font-medium font-heebo">
                 {hebrewContent.startButton}
               </Button>
             </Link>
 
-            <Button
-              variant="outline"
-              size="default"
-              className="w-full font-medium font-heebo"
-            >
-              {hebrewContent.learnMore}
-            </Button>
+            <Link href="/technology" className="w-full">
+              <Button
+                variant="outline"
+                size="default"
+                className="w-full font-medium font-heebo"
+              >
+                {hebrewContent.learnMore}
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

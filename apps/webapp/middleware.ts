@@ -1,65 +1,137 @@
-import NextAuth from "next-auth";
+import { NextResponse, type NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { NextResponse } from "next/server";
-import authConfig from "./auth.config";
 
-const { auth } = NextAuth(authConfig);
+interface RouteConfig {
+  pattern: RegExp;
+  requiresAuth?: boolean;
+  requiresApproval?: boolean;
+  requiresOnboarding?: boolean;
+  redirect: string;
+  excludePatterns?: RegExp[];
+}
 
-export default auth(async (req) => {
-  // Skip auth check for health check and auth endpoints
-  const url = new URL(req.url || "");
-  const path = url.pathname;
-  if (req.method === "GET" && path === "/health") {
-    return NextResponse.json({ message: "OK" });
+const publicRoutes = [
+  "/",
+  "/login",
+  "/api/auth",
+  "/_next",
+  "/fonts",
+  "/images",
+  "/favicon.ico",
+];
+
+const routeConfig: RouteConfig[] = [
+  {
+    pattern: /^\/dashboard/,
+    requiresAuth: true,
+    requiresApproval: true,
+    requiresOnboarding: true,
+    redirect: "/login",
+    excludePatterns: [/^\/dashboard\/public/],
+  },
+  {
+    pattern: /^\/onboarding/,
+    requiresAuth: true,
+    redirect: "/login",
+    excludePatterns: [/^\/onboarding\/success/],
+  },
+  {
+    pattern: /^\/chat/,
+    requiresAuth: true,
+    requiresApproval: true,
+    requiresOnboarding: true,
+    redirect: "/login",
+  },
+  {
+    pattern: /^\/settings/,
+    requiresAuth: true,
+    requiresApproval: true,
+    requiresOnboarding: true,
+    redirect: "/login",
+  },
+];
+
+async function isAuthenticated(request: NextRequest): Promise<{
+  isAuth: boolean;
+  user?: { approved?: boolean; isOnboardingDone?: boolean };
+}> {
+  try {
+    const token = await getToken({ req: request });
+    if (!token) return { isAuth: false };
+    return {
+      isAuth: true,
+      user: token.user as { approved?: boolean; isOnboardingDone?: boolean },
+    };
+  } catch (error) {
+    return { isAuth: false };
   }
+}
 
-  const token = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: process.env.AUTH_URL
-      ? new URL(process.env.AUTH_URL).protocol === "https:"
-      : false,
-  });
+function isPublicRoute(pathname: string): boolean {
+  return publicRoutes.some((route) => pathname.startsWith(route));
+}
 
-  // Skip auth check for auth-related endpoints
-  if (path.startsWith("/api/auth")) {
+function shouldExcludeRoute(
+  pathname: string,
+  excludePatterns?: RegExp[]
+): boolean {
+  if (!excludePatterns) return false;
+  return excludePatterns.some((pattern) => pattern.test(pathname));
+}
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Allow public routes
+  if (isPublicRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // Only apply auth rules to dashboard routes
-  if (!path.startsWith("/dashboard")) {
+  // Find matching route configuration
+  const matchedRoute = routeConfig.find(
+    (route) =>
+      route.pattern.test(pathname) &&
+      !shouldExcludeRoute(pathname, route.excludePatterns)
+  );
+
+  if (!matchedRoute) {
     return NextResponse.next();
   }
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  const { isAuth, user } = await isAuthenticated(request);
+
+  // Handle authentication requirement
+  if (matchedRoute.requiresAuth && !isAuth) {
+    const redirectUrl = new URL(matchedRoute.redirect, request.url);
+    redirectUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  if (path.startsWith("/dashboard/onboarding")) {
-    if (token.isOnboardingDone) {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-    return NextResponse.next();
+  // Handle approval requirement
+  if (matchedRoute.requiresApproval && !user?.approved) {
+    return NextResponse.redirect(new URL("/onboarding/success", request.url));
   }
 
-  if (!token.approved) {
-    if (path !== "/dashboard/approval-pending") {
-      return NextResponse.redirect(
-        new URL("/dashboard/approval-pending", req.url)
-      );
-    }
-    return NextResponse.next();
-  }
-
-  if (!token.isOnboardingDone && path !== "/dashboard/onboarding") {
-    return NextResponse.redirect(new URL("/dashboard/onboarding", req.url));
+  // Handle onboarding requirement
+  if (matchedRoute.requiresOnboarding && !user?.isOnboardingDone) {
+    return NextResponse.redirect(new URL("/onboarding", request.url));
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    /*
+     * Match all request paths except:
+     * 1. Matches any request that starts with:
+     *  - api/auth (API routes)
+     *  - _next/static (static files)
+     *  - _next/image (image optimization files)
+     *  - favicon.ico (favicon file)
+     *  - images, fonts (public assets)
+     * 2. Matches based on the route configurations above
+     */
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|images|fonts).*)",
   ],
 };
