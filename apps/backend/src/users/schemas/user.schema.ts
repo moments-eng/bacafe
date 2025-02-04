@@ -73,3 +73,4 @@ export const UserSchema = SchemaFactory.createForClass(User);
 // Add indexes after schema creation
 UserSchema.index({ digestTime: 1 });
 UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ approved: 1 });

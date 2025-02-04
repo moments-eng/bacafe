@@ -74,7 +74,7 @@ export class UsersService {
   }
 
   getUserCursor(): Cursor<Unpacked<UserDocument>, QueryOptions<UserDocument>> {
-    return this.userModel.find().cursor();
+    return this.userModel.find({ approved: true }).cursor();
   }
 
   /**
