@@ -10,6 +10,12 @@ interface RouteConfig {
   excludePatterns?: RegExp[];
 }
 
+function isSecureCookie() {
+  return process.env.AUTH_URL
+    ? new URL(process.env.AUTH_URL).protocol === "https:"
+    : false;
+}
+
 const publicRoutes = [
   "/",
   "/login",
@@ -56,7 +62,10 @@ async function isAuthenticated(request: NextRequest): Promise<{
   user?: { approved?: boolean; isOnboardingDone?: boolean };
 }> {
   try {
-    const token = await getToken({ req: request });
+    const token = await getToken({
+      req: request,
+      secureCookie: isSecureCookie(),
+    });
     if (!token) return { isAuth: false };
     return {
       isAuth: true,
@@ -81,6 +90,11 @@ function shouldExcludeRoute(
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Add health check endpoint
+  if (pathname === "/health") {
+    return new NextResponse("OK", { status: 200 });
+  }
 
   // Allow public routes
   if (isPublicRoute(pathname)) {
