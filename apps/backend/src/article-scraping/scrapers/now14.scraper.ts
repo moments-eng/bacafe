@@ -65,7 +65,7 @@ export class Now14Scraper extends BaseArticleScraper {
         categories,
       };
 
-      this.logger.log(`Successfully scraped now14 article from ${url}`);
+      this.logger.debug(`Successfully scraped now14 article from ${url}`);
       return result;
     } catch (error: unknown) {
       this.logger.error(`Failed to scrape now14 article at ${url}: ${extractErrorMessage(error)}`);

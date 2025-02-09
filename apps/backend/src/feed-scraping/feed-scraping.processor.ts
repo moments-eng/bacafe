@@ -47,7 +47,7 @@ export class FeedScrapingProcessor extends WorkerHost {
       }
 
       await this.feedChannelRepository.updateLastScrapedAt(feedId);
-      this.logger.log(`Successfully scraped feed ${feedId}: ${processedArticles} processed, ${newArticles} new`);
+      this.logger.debug(`Successfully scraped feed ${feedId}: ${processedArticles} processed, ${newArticles} new`);
 
       return {
         processedArticles,

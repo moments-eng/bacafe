@@ -43,7 +43,7 @@ export class YnetScraper extends BaseArticleScraper {
       const imageUrl = $('meta[property="vr:image"]').attr('content');
       const imageCredit = $('meta[property="vr:image_credit"]').attr('content');
 
-      this.logger.log(`Successfully scraped article from ${url} (${jsonData.articleBody.length} chars)`);
+      this.logger.debug(`Successfully scraped article from ${url} (${jsonData.articleBody.length} chars)`);
 
       return {
         title: jsonData.headline,
