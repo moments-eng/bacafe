@@ -16,6 +16,22 @@ jest.mock("next/navigation", () => ({
   useSearchParams() {
     return new URLSearchParams();
   },
+  redirect: jest.fn(),
+}));
+
+let mockSession: any = null;
+
+// Mock next-auth
+jest.mock("next-auth/react", () => ({
+  useSession: jest.fn().mockImplementation(() => ({
+    data: mockSession,
+    status: mockSession ? "authenticated" : "unauthenticated",
+  })),
+  SessionProvider: ({ children }: { children: React.ReactNode }) => children,
+  getSession: jest.fn().mockImplementation(() => Promise.resolve(mockSession)),
+  setMockSession: (session: any) => {
+    mockSession = session;
+  },
 }));
 
 class ResizeObserverMock {

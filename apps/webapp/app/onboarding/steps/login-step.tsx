@@ -53,6 +53,7 @@ export function LoginStep() {
 
   return (
     <motion.div
+      data-testid="login-step"
       variants={container}
       initial="hidden"
       animate="show"

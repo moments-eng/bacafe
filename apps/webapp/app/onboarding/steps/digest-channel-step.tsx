@@ -7,7 +7,7 @@ import { hebrewContent } from "@/locales/he";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Mail, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,8 @@ import {
   Form,
 } from "@/components/ui/form";
 import { useOnboardingStore, OnboardingStep } from "../store/onboarding-store";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const { onboarding } = hebrewContent;
 const step = onboarding.steps.digestChannel;
@@ -48,6 +50,8 @@ type DigestChannelForm = z.infer<typeof formSchema>;
 export function DigestChannelStep() {
   const { updateDigestChannel, setStep } = useOnboardingStore();
   const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const form = useForm<DigestChannelForm>({
     resolver: zodResolver(formSchema),
@@ -60,15 +64,19 @@ export function DigestChannelStep() {
   const onSubmit = async (values: DigestChannelForm) => {
     setIsLoading(true);
     try {
-      updateDigestChannel(values.channel, values.phoneNumber);
-      setStep(OnboardingStep.Login);
+      if (session?.user) {
+        router.replace("/onboarding/success");
+      } else {
+        updateDigestChannel(values.channel, values.phoneNumber);
+        setStep(OnboardingStep.Login);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="digest-channel-step">
       <div>
         <h2 className="text-lg font-semibold">{step.title}</h2>
         <p className="text-sm text-muted-foreground">{step.subtitle}</p>
@@ -114,6 +122,7 @@ export function DigestChannelStep() {
                           value="email"
                           className="absolute left-4 top-1/2 -translate-y-1/2"
                           disabled
+                          aria-label="email"
                         />
                       </div>
                     </div>
@@ -149,6 +158,7 @@ export function DigestChannelStep() {
                         <RadioGroupItem
                           value="whatsapp"
                           className="absolute left-4 top-1/2 -translate-y-1/2"
+                          aria-label="whatsapp"
                         />
                       </div>
                     </div>

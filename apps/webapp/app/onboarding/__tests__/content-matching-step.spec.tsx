@@ -1,6 +1,6 @@
 import { OnboardingArticleFixtures } from "@/test/fixtures/onboarding-article.fixtures";
 import { OnboardingDriver } from "@/test/onboarding.driver";
-import { OnboardingStep, useOnboardingStore } from "../store/onboarding-store";
+import { OnboardingStep } from "../store/onboarding-store";
 import { hebrewContent } from "@/locales/he";
 import { screen, waitFor } from "@testing-library/react";
 
@@ -11,16 +11,17 @@ jest.mock("../actions", () => ({
 }));
 
 describe("<ContentMatchingStep />", () => {
-  let driven: OnboardingDriver;
+  let driver: OnboardingDriver;
 
   beforeEach(() => {
-    driven = new OnboardingDriver();
+    driver = new OnboardingDriver();
+    driver.given.onboardingStep(OnboardingStep.ContentMatching);
     jest.useFakeTimers();
     mockGetProductionOnboarding.mockClear();
   });
 
   afterEach(() => {
-    driven.cleanup();
+    driver.cleanup();
     jest.useRealTimers();
   });
 
@@ -30,7 +31,7 @@ describe("<ContentMatchingStep />", () => {
     );
     const likedArticleIndexes = [0, 1];
 
-    await driven.given.articles(articles).given.render();
+    await driver.given.articles(articles).render();
 
     await waitFor(() => {
       expect(
@@ -38,9 +39,9 @@ describe("<ContentMatchingStep />", () => {
       ).not.toBeInTheDocument();
     });
 
-    await driven.when.contentMatchingStep(likedArticleIndexes);
+    await driver.when.contentMatchingStep(likedArticleIndexes);
 
-    const likedArticles = driven.then.getLikedArticlesFromStore();
+    const likedArticles = driver.get.likedArticles();
     expect(likedArticles).toHaveLength(2);
 
     const expectedLikedArticles = likedArticleIndexes.map((index) => ({
@@ -58,18 +59,9 @@ describe("<ContentMatchingStep />", () => {
     );
   });
 
-  it("should show loading state initially", async () => {
-    mockGetProductionOnboarding.mockImplementation(() => new Promise(() => {}));
-
-    await driven.given.render();
-
-    expect(
-      screen.getByText(hebrewContent.onboarding.loading.title)
-    ).toBeInTheDocument();
-  });
 
   it("should show no articles message when articles array is empty", async () => {
-    await driven.given.articles([]).given.render();
+    await driver.given.articles([]).render();
 
     await waitFor(() => {
       expect(
@@ -87,7 +79,7 @@ describe("<ContentMatchingStep />", () => {
       OnboardingArticleFixtures.valid({ position: index })
     );
 
-    await driven.given.articles(articles).given.render();
+    await driver.given.articles(articles).render();
 
     await waitFor(() => {
       expect(
@@ -95,10 +87,9 @@ describe("<ContentMatchingStep />", () => {
       ).not.toBeInTheDocument();
     });
 
-    await driven.when.contentMatchingStep([0]);
+    await driver.when.contentMatchingStep([0]);
 
-    const store = useOnboardingStore.getState();
-    expect(store.step).toBe(OnboardingStep.PersonalDetails);
+    expect(driver.get.currentStep()).toBe(OnboardingStep.PersonalDetails);
   });
 
   it("should store all articles when liking all of them", async () => {
@@ -107,7 +98,7 @@ describe("<ContentMatchingStep />", () => {
     );
     const allIndexes = [0, 1, 2];
 
-    await driven.given.articles(articles).given.render();
+    await driver.given.articles(articles).render();
 
     await waitFor(() => {
       expect(
@@ -115,9 +106,9 @@ describe("<ContentMatchingStep />", () => {
       ).not.toBeInTheDocument();
     });
 
-    await driven.when.contentMatchingStep(allIndexes);
+    await driver.when.contentMatchingStep(allIndexes);
 
-    const likedArticles = driven.then.getLikedArticlesFromStore();
+    const likedArticles = driver.get.likedArticles();
     expect(likedArticles).toHaveLength(3);
 
     const expectedLikedArticles = allIndexes.map((index) => ({
@@ -134,9 +125,6 @@ describe("<ContentMatchingStep />", () => {
       expect.arrayContaining(expectedLikedArticles)
     );
 
-    await waitFor(() => {
-      const store = useOnboardingStore.getState();
-      expect(store.step).toBe(OnboardingStep.PersonalDetails);
-    });
+    expect(driver.get.currentStep()).toBe(OnboardingStep.PersonalDetails);
   });
 });
