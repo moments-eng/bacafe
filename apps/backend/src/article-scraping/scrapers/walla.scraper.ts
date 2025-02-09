@@ -90,7 +90,7 @@ export class WallaScraper extends BaseArticleScraper {
         for (const item of items) {
           if (item['@type'] === 'NewsArticle') {
             newsArticle = item as WallaJsonLdNewsArticle;
-            this.logger.log('Found valid NewsArticle JSON-LD data');
+            this.logger.debug('Found valid NewsArticle JSON-LD data');
             return false; // Break the loop
           }
         }

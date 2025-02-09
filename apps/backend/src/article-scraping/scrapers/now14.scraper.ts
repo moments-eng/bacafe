@@ -88,7 +88,7 @@ export class Now14Scraper extends BaseArticleScraper {
           // We only care about NewsArticle items
           if (item['@type'] === 'NewsArticle') {
             newsArticleData = item;
-            this.logger.log('Found valid NewsArticle JSON-LD data for now14');
+            this.logger.debug('Found valid NewsArticle JSON-LD data for now14');
             return false; // Cheerio's way to break out of .each
           }
         }
@@ -98,7 +98,7 @@ export class Now14Scraper extends BaseArticleScraper {
     });
 
     if (!newsArticleData) {
-      this.logger.log('No valid NewsArticle data found in JSON-LD. Using fallback logic.');
+      this.logger.debug('No valid NewsArticle data found in JSON-LD. Using fallback logic.');
       return null;
     }
 

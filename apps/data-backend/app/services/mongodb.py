@@ -1,174 +1,120 @@
 from typing import Dict, List, Optional, Any
-from pymongo import MongoClient, ASCENDING, DESCENDING
-from bson import ObjectId
+from pymongo import ASCENDING, DESCENDING
 import os
 from ..utils.logger import logger
-from flask import g
+from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class MongoDBService:
     def __init__(self):
-        self.client = None
-        self.db = None
+        mongodb_uri = os.getenv("MONGODB_URI")
+        if not mongodb_uri:
+            raise ValueError("MONGODB_URI environment variable is not set")
+            
+        db_name = os.getenv("MONGODB_DB_NAME", "bacafe")
+        logger.info(f"Connecting to MongoDB database: {db_name}")
+        
+        self.client = AsyncIOMotorClient(mongodb_uri)
+        self.db = self.client[db_name]
         self.init_db()
 
     def init_db(self):
         """Initialize MongoDB connection"""
         try:
-            mongodb_url = os.getenv('MONGODB_URI', 'mongodb://localhost:27017')
-            self.client = MongoClient(mongodb_url)
-            self.db = self.client[os.getenv('MONGODB_DB', 'bacafe')]
             logger.info("MongoDB connection initialized")
         except Exception as e:
             logger.error(f"MongoDB connection failed: {str(e)}")
             raise
 
-    def create_indexes(self):
+    async def create_indexes(self):
         """Create necessary indexes"""
         try:
             # Articles collection indexes
-            self.db.articles.create_index([("title", ASCENDING)], unique=True)
-            self.db.articles.create_index([("topics", ASCENDING)])
-            self.db.articles.create_index([("created_at", DESCENDING)])
+            await self.db.articles.create_index([("title", ASCENDING)], unique=True)
+            await self.db.articles.create_index([("topics", ASCENDING)])
+            await self.db.articles.create_index([("created_at", DESCENDING)])
 
             # Readers collection indexes
-            self.db.readers.create_index([("age", ASCENDING)])
-            self.db.readers.create_index([("gender", ASCENDING)])
+            await self.db.readers.create_index([("age", ASCENDING)])
+            await self.db.readers.create_index([("gender", ASCENDING)])
 
-            logger.info(
-                "MongoDB indexes created",
-                extra={'request_id': getattr(g, 'request_id', None)}
-            )
+            logger.info("MongoDB indexes created")
         except Exception as e:
-            logger.error(
-                "Failed to create MongoDB indexes",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'error': str(e)
-                }
-            )
+            logger.error(f"Failed to create MongoDB indexes: {str(e)}")
             raise
 
     # Article operations
-    def insert_article(self, article: Dict) -> str:
+    async def insert_article(self, article_data):
         """Insert a new article"""
         try:
-            result = self.db.articles.insert_one(article)
-            logger.info(
-                "Article inserted",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'article_id': str(result.inserted_id)
-                }
-            )
+            result = await self.db.articles.insert_one(article_data)
+            logger.info(f"Article inserted with ID: {result.inserted_id}")
             return str(result.inserted_id)
         except Exception as e:
-            logger.error(
-                "Failed to insert article",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'error': str(e)
-                }
-            )
+            logger.error(f"Failed to insert article: {str(e)}")
             raise
 
-    def get_article(self, article_id: str) -> Optional[Dict]:
+    async def get_article(self, article_id: str) -> Optional[Dict]:
         """Retrieve an article by ID"""
         try:
-            article = self.db.articles.find_one({"_id": article_id})
+            article = await self.db.articles.find_one({"_id": article_id})
             return article
         except Exception as e:
-            logger.error(
-                "Failed to retrieve article",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'article_id': article_id,
-                    'error': str(e)
-                }
-            )
+            logger.error(f"Failed to retrieve article {article_id}: {str(e)}")
             raise
 
-    def get_articles_by_topic(self, topic: str, limit: int = 10) -> List[Dict]:
+    async def get_articles_by_topic(self, topic: str, limit: int = 10) -> List[Dict]:
         """Retrieve articles by topic"""
         try:
             cursor = self.db.articles.find({"topics": topic}).limit(limit)
-            return list(cursor)
+            return await cursor.to_list(length=None)
         except Exception as e:
-            logger.error(
-                "Failed to retrieve articles by topic",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'topic': topic,
-                    'error': str(e)
-                }
-            )
+            logger.error(f"Failed to retrieve articles by topic {topic}: {str(e)}")
             raise
 
     # Reader operations
-    def insert_reader(self, reader: Dict) -> str:
+    async def insert_reader(self, reader_data):
         """Insert a new reader"""
         try:
-            result = self.db.users.insert_one(reader)
-            logger.info(
-                "Reader inserted",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'reader_id': str(result.inserted_id)
-                }
-            )
+            result = await self.db.readers.insert_one(reader_data)
+            logger.info(f"Reader inserted with ID: {result.inserted_id}")
             return str(result.inserted_id)
         except Exception as e:
-            logger.error(
-                "Failed to insert reader",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'error': str(e)
-                }
-            )
+            logger.error(f"Failed to insert reader: {str(e)}")
             raise
 
-    def get_reader(self, reader_id: str) -> Optional[Dict]:
+    async def get_reader(self, reader_id: str) -> Optional[Dict]:
         """Retrieve a reader by ID"""
         try:
-            reader = self.db.users.find_one({"_id": ObjectId(reader_id)})
+            reader = await self.db.readers.find_one({"_id": reader_id})
             return reader
         except Exception as e:
-            print(e)
-            logger.error(
-                "Failed to retrieve reader",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'reader_id': reader_id,
-                    'error': str(e)
-                }
-            )
+            logger.error(f"Failed to retrieve reader {reader_id}: {str(e)}")
             raise
 
-    def update_reader_interests(self, reader_id: str, interests: List[str]) -> bool:
+    async def update_reader_interests(self, reader_id: str, interests: List[str]) -> bool:
         """Update reader interests"""
         try:
-            result = self.db.users.update_one(
+            result = await self.db.readers.update_one(
                 {"_id": reader_id},
                 {"$set": {"interests": interests}}
             )
             success = result.modified_count > 0
             if success:
-                logger.info(
-                    "Reader interests updated",
-                    extra={
-                        'request_id': getattr(g, 'request_id', None),
-                        'reader_id': reader_id
-                    }
-                )
+                logger.info(f"Reader {reader_id} interests updated")
             return success
         except Exception as e:
-            logger.error(
-                "Failed to update reader interests",
-                extra={
-                    'request_id': getattr(g, 'request_id', None),
-                    'reader_id': reader_id,
-                    'error': str(e)
-                }
-            )
+            logger.error(f"Failed to update reader {reader_id} interests: {str(e)}")
+            raise
+
+    async def aggregate_articles(self, pipeline):
+        try:
+            cursor = self.db.articles.aggregate(pipeline)
+            return await cursor.to_list(length=None)
+        except Exception as e:
+            logger.error(f"Failed to aggregate articles: {str(e)}")
             raise
 
     # Cleanup

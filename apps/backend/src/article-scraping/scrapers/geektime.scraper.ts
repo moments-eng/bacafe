@@ -64,7 +64,7 @@ export class GeektimeScraper extends BaseArticleScraper {
           return false; // break the loop
         }
       } catch (error) {
-        this.logger.log(`Failed to parse JSON-LD data: ${extractErrorMessage(error)}`);
+        this.logger.debug(`Failed to parse JSON-LD data: ${extractErrorMessage(error)}`);
       }
     });
 

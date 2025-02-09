@@ -80,7 +80,7 @@ export class YnetScraper extends BaseArticleScraper {
               articleBody: item.articleBody,
               author: item.author,
             };
-            this.logger.log('Found valid NewsArticle JSON-LD data');
+            this.logger.debug('Found valid NewsArticle JSON-LD data');
             return false; // Break Cheerio loop
           }
         }
@@ -97,7 +97,7 @@ export class YnetScraper extends BaseArticleScraper {
 
   private parseAuthor(authorData: YnetNewsArticle['author']): string | undefined {
     if (!authorData) {
-      this.logger.log('No author information found in JSON-LD');
+      this.logger.debug('No author information found in JSON-LD');
       return undefined;
     }
 

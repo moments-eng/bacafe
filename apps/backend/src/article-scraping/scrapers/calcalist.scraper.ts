@@ -127,7 +127,7 @@ export class CalcalistScraper extends BaseArticleScraper {
           }
         }
       } catch (err) {
-        this.logger.log(`Failed to parse JSON-LD: ${err}`);
+        this.logger.debug(`Failed to parse JSON-LD: ${err}`);
       }
     });
 

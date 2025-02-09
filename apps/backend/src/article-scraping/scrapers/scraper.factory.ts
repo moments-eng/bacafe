@@ -34,7 +34,7 @@ export class ScraperFactory {
 
   private addScraper(scraper: BaseArticleScraper): void {
     this.scrapers.set(scraper.provider, scraper);
-    this.logger.log(`Registered scraper for provider: ${scraper.provider}`);
+    this.logger.debug(`Registered scraper for provider: ${scraper.provider}`);
   }
 
   getScraper(provider: string): BaseArticleScraper {

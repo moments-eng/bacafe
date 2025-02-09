@@ -20,7 +20,9 @@ export default async function AdminLayout({
   }
 
   const user = await userService.getUser(session.user.email);
+  
   if (!user || user.role !== "admin") {
+    console.log("redirecting...");
     redirect("/");
   }
 

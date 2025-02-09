@@ -69,11 +69,11 @@ services:
       - "3003:3000"
     volumes:
       - ./apps/data-backend:/app
+      - /app/__pycache__
+      - /app/app/__pycache__
     environment:
-      - FLASK_APP=app.main
-      - FLASK_ENV=development
-      - FLASK_DEBUG=1
-    command: flask run --host=0.0.0.0 --port 3000 --reload
+      - PYTHONUNBUFFERED=1
+    command: python run.py
     depends_on:
       redis:
         condition: service_healthy

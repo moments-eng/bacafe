@@ -1,5 +1,5 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
+from pydantic import BaseModel, Field, validator
+from typing import List, Optional, Dict, Union
 from enum import Enum
 
 class Topics(str, Enum):
@@ -41,10 +41,56 @@ class ArticleRequest(BaseModel):
             }
         }
 
+class ArticleRead(BaseModel):
+    title: str = Field(..., description="Title of the article")
+    summary: Optional[str] = Field(None, description="Summary of the article")
+    reader_interests: Optional[List[Union[ReaderInterest, Dict]]] = Field(default_factory=list, description="Reader's interests in this article")
+    locations: Optional[List[str]] = Field(default_factory=list, description="Locations mentioned in the article")
+    concepts: Optional[List[str]] = Field(default_factory=list, description="Key concepts from the article")
+    topics: Optional[List[str]] = Field(default_factory=list, description="Topics covered in the article")
+
+    @validator('reader_interests')
+    def validate_reader_interests(cls, v):
+        if not v:
+            return v
+        interests = []
+        for interest in v:
+            if isinstance(interest, dict):
+                interests.append(ReaderInterest(**interest))
+            else:
+                interests.append(interest)
+        return interests
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "title": "The Future of AI in Healthcare",
+                "summary": "An exploration of how artificial intelligence is transforming medical diagnosis...",
+                "reader_interests": [
+                    {"interest": "AI in medicine", "ranking": 5}
+                ],
+                "locations": ["United States"],
+                "concepts": ["artificial intelligence", "medical diagnosis"],
+                "topics": ["health"]
+            }
+        }
+
 class ReaderRequest(BaseModel):
     age: int = Field(..., ge=0, le=120, description="Age of the reader")
     gender: str = Field(..., description="Gender of the reader")
-    articles: List[Dict] = Field(..., description="List of articles read by the reader")
+    articles: List[Union[ArticleRead, Dict]] = Field(default_factory=list, description="List of articles read by the reader")
+
+    @validator('articles')
+    def validate_articles(cls, v):
+        if not v:
+            return v
+        articles = []
+        for article in v:
+            if isinstance(article, dict):
+                articles.append(ArticleRead(**article))
+            else:
+                articles.append(article)
+        return articles
 
     class Config:
         json_schema_extra = {
