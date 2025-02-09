@@ -1,16 +1,32 @@
-# compiled output
-/dist
-/node_modules
-/build
+# Environment files
+.env
+.env.*
+!.env.*.example
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+build/
 
 # Logs
 logs
 *.log
 npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.DS_Store
 
 # OS
 .DS_Store
@@ -30,13 +46,10 @@ lerna-debug.log*
 
 # IDE - VSCode
 .vscode/*
-!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-!.vscode/extensions.json
 
 # dotenv environment variable files
-.env
 .env.development.local
 .env.test.local
 .env.production.local

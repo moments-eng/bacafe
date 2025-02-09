@@ -1,5 +1,40 @@
 # syntax=docker.io/docker/dockerfile:1
 
+# Development Stage
+FROM node:20-alpine AS development
+
+WORKDIR /usr/src/app
+
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+# Production Stage
+FROM node:20-alpine AS production
+
+WORKDIR /usr/src/app
+
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+RUN npm run build
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+CMD ["npm", "start"]
+
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed

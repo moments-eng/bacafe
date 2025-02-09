@@ -30,6 +30,7 @@ export default function OnboardingSuccessPage() {
     phoneNumber,
     articlePreferences,
     reset,
+    hasHydrated,
   } = useOnboardingStore();
 
   const [loading, setLoading] = useState<LoadingState>({
@@ -52,13 +53,22 @@ export default function OnboardingSuccessPage() {
   };
 
   const completeOnboarding = async () => {
+    if (!hasHydrated) {
+      console.log("Store not yet hydrated, skipping update");
+      return;
+    }
+
     try {
-      const userResult = await getUserInformation();
-      if (userResult.success && userResult.data?.enrichment?.summary) {
-        setUserInfo(userResult.data);
-        setLoading((prev) => ({ ...prev, isLoading: false }));
-        return;
-      }
+      console.log("Store hydrated, updating user with data:", {
+        name,
+        age,
+        gender,
+        digestTime,
+        digestChannel,
+        phoneNumber,
+        preferences: articlePreferences || [],
+        isOnboardingDone: true,
+      });
 
       updateLoadingState("persisting", 40);
       await updateUser({
@@ -83,10 +93,11 @@ export default function OnboardingSuccessPage() {
       }
 
       const updatedUserResult = await getUserInformation();
-      if (updatedUserResult.success) {
-        setUserInfo(updatedUserResult.data);
+      if (!updatedUserResult.success) {
+        throw new Error("Failed to get updated user information");
       }
 
+      setUserInfo(updatedUserResult.data);
       updateLoadingState("finalizing", 100);
       setLoading((prev) => ({ ...prev, isLoading: false }));
     } catch (error) {
@@ -98,7 +109,15 @@ export default function OnboardingSuccessPage() {
   };
 
   useEffect(() => {
-    completeOnboarding();
+    if (hasHydrated) {
+      console.log("Store hydrated, starting onboarding completion");
+      completeOnboarding();
+    } else {
+      console.log("Waiting for store hydration...");
+    }
+  }, [hasHydrated]);
+
+  useEffect(() => {
     return () => {
       reset();
     };

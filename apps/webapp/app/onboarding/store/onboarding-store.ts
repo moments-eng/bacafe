@@ -1,7 +1,7 @@
 import { PreferredArticle } from "@/lib/models/user.model";
 import { UserGender } from "@/lib/types/user.types";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export enum OnboardingStep {
   ContentMatching = 1,
@@ -20,6 +20,7 @@ interface OnboardingState {
   digestChannel?: "email" | "whatsapp";
   phoneNumber?: string;
   articlePreferences?: PreferredArticle[];
+  hasHydrated: boolean;
   setStep: (step: OnboardingStep) => void;
   updatePersonalDetails: (details: {
     name?: string;
@@ -32,6 +33,7 @@ interface OnboardingState {
     phoneNumber?: string
   ) => void;
   updateArticlePreferences: (preferences: PreferredArticle[]) => void;
+  setHasHydrated: (state: boolean) => void;
   reset: () => void;
 }
 
@@ -44,6 +46,7 @@ const initialState = {
   digestChannel: undefined,
   phoneNumber: undefined,
   articlePreferences: [],
+  hasHydrated: false,
 };
 
 export const useOnboardingStore = create<OnboardingState>()(
@@ -58,10 +61,15 @@ export const useOnboardingStore = create<OnboardingState>()(
         set({ digestChannel: channel, phoneNumber }),
       updateArticlePreferences: (preferences) =>
         set({ articlePreferences: preferences }),
+      setHasHydrated: (state) => set({ hasHydrated: state }),
       reset: () => set(initialState),
     }),
     {
       name: "onboarding-storage",
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

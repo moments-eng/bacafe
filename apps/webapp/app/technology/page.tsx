@@ -4,26 +4,13 @@ import { Bona_Nova_SC } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 
-const titleFont = Bona_Nova_SC({
-  subsets: ["hebrew"],
-  weight: ["400"],
-});
 
 export default function TechnologyPage() {
   return (
     <main className="flex flex-col min-h-full px-4">
       <div className="flex-1">
         <div className="py-2 flex flex-col items-center">
-          <Image
-            src="/technology.png"
-            alt="Technology Illustration"
-            width={180}
-            height={180}
-            className="mb-6"
-            priority
-          />
-
-          <h1 className={`${titleFont.className} text-3xl text-center mb-2`}>
+          <h1 className={`text-3xl text-center mb-2`}>
             {hebrewContent.technology.title}
           </h1>
 

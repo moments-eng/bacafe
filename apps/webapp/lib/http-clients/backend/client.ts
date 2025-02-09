@@ -8,7 +8,7 @@ import {
 } from "@/generated/http-clients/backend";
 
 const config = new Configuration({
-  basePath: process.env.BACKNED_API_URL ?? "",
+  basePath: process.env.BACKEND_API_URL ?? "",
 });
 
 const articlesApi = new ArticlesApi(config);

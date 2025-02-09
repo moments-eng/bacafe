@@ -1,33 +1,34 @@
-# Build stage for dependencies
-FROM docker.io/node:lts-alpine as deps
-RUN apk add --no-cache libc6-compat
+# Development Stage
+FROM node:20-alpine AS development
+
 WORKDIR /usr/src/app
 
-# Copy package files for better layer caching
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 COPY package*.json ./
-RUN npm ci --omit=dev
 
-# Runner stage
-FROM docker.io/node:lts-alpine as runner
-RUN apk add --no-cache dumb-init curl
+RUN npm install
 
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
+COPY . .
+
+RUN npm run build
+
+# Production Stage
+FROM node:20-alpine AS production
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
-RUN addgroup -g 1001 nodejs && \
-    adduser -S -u 1001 -G nodejs nodejs && \
-    chown -R nodejs:nodejs /usr/src/app
 
-COPY --from=deps --chown=nodejs:nodejs /usr/src/app/node_modules ./node_modules
-COPY --from=deps --chown=nodejs:nodejs /usr/src/app/package.json ./package.json
-COPY --chown=nodejs:nodejs dist ./dist
+# Install curl for healthcheck
+RUN apk add --no-cache curl
 
-USER nodejs
+COPY package*.json ./
 
-EXPOSE $PORT
+RUN npm ci --only=production
 
-# Use dumb-init as PID 1
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/main.js"]
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main"]

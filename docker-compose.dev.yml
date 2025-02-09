@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./apps/backend
+      target: development
+    env_file: ./apps/backend/.env.development
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./apps/backend:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  webapp:
+    build:
+      context: ./apps/webapp
+      target: development
+    env_file: ./apps/webapp/.env.development
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./apps/webapp:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/.next
+    command: npm run dev
+    depends_on:
+      backend:
+        condition: service_healthy
+      data-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  data-backend:
+    build:
+      context: ./apps/data-backend
+      target: development
+    env_file: ./apps/data-backend/.env.development
+    ports:
+      - "3003:3000"
+    volumes:
+      - ./apps/data-backend:/app
+    environment:
+      - FLASK_APP=app.main
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    command: flask run --host=0.0.0.0 --port 3000 --reload
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  redis-data: 

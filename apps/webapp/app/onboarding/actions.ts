@@ -55,7 +55,6 @@ export async function updateUser(
   const userEmail = session.user.email;
 
   Logger.getInstance().info("Processing update for userId", { userEmail });
-
   try {
     const validatedFields = userUpdateSchema.safeParse(data);
     Logger.getInstance().info("Validation result", { validatedFields });

@@ -36,20 +36,27 @@ export function ContentMatchingStep() {
 
     setIsAnimating(true);
 
-    const currentArticle = onboardingData.articles[currentIndex].article;
-    const article: PreferredArticle = {
-      title: currentArticle.title,
-      subtitle: currentArticle.subtitle,
-      content: currentArticle.content || "",
-      description: currentArticle.description || "",
-      categories: currentArticle.categories || [],
-      author: currentArticle.author || "",
-      enrichment: currentArticle.enrichment || {},
-    };
+    if (direction === "right") {
+      const currentArticle = onboardingData.articles[currentIndex].article;
+      const article: PreferredArticle = {
+        title: currentArticle.title,
+        subtitle: currentArticle.subtitle,
+        content: currentArticle.content || "",
+        description: currentArticle.description || "",
+        categories: currentArticle.categories || [],
+        author: currentArticle.author || "",
+        enrichment: currentArticle.enrichment || {},
+      };
 
-    setSelectedArticles((prev) => [...prev, article]);
+      setSelectedArticles((prev) => [...prev, article]);
+    }
 
     if (currentIndex >= onboardingData.articles.length - 1) {
+      console.log(
+        "Updating article preferences with liked articles:",
+        selectedArticles
+      );
+      updateArticlePreferences(selectedArticles);
       setTimeout(() => {
         setIsAnimating(false);
         setStep(OnboardingStep.PersonalDetails);

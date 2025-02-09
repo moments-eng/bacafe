@@ -46,12 +46,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt: async ({ token, trigger, session }) => {
+    jwt: async ({ token, trigger }) => {
       if (jwtTrigger.includes(trigger || "") && token.email) {
-        console.log("jwt trigger", trigger);
-        console.log("token", token);
         const user = await userService.getUser(token.email);
-        console.log("user", user);
         if (!user) return null;
         token.role = user.role;
         token.approved = user.approved;
