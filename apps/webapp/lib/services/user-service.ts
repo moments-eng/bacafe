@@ -27,7 +27,7 @@ export class UserService {
 
   async getUser(email: string): Promise<User | null> {
     await connectDB();
-    return UserModel.findOne({ email }).lean();
+    return UserModel.findOne({ email }, { embeddings: false }).lean();
   }
 }
 

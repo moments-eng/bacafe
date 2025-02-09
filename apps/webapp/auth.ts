@@ -46,7 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt: async ({ token, trigger }) => {
+    jwt: async ({ token, trigger, session }) => {
       if (jwtTrigger.includes(trigger || "") && token.email) {
         const user = await userService.getUser(token.email);
         if (!user) return null;
@@ -54,14 +54,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.approved = user.approved;
         token.id = user._id.toString();
         token.isOnboardingDone = user.isOnboardingDone;
+        token;
       }
       return token;
     },
     session: async ({ session, token }) => {
-      session.user.role = token.role;
-      session.user.approved = token.approved;
-      session.user.id = token.id;
-      session.user.isOnboardingDone = token.isOnboardingDone;
+      if (token) {
+        session.user.role = token.role;
+        session.user.approved = token.approved;
+        session.user.id = token.id;
+        session.user.isOnboardingDone = token.isOnboardingDone;
+      }
       return session;
     },
   },

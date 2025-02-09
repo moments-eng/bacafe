@@ -1,25 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Confetti from "react-confetti";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Confetti from "react-confetti";
 
-import { hebrewContent } from "@/locales/he";
-import { getUserInformation, updateUser, ingestReader } from "../actions";
-import { useOnboardingStore } from "../store/onboarding-store";
 import { useContainerDimensions } from "@/hooks/use-container-dimensions";
-import { LoadingState, UserInfo, loadingStates } from "./types";
+import { hebrewContent } from "@/locales/he";
+import { getUserInformation, ingestReader, updateUser } from "../actions";
+import { useOnboardingStore } from "../store/onboarding-store";
 import { ApprovedUserContent, PendingUserContent } from "./components";
+import { LoadingState, UserInfo, loadingStates } from "./types";
 
 const { onboarding } = hebrewContent;
 const { success } = onboarding.steps;
 
 export default function OnboardingSuccessPage() {
   const router = useRouter();
-  const { data: session, update } = useSession();
+  const { data: session, update, status } = useSession();
+
   const { width, height } = useContainerDimensions();
   const {
     name,
@@ -38,8 +39,26 @@ export default function OnboardingSuccessPage() {
     status: loadingStates.persisting,
     progress: 20,
   });
+  const [isOnboardingDone, setIsOnboardingDone] = useState(false);
+
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [error, setError] = useState<string>();
+
+  useEffect(() => {
+    const updateSession = async () => {
+      if (
+        isOnboardingDone &&
+        status === "authenticated" &&
+        session?.user &&
+        !session.user.isOnboardingDone
+      ) {
+        await update({
+          user: { ...session.user, isOnboardingDone: true },
+        });
+      }
+    };
+    updateSession();
+  }, [isOnboardingDone, status, session?.user]);
 
   const updateLoadingState = (
     status: keyof typeof loadingStates,
@@ -54,22 +73,11 @@ export default function OnboardingSuccessPage() {
 
   const completeOnboarding = async () => {
     if (!hasHydrated) {
-      console.log("Store not yet hydrated, skipping update");
       return;
     }
+    const user = await getUserInformation();
 
     try {
-      console.log("Store hydrated, updating user with data:", {
-        name,
-        age,
-        gender,
-        digestTime,
-        digestChannel,
-        phoneNumber,
-        preferences: articlePreferences || [],
-        isOnboardingDone: true,
-      });
-
       updateLoadingState("persisting", 40);
       await updateUser({
         name,
@@ -82,14 +90,15 @@ export default function OnboardingSuccessPage() {
         isOnboardingDone: true,
       });
 
-      await update({ user: { isOnboardingDone: true } });
-
+      setIsOnboardingDone(true);
       updateLoadingState("building", 60);
       updateLoadingState("ingesting", 80);
 
-      const result = await ingestReader();
-      if (!result.success) {
-        throw new Error(result.error);
+      if (!user.data?.enrichment) {
+        const result = await ingestReader();
+        if (!result.success) {
+          throw new Error(result.error);
+        }
       }
 
       const updatedUserResult = await getUserInformation();

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { hebrewContent } from "@/locales/he";
+import { redirect } from "next/navigation";
 export default async function DashboardPage() {
   const session = await auth();
 

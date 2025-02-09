@@ -151,6 +151,7 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
               "border-2 hover:scale-110 hover:bg-emerald-50"
             )}
             onClick={() => onSwipe("right")}
+            data-testid="like-button"
           >
             <ThumbsUpIcon
               className="w-7 h-7 text-emerald-500 group-hover:text-emerald-600 transition-colors"
@@ -166,6 +167,7 @@ export default function ArticleCard({ article, onSwipe }: ArticleCardProps) {
               "border-2 hover:scale-110 hover:bg-orange-50"
             )}
             onClick={() => onSwipe("left")}
+            data-testid="dislike-button"
           >
             <ThumbsDownIcon
               className="w-7 h-7 text-orange-500 group-hover:text-orange-600 transition-colors"

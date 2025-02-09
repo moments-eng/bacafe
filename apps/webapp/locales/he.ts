@@ -17,6 +17,7 @@ export const hebrewContent = {
       progress: "שלב",
       of: "מתוך",
     },
+    noArticles: "אין כרגע מאמרים זמינים",
     steps: {
       contentMatching: {
         title: "בחירת תכנים",

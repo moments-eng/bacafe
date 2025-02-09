@@ -17,7 +17,6 @@ export function ContentMatchingStep() {
   const { setStep, updateArticlePreferences } = useOnboardingStore();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedArticles, setSelectedArticles] = useState<PreferredArticle[]>(
     []
   );
@@ -35,6 +34,7 @@ export function ContentMatchingStep() {
     if (isAnimating || !onboardingData) return;
 
     setIsAnimating(true);
+    const isLastArticle = currentIndex >= onboardingData.articles.length - 1;
 
     if (direction === "right") {
       const currentArticle = onboardingData.articles[currentIndex].article;
@@ -48,25 +48,24 @@ export function ContentMatchingStep() {
         enrichment: currentArticle.enrichment || {},
       };
 
-      setSelectedArticles((prev) => [...prev, article]);
+      const newSelectedArticles = [...selectedArticles, article];
+      setSelectedArticles(newSelectedArticles);
+
+      if (isLastArticle) {
+        updateArticlePreferences(newSelectedArticles);
+        setStep(OnboardingStep.PersonalDetails);
+      }
+    } else if (isLastArticle) {
+      // If this is the last article and it was disliked, update preferences with current selection
+      updateArticlePreferences(selectedArticles);
+      setStep(OnboardingStep.PersonalDetails);
     }
 
-    if (currentIndex >= onboardingData.articles.length - 1) {
-      console.log(
-        "Updating article preferences with liked articles:",
-        selectedArticles
-      );
-      updateArticlePreferences(selectedArticles);
-      setTimeout(() => {
-        setIsAnimating(false);
-        setStep(OnboardingStep.PersonalDetails);
-      }, 100);
-    } else {
-      setTimeout(() => {
-        setCurrentIndex((prev) => prev + 1);
-        setIsAnimating(false);
-      }, 100);
+    if (!isLastArticle) {
+      setCurrentIndex((prev) => prev + 1);
     }
+
+    setIsAnimating(false);
   };
 
   if (queryLoading) {
@@ -106,7 +105,7 @@ export function ContentMatchingStep() {
   }
 
   if (!onboardingData || onboardingData.articles.length === 0) {
-    return <div>No articles available</div>;
+    return <div>{hebrewContent.onboarding.noArticles}</div>;
   }
 
   const progress = ((currentIndex + 1) / onboardingData.articles.length) * 100;

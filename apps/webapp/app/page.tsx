@@ -11,10 +11,6 @@ const titleFont = Bona_Nova_SC({
   weight: ["400"],
 });
 
-async function getStartHereUrl() {
-  return "/onboarding";
-}
-
 export default async function Home() {
   return (
     <main className="flex flex-col min-h-full">
