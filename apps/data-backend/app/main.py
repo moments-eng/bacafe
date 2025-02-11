@@ -124,3 +124,34 @@ async def reader_daily_digest(request: Request):
         )
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/batch-digest")
+async def batch_digest(request: Request):
+    try:
+        data = await request.json()
+        logger.info(
+            "Computing batch digest",
+            extra={
+                'request_id': request.state.request_id
+            }
+        )
+        result = await process_service.get_batch_digest()
+        logger.info(
+            "Batch digest processed successfully",
+            extra={
+                'request_id': request.state.request_id,
+                'sections_count': len(result)
+            }
+        )
+        return result
+    except Exception as e:
+        
+        logger.error(
+            "Batch digest processing failed",
+            extra={
+                'request_id': request.state.request_id,
+                'error': str(e)
+            }
+        )
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
+

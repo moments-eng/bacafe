@@ -122,3 +122,12 @@ class MongoDBService:
         """Close MongoDB connection"""
         if self.client:
             self.client.close() 
+    
+    async def aggregate_digests(self, pipeline):
+        #TODO check schema
+        try:
+            cursor = self.db.daily_digest.aggregate(pipeline)
+            return await cursor.to_list(length=None)
+        except Exception as e:
+            logger.error(f"Failed to aggregate digests: {str(e)}")
+            raise

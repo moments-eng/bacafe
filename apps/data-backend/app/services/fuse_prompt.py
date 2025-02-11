@@ -3,11 +3,13 @@ from langfuse import Langfuse
 from typing import Any, Dict
 
 class PromptName(Enum):
+    CLUSTER_DIGEST = "cluster_digest"
     DAILY_DIGEST = "daily_digest"
     ARTICLE_INGESTION = "article_ingestion"
     READER_PROFILER = "reader_profiler"
     ARTICLE_INGEST_CHAT = "article_ingest_chat"
 
+    DIGEST_EMBEDDINGS = "digest_embedder"
     READER_EMBEDDINGS = "reader_embedder_general"
     ARTICLE_EMBEDDINGS = "article_embedder"
 
