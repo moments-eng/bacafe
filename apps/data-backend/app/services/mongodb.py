@@ -1,48 +1,228 @@
 from typing import Dict, List, Optional, Any
-from pymongo import ASCENDING, DESCENDING
 import os
 from ..utils.logger import logger
 from motor.motor_asyncio import AsyncIOMotorClient
+from bson import ObjectId
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class MongoDBService:
     def __init__(self):
-        mongodb_uri = os.getenv("MONGODB_URI")
-        if not mongodb_uri:
-            raise ValueError("MONGODB_URI environment variable is not set")
-            
-        db_name = os.getenv("MONGODB_DB_NAME", "bacafe")
-        logger.info(f"Connecting to MongoDB database: {db_name}")
-        
+        mongodb_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
         self.client = AsyncIOMotorClient(mongodb_uri)
-        self.db = self.client[db_name]
-        self.init_db()
+        self.db = self.client["bacafe"]
+        self._ensure_indexes()
 
-    def init_db(self):
-        """Initialize MongoDB connection"""
+    async def _ensure_indexes(self):
+        """Ensure all required indexes exist in MongoDB collections."""
         try:
-            logger.info("MongoDB connection initialized")
+            # Indexes for articles collection
+            await self.db.articles.create_index([("createdAt", 1)])
+
+            # Indexes for digests collection
+            await self.db.digests.create_index([("createdAt", 1)])
+            await self.db.digests.create_index([("version", 1)])
+            await self.db.digests.create_index([("cluster", 1)])
+
+            logger.info("MongoDB indexes created successfully")
         except Exception as e:
-            logger.error(f"MongoDB connection failed: {str(e)}")
+            logger.error(f"Error creating MongoDB indexes: {str(e)}")
             raise
 
-    async def create_indexes(self):
-        """Create necessary indexes"""
+    async def aggregate_articles(self, pipeline: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Execute an aggregation pipeline on the articles collection."""
         try:
-            # Articles collection indexes
-            await self.db.articles.create_index([("title", ASCENDING)], unique=True)
-            await self.db.articles.create_index([("topics", ASCENDING)])
-            await self.db.articles.create_index([("created_at", DESCENDING)])
-
-            # Readers collection indexes
-            await self.db.readers.create_index([("age", ASCENDING)])
-            await self.db.readers.create_index([("gender", ASCENDING)])
-
-            logger.info("MongoDB indexes created")
+            cursor = self.db.articles.aggregate(pipeline)
+            return await cursor.to_list(length=None)
         except Exception as e:
-            logger.error(f"Failed to create MongoDB indexes: {str(e)}")
+            logger.error(f"Error in MongoDB aggregation: {str(e)}")
+            raise
+
+    async def aggregate_digests(self, pipeline: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Execute an aggregation pipeline on the digests collection."""
+        try:
+            cursor = self.db.digests.aggregate(pipeline)
+            return await cursor.to_list(length=None)
+        except Exception as e:
+            logger.error(f"Error in MongoDB aggregation: {str(e)}")
+            raise
+
+    async def get_reader(self, reader_id: str) -> Dict[str, Any]:
+        """
+        Retrieve a reader by ID from the users collection.
+        
+        Args:
+            reader_id: The ID of the reader (can be string or ObjectId string)
+            
+        Returns:
+            Dict containing the reader data
+            
+        Raises:
+            ValueError: If reader is not found
+            Exception: For other database errors
+        """
+        try:
+            # Try to find by string ID first
+            reader = await self.db.users.find_one({"_id": ObjectId(reader_id)})
+            
+            if not reader:
+                raise ValueError(f"Reader not found: {reader_id}")
+                
+            logger.info(
+                "Reader found",
+                extra={
+                    'reader_id': reader_id
+                }
+            )
+            return reader
+            
+        except ValueError:
+            # Re-raise ValueError for not found cases
+            raise
+        except Exception as e:
+            logger.error(
+                "Error retrieving reader",
+                extra={
+                    'reader_id': reader_id,
+                    'error': str(e)
+                }
+            )
+            raise
+
+    async def get_latest_digest_version(self) -> int:
+        """
+        Get the latest digest version (timestamp).
+        
+        Returns:
+            int: Latest version timestamp in milliseconds since epoch
+        """
+        try:
+            pipeline = [
+                {
+                    '$sort': {'version': -1}
+                },
+                {
+                    '$limit': 1
+                },
+                {
+                    '$project': {
+                        'version': 1,
+                        '_id': 0
+                    }
+                }
+            ]
+            
+            result = await self.aggregate_digests(pipeline)
+            if result and len(result) > 0:
+                return result[0]['version']
+            return 0
+        except Exception as e:
+            logger.error(f"Error getting latest digest version: {str(e)}")
+            raise
+
+    async def get_digest_status(self, version: int) -> Dict[str, Any]:
+        """
+        Get status of digests for a specific version.
+        
+        Args:
+            version: Version timestamp in milliseconds since epoch
+            
+        Returns:
+            Dict containing:
+            - total_digests: Total number of digests for this version
+            - clusters: Number of unique clusters
+            - creation_time: Timestamp of first digest in this version
+        """
+        try:
+            pipeline = [
+                {
+                    '$match': {
+                        'version': version
+                    }
+                },
+                {
+                    '$group': {
+                        '_id': None,
+                        'total_digests': {'$sum': 1},
+                        'clusters': {'$addToSet': '$cluster'},
+                        'first_created': {'$min': '$createdAt'},
+                        'last_created': {'$max': '$createdAt'}
+                    }
+                }
+            ]
+            
+            result = await self.aggregate_digests(pipeline)
+            if result and len(result) > 0:
+                stats = result[0]
+                return {
+                    'version': version,
+                    'total_digests': stats['total_digests'],
+                    'unique_clusters': len(stats['clusters']),
+                    'started_at': stats['first_created'],
+                    'completed_at': stats['last_created']
+                }
+            return {
+                'version': version,
+                'total_digests': 0,
+                'unique_clusters': 0,
+                'started_at': None,
+                'completed_at': None
+            }
+        except Exception as e:
+            logger.error(f"Error getting digest status: {str(e)}")
+            raise
+
+    async def insert_digest(self, digest: Dict[str, Any]) -> str:
+        """
+        Insert a digest document into MongoDB.
+        
+        Args:
+            digest: Dictionary containing digest data including:
+                   - category, title, teaser, highlights, body
+                   - articleLinks, imageUrl, readTime, mood
+                   - embeddings, cluster, version (as milliseconds since epoch)
+                   - createdAt
+        
+        Returns:
+            str: The ID of the inserted digest document
+        
+        Raises:
+            Exception: If the insertion fails
+        """
+        try:
+            logger.info(
+                "Inserting digest",
+                extra={
+                    'title': digest.get('title'),
+                    'cluster': digest.get('cluster'),
+                    'version': digest.get('version')
+                }
+            )
+            
+            result = await self.db.digests.insert_one(digest)
+            
+            logger.info(
+                "Digest inserted successfully",
+                extra={
+                    'digest_id': str(result.inserted_id),
+                    'title': digest.get('title'),
+                    'cluster': digest.get('cluster'),
+                    'version': digest.get('version')
+                }
+            )
+            
+            return str(result.inserted_id)
+        except Exception as e:
+            logger.error(
+                "Failed to insert digest",
+                extra={
+                    'error': str(e),
+                    'title': digest.get('title'),
+                    'cluster': digest.get('cluster'),
+                    'version': digest.get('version')
+                }
+            )
             raise
 
     # Article operations
@@ -85,15 +265,6 @@ class MongoDBService:
             logger.error(f"Failed to insert reader: {str(e)}")
             raise
 
-    async def get_reader(self, reader_id: str) -> Optional[Dict]:
-        """Retrieve a reader by ID"""
-        try:
-            reader = await self.db.readers.find_one({"_id": reader_id})
-            return reader
-        except Exception as e:
-            logger.error(f"Failed to retrieve reader {reader_id}: {str(e)}")
-            raise
-
     async def update_reader_interests(self, reader_id: str, interests: List[str]) -> bool:
         """Update reader interests"""
         try:
@@ -107,14 +278,6 @@ class MongoDBService:
             return success
         except Exception as e:
             logger.error(f"Failed to update reader {reader_id} interests: {str(e)}")
-            raise
-
-    async def aggregate_articles(self, pipeline):
-        try:
-            cursor = self.db.articles.aggregate(pipeline)
-            return await cursor.to_list(length=None)
-        except Exception as e:
-            logger.error(f"Failed to aggregate articles: {str(e)}")
             raise
 
     # Cleanup

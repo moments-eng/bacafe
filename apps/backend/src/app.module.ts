@@ -8,7 +8,6 @@ import { AppController } from './app.controller';
 import { ArticleQueueModule } from './article-queue/article-queue.module';
 import { ArticleScrapingModule } from './article-scraping/article-scraping.module';
 import { ArticlesModule } from './articles/articles.module';
-import { DailyDigestModule } from './daily-digest/daily-digest.module';
 import { EmailModule } from './emails/email.module';
 import { FeedScrapingModule } from './feed-scraping/feed-scraping.module';
 import { FeedsModule } from './feeds/feeds.module';
@@ -16,6 +15,7 @@ import { loggerOptions } from './logger/logger';
 import { OnboardingModule } from './onboarding/onboarding.module';
 import { QueuesModule } from './queues/queues.module';
 import { ScrapersModule } from './scrapers/scrapers.module';
+import { DigestModule } from './digest/digest.module';
 
 @Module({
   imports: [
@@ -39,7 +39,7 @@ import { ScrapersModule } from './scrapers/scrapers.module';
     QueuesModule,
     FeedScrapingModule,
     OnboardingModule,
-    DailyDigestModule,
+    DigestModule,
     EmailModule,
   ],
   controllers: [AppController],

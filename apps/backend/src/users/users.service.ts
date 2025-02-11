@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cursor, Model, QueryOptions, Unpacked } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -7,6 +7,8 @@ import { EmailQueueService } from '../emails/email-queue.service';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly emailQueueService: EmailQueueService,
@@ -98,5 +100,10 @@ export class UsersService {
     });
 
     return user;
+  }
+
+  async findByDigestTime(digestTime: string): Promise<User[]> {
+    this.logger.log(`Finding users with digest time ${digestTime}`);
+    return this.userModel.find({ digestTime }).exec();
   }
 }

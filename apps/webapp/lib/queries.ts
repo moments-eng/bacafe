@@ -5,4 +5,6 @@ export const QUERY_KEYS = {
   ARTICLES: "articles",
   ADMIN_STATS: "admin-stats",
   DAILY_DIGEST: "daily-digest",
+  DIGEST_IDS: "digest-ids",
+  DIGEST_DETAILS: "digest-details",
 } as const;

@@ -1,5 +1,6 @@
 "use client";
 
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ToastProvider } from "@/components/ui/toast";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -22,7 +23,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <DirectionProvider dir="rtl">
           <ToastProvider>
-            {children}
+              {children}
             <ReactQueryDevtools initialIsOpen={false} />
           </ToastProvider>
         </DirectionProvider>

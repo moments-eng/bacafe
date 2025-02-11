@@ -12,6 +12,7 @@ import { Menu } from "lucide-react";
 import { Bona_Nova_SC } from "next/font/google";
 import { Sidebar } from "./sidebar/sidebar";
 import Image from "next/image";
+import { useCallback, useState } from "react";
 
 const titleFont = Bona_Nova_SC({
   subsets: ["hebrew"],
@@ -19,6 +20,12 @@ const titleFont = Bona_Nova_SC({
 });
 
 export function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b backdrop-blur px-4">
       <div className="container flex h-14 max-w-screen-md items-center justify-between">
@@ -34,7 +41,7 @@ export function Header() {
             priority
           />
         </div>
-        <Sheet>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Toggle Menu">
               <Menu className="h-5 w-5" />
@@ -45,7 +52,7 @@ export function Header() {
             className="flex w-[85vw] flex-col p-0 sm:max-w-sm [&_*]:text-right"
           >
             <SheetTitle hidden>Menu</SheetTitle>
-            <Sidebar />
+            <Sidebar onClose={handleClose} />
           </SheetContent>
         </Sheet>
       </div>

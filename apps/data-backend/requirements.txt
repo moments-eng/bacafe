@@ -9,3 +9,7 @@ langfuse==2.57.12
 python-dotenv==1.0.1
 python-json-logger==3.2.1
 structlog==25.1.0
+umap-learn==0.5.7
+pandas==2.2.3
+scikit-learn==1.6.1
+coralogix-logger==2.0.6

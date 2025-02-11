@@ -147,3 +147,17 @@
 	min-height: 100vh;
 	background-color: hsl(var(--background));
 }
+
+@keyframes slide {
+	0% {
+		transform: translateX(0) translateY(0);
+	}
+	100% {
+		transform: translateX(-50%) translateY(-50%);
+	}
+}
+
+.animate-slide {
+	animation: slide 50s linear infinite;
+	background-size: 200% 200%;
+}
