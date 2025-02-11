@@ -1,9 +1,9 @@
 import {
   ArticlesApi,
   Configuration,
-  DailyDigestApi,
   FeedsApi,
   OnboardingApi,
+  DigestsApi,
   UsersApi,
 } from "@/generated/http-clients/backend";
 
@@ -14,8 +14,8 @@ const config = new Configuration({
 const articlesApi = new ArticlesApi(config);
 const feedsApi = new FeedsApi(config);
 const onboardingApi = new OnboardingApi(config);
-const dailyDigestApi = new DailyDigestApi(config);
+const digestsApi = new DigestsApi(config);
 const usersApi = new UsersApi(config);
 
-export { articlesApi, dailyDigestApi, feedsApi, onboardingApi, usersApi };
+export { articlesApi, digestsApi, feedsApi, onboardingApi, usersApi };
 

@@ -4,7 +4,11 @@ import { LogoutButton } from "./logout-button";
 import { Navigation } from "./navigation";
 import { UserProfile } from "./user-profile";
 
-export function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export function Sidebar({ onClose }: SidebarProps) {
   return (
     <div className="flex h-full flex-col bg-gradient-to-b from-primary/10 via-background to-background ">
       <div className="border-b mt-12">
@@ -12,12 +16,16 @@ export function Sidebar() {
       </div>
 
       <div className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
-        <Navigation items={mainMenuItems} />
+        <Navigation items={mainMenuItems} onNavigate={onClose} />
       </div>
 
       <div className="shrink-0 border-t">
         <div className="px-4 py-4">
-          <Navigation items={bottomMenuItems} variant="muted" />
+          <Navigation
+            items={bottomMenuItems}
+            variant="muted"
+            onNavigate={onClose}
+          />
           <Separator className="my-4" />
           <LogoutButton />
         </div>

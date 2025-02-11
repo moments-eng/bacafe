@@ -1,12 +1,18 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uuid
-from .services.process import ProcessService
+from .services.article_ingestion import ArticleIngestionService
+from .services.reader_ingestion import ReaderIngestionService
+from .services.digest import DigestService
 from .utils.logger import logger
 
 app = FastAPI()
-process_service = ProcessService()
+
+# Initialize services
+article_service = ArticleIngestionService()
+reader_service = ReaderIngestionService()
+digest_service = DigestService()
 
 # Add CORS middleware
 app.add_middleware(
@@ -46,7 +52,7 @@ async def ingest_article(request: Request):
                 'article_title': article_data.get('title', 'Unknown Title')
             }
         )
-        result = await process_service.ingest_article(article_data)
+        result = await article_service.process_article(article_data)
         logger.info(
             "Article processed successfully",
             extra={
@@ -75,7 +81,7 @@ async def ingest_reader(request: Request):
                 'request_id': request.state.request_id
             }
         )
-        result = await process_service.ingest_reader(reader_data)
+        result = await reader_service.process_reader(reader_data)
         logger.info(
             "Reader processed successfully",
             extra={
@@ -94,64 +100,76 @@ async def ingest_reader(request: Request):
         )
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/daily-digest")
-async def reader_daily_digest(request: Request):
+@app.get("/api/daily-digest/{reader_id}")
+async def get_daily_digest(reader_id: str, request: Request):
+    """
+    Get personalized daily digest for a reader.
+    
+    Args:
+        reader_id: The ID of the reader to get digest for
+        
+    Returns:
+        List of relevant digest sections for the reader
+    """
     try:
-        data = await request.json()
         logger.info(
-            "Writing reader digest",
+            "Fetching daily digest",
             extra={
                 'request_id': request.state.request_id,
-                'reader_id': data.get('reader_id')
+                'reader_id': reader_id
             }
         )
-        result = await process_service.get_daily(data.get('reader_id'))
+        result = await digest_service.get_daily_digest(reader_id)
         logger.info(
-            "Reader digest processed successfully",
+            "Daily digest fetched successfully",
             extra={
                 'request_id': request.state.request_id,
-                'sections_count': len(result.get('sections', []))
+                'reader_id': reader_id,
+                'sections_count': len(result)
             }
         )
         return result
-    except Exception as e:
+    except ValueError as e:
+        # This will catch the "Reader not found" error from MongoDBService
         logger.error(
-            "Reader digest processing failed",
+            "Reader not found",
             extra={
                 'request_id': request.state.request_id,
+                'reader_id': reader_id,
+                'error': str(e)
+            }
+        )
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(
+            "Failed to fetch daily digest",
+            extra={
+                'request_id': request.state.request_id,
+                'reader_id': reader_id,
                 'error': str(e)
             }
         )
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/batch-digest")
-async def batch_digest(request: Request):
-    try:
-        data = await request.json()
-        logger.info(
-            "Computing batch digest",
-            extra={
-                'request_id': request.state.request_id
-            }
-        )
-        result = await process_service.get_batch_digest()
-        logger.info(
-            "Batch digest processed successfully",
-            extra={
-                'request_id': request.state.request_id,
-                'sections_count': len(result)
-            }
-        )
-        return result
-    except Exception as e:
-        
-        logger.error(
-            "Batch digest processing failed",
-            extra={
-                'request_id': request.state.request_id,
-                'error': str(e)
-            }
-        )
-        print(e)
-        raise HTTPException(status_code=500, detail=str(e))
+async def batch_digest(request: Request, background_tasks: BackgroundTasks):
+    """
+    Endpoint to trigger batch digest processing.
+    Returns immediately with a request ID while processing continues in the background.
+    """
+    request_id = request.state.request_id
+    logger.info(
+        "Batch digest requested",
+        extra={
+            'request_id': request_id
+        }
+    )
+    
+    # Schedule the batch processing as a background task
+    background_tasks.add_task(digest_service.process_batch_digest, request_id)
+    
+    return {
+        "message": "Batch Requested",
+        "request_id": request_id
+    }
 

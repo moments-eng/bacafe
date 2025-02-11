@@ -1,7 +1,5 @@
-import { Header } from "@/components/header";
-import { Providers } from "../providers";
-import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { Header } from "@/components/header";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({

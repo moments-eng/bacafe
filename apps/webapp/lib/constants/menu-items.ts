@@ -1,7 +1,18 @@
 import { hebrewContent } from "@/locales/he";
-import { Newspaper, Settings, Shield, User } from "lucide-react";
+import {
+  LayoutDashboard,
+  Newspaper,
+  Settings,
+  Shield,
+  User,
+} from "lucide-react";
 
 export const mainMenuItems = [
+  {
+    title: "דשבורד",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
   {
     title: hebrewContent.navigation.menu.dailyDigest,
     href: "/dashboard/daily",

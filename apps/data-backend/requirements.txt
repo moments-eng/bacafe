@@ -16,3 +16,4 @@ structlog==25.1.0
 umap-learn==0.5.7
 pandas==2.2.3
 scikit-learn==1.6.1
+coralogix-logger==2.0.6

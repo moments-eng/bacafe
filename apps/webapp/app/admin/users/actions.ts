@@ -7,7 +7,7 @@ import type { UserRole } from "@/lib/types/user.types";
 import type { FilterQuery } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { withAdminAccess } from "../utils/auth";
-import { dailyDigestApi, usersApi } from "@/lib/http-clients/backend/client";
+import { digestsApi, usersApi } from "@/lib/http-clients/backend/client";
 import Logger from "../../../logger/logger";
 
 interface GetUsersOptions {
@@ -133,7 +133,7 @@ async function updateUserRoleAction(userId: string, role: UserRole) {
 
 async function generateUserDailyDigestAction(userId: string) {
   try {
-    await dailyDigestApi.triggerDailyDigest(userId);
+    await digestsApi.triggerDigestCreation();
     return { success: true };
   } catch (error) {
     Logger.getInstance().error("Error generating daily digest", { error });
@@ -143,7 +143,7 @@ async function generateUserDailyDigestAction(userId: string) {
 
 async function deliverUserDailyDigestAction(userId: string) {
   try {
-    await dailyDigestApi.deliverDailyDigest(userId);
+    await digestsApi.sendUserNotification(userId);
     return { success: true };
   } catch (error) {
     Logger.getInstance().error("Error delivering daily digest", { error });

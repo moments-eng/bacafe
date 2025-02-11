@@ -1,48 +1,48 @@
 "use client";
 
-import { DigestCompletionMessage } from "@/components/daily-digest/digest-completion-message";
-import { DigestHeader } from "@/components/daily-digest/digest-header";
+import { useEffect, useRef } from "react";
 import { DigestSection } from "@/components/daily-digest/digest-section";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDailyDigest } from "@/hooks/use-daily-digest";
-import { QUERY_KEYS } from "@/lib/queries";
+import { useDigestFeed } from "@/hooks/use-digest-feed";
 import { hebrewContent } from "@/locales/he";
-import { useQuery } from "@tanstack/react-query";
+import { Section } from "@/types/daily-digest";
 import { AnimatePresence } from "framer-motion";
-import { getLatestDailyDigest } from "./actions";
 
 const { dailyDigest } = hebrewContent;
 
 export default function DailyPage() {
-  const { data: digest, isLoading } = useQuery({
-    queryKey: [QUERY_KEYS.DAILY_DIGEST],
-    queryFn: () => getLatestDailyDigest(),
-  });
+  const { digestPages, isLoading, hasNextPage, fetchNextPage } =
+    useDigestFeed();
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  const {
-    expandedSections,
-    completedSections,
-    progress,
-    toggleSection,
-    markAsComplete,
-  } = useDailyDigest(digest?.sections.length ?? 0);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage]);
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <DigestHeader progress={0} />
-        <div className="space-y-6">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-48 w-full rounded-lg" />
-          ))}
-        </div>
+      <div className="h-screen w-full flex items-center justify-center">
+        <Skeleton className="h-12 w-12 rounded-full" />
       </div>
     );
   }
 
-  if (!digest) {
+  if (!digestPages?.pages[0]?.items.length) {
     return (
-      <div className="flex h-[80vh] items-center justify-center">
+      <div className="flex h-screen items-center justify-center">
         <p className="text-center text-muted-foreground">
           {dailyDigest.noDigestAvailable}
         </p>
@@ -50,32 +50,28 @@ export default function DailyPage() {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <DigestHeader progress={progress} />
+  const allDigests = digestPages.pages.flatMap((page) => page.items);
 
-      {/* Main Content */}
-      <div className="space-y-6">
-        <AnimatePresence>
-          {digest.sections.map(
-            (section, index) =>
-              !completedSections.has(index) && (
-                <DigestSection
-                  key={section.title}
-                  section={section}
-                  index={index}
-                  onComplete={markAsComplete}
-                  isExpanded={expandedSections.has(index)}
-                  onToggle={toggleSection}
-                />
-              )
-          )}
+  return (
+    <div className="h-screen overflow-hidden bg-black">
+      <div className="h-screen snap-y snap-mandatory overflow-y-scroll">
+        <AnimatePresence mode="popLayout">
+          {allDigests.map((section: Section) => (
+            <DigestSection key={section.title} section={section} />
+          ))}
         </AnimatePresence>
 
-        {/* Completion Message */}
-        {completedSections.size === digest.sections.length && (
-          <DigestCompletionMessage />
-        )}
+        {/* Intersection Observer Target */}
+        <div
+          ref={observerTarget}
+          className="h-screen w-full flex items-center justify-center"
+        >
+          {hasNextPage && (
+            <div className="relative">
+              <Skeleton className="h-12 w-12 rounded-full animate-pulse" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

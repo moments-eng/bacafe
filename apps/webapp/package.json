@@ -11,7 +11,7 @@
     "check": "biome check --apply .",
     "check-types": "tsc --noEmit",
     "build-and-push": "./scripts/build-and-push.sh",
-    "generate:api-types": "openapi-generator generate -i http://localhost:3100/api-yaml -g typescript-axios -o generated/http-clients/backend",
+    "generate:api-types": "openapi-generator generate -i http://localhost:3001/api-yaml -g typescript-axios -o generated/http-clients/backend",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
