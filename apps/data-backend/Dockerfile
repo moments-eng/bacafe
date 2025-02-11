@@ -22,10 +22,11 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt gunicorn
+RUN pip install --no-cache-dir -r requirements.txt gunicorn uvicorn
 
 COPY . .
 
-ENV FLASK_ENV=production
+ENV PYTHONPATH=/app
+ENV PORT=3000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"] 
+CMD ["gunicorn", "app.main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:3000"] 
