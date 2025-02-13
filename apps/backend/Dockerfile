@@ -27,7 +27,8 @@ RUN apk add --no-cache curl
 
 COPY package*.json ./
 
-RUN npm ci --only=production
+# Generate a clean package-lock.json with only production dependencies
+RUN npm install --package-lock-only --omit=dev && npm ci --omit=dev
 
 COPY --from=development /usr/src/app/dist ./dist
 

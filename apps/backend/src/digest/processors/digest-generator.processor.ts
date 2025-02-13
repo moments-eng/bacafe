@@ -1,6 +1,6 @@
 import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger, OnModuleInit } from '@nestjs/common';
-import { Job, Queue } from 'bullmq';
+import { Queue } from 'bullmq';
 import { DataService } from '../services/data.service';
 
 type DigestJobData = {
@@ -19,6 +19,7 @@ export class DigestGeneratorProcessor extends WorkerHost implements OnModuleInit
   }
 
   async onModuleInit() {
+    this.logger.log('Initializing digest generator processor');
     // Schedule digest generation for 5 AM
     await this.digestQueue.upsertJobScheduler(
       'morning-digest-generation',

@@ -19,10 +19,16 @@ build_and_push() {
     
     echo -e "\n${GREEN}Building $service...${NC}"
     
+    # Set target based on service
+    local target="production"
+    if [ "$service" = "webapp" ]; then
+        target="runner"
+    fi
+    
     # Build the production image
     docker build \
         --platform linux/amd64 \
-        --target production \
+        --target $target \
         -t $repo_name:latest \
         -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$repo_name:latest \
         ./apps/$service

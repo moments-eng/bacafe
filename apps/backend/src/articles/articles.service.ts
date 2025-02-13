@@ -64,7 +64,7 @@ export class ArticlesService {
       // Queue for initial scraping
       await this.queueForScraping(savedArticle);
 
-      this.logger.log(`Created new article with ID: ${savedArticle._id}`);
+      this.logger.debug(`Created new article with ID: ${savedArticle._id}`);
       return savedArticle;
     } catch (error) {
       if (error instanceof BadRequestException || error instanceof ConflictException) {

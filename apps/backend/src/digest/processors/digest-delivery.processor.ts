@@ -21,9 +21,10 @@ export class DigestDeliveryProcessor extends WorkerHost implements OnModuleInit 
   }
 
   async onModuleInit() {
+    this.logger.log('Initializing digest delivery processor');
     await this.deliveryQueue.upsertJobScheduler(
       'hourly-digest-delivery',
-      { pattern: '0 * * * *' },
+      { pattern: '0 * * * 0-4' },
       {
         name: 'deliver_digests',
         data: { type: 'deliver_digests' },

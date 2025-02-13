@@ -20,7 +20,7 @@ export class ArticleQueueService {
         articleId,
         url,
       });
-      this.logger.log(`Added article ${articleId} to scraping queue`);
+      this.logger.debug(`Added article ${articleId} to scraping queue`);
     } catch (error) {
       this.logger.error(`Failed to add article ${articleId} to scraping queue: ${extractErrorMessage(error)}`);
       throw error;
