@@ -10,9 +10,10 @@ const { dailyDigest } = hebrewContent;
 export function DigestSection({ section }: { section: Section }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastScrollTime = useRef<number>(0);
-  const scrollThreshold = 100;
-  const scrollDelay = 500;
+  const scrollDelay = 500; // Delay between scroll transitions
+  const scrollThreshold = 50; // Distance from bottom to trigger next section
   const [isMobile, setIsMobile] = useState(false);
+  const [isNearBottom, setIsNearBottom] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -32,20 +33,38 @@ export function DigestSection({ section }: { section: Section }) {
       const container = e.currentTarget;
       const now = Date.now();
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isAtBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < 1;
 
-      if (!isAtBottom) {
+      // Calculate distance from bottom
+      const distanceFromBottom = scrollHeight - clientHeight - scrollTop;
+      const wasNearBottom = isNearBottom;
+
+      // Update near bottom state
+      setIsNearBottom(distanceFromBottom <= scrollThreshold);
+
+      // If we're not near the bottom, allow natural scrolling within the section
+      if (distanceFromBottom > scrollThreshold) {
         e.stopPropagation();
         return;
       }
 
-      if (isAtBottom && now - lastScrollTime.current > scrollDelay) {
-        lastScrollTime.current = now;
-      } else {
-        e.stopPropagation();
+      // If we are near bottom, check if we should allow transition
+      if (distanceFromBottom <= scrollThreshold) {
+        // If we just entered the threshold zone, stop propagation
+        if (!wasNearBottom) {
+          e.stopPropagation();
+          return;
+        }
+
+        // Apply rate limiting to prevent rapid transitions
+        if (now - lastScrollTime.current > scrollDelay) {
+          lastScrollTime.current = now;
+          // Allow event to bubble up to trigger section transition
+        } else {
+          e.stopPropagation();
+        }
       }
     },
-    [isMobile]
+    [isMobile, isNearBottom]
   );
 
   return (
@@ -117,30 +136,28 @@ export function DigestSection({ section }: { section: Section }) {
                 {paragraph}
               </p>
             ))}
-
-            
           </div>
           {section.articleLinks.length > 0 && (
-              <div className="mt-8 bg-black/60rounded-xl backdrop-blur-sm shadow-lg">
-                <h2 className="mb-3 text-lg font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  {dailyDigest.section.articleLinks}
-                </h2>
-                <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
-                  {section.articleLinks.map((link, index) => (
-                    <a
-                      key={index}
-                      href={link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="min-w-[120px] h-10 flex-shrink-0 rounded-lg bg-white/20 px-3 text-sm text-white hover:bg-white/30 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm hover:shadow-lg"
-                    >
-                      <span>{dailyDigest.section.feedback.readMore}</span>
-                      <ArrowUpRightFromSquare className="h-4 w-4 flex-shrink-0" />
-                    </a>
-                  ))}
-                </div>
+            <div className="mt-8 bg-black/60rounded-xl backdrop-blur-sm shadow-lg">
+              <h2 className="mb-3 text-lg font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                {dailyDigest.section.articleLinks}
+              </h2>
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+                {section.articleLinks.map((link, index) => (
+                  <a
+                    key={index}
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="min-w-[120px] h-10 flex-shrink-0 rounded-lg bg-white/20 px-3 text-sm text-white hover:bg-white/30 transition-colors flex items-center justify-center gap-2 backdrop-blur-sm hover:shadow-lg"
+                  >
+                    <span>{dailyDigest.section.feedback.readMore}</span>
+                    <ArrowUpRightFromSquare className="h-4 w-4 flex-shrink-0" />
+                  </a>
+                ))}
               </div>
-            )}
+            </div>
+          )}
         </div>
       </div>
     </motion.div>

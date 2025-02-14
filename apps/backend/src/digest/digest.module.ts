@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DigestDeliveryProcessor } from './processors/digest-delivery.processor';
 import { DigestGeneratorProcessor } from './processors/digest-generator.processor';
 import { BullModule } from '@nestjs/bullmq';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -19,10 +20,25 @@ import { BullModule } from '@nestjs/bullmq';
     ConfigModule,
     BullModule.registerQueue({
       name: 'digest-generator',
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 1000,
+        },
+      },
     }),
     BullModule.registerQueue({
       name: 'digest-delivery',
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 1000,
+        },
+      },
     }),
+    NotificationsModule,
   ],
   controllers: [DigestController],
   providers: [DigestService, DataService, DigestGeneratorProcessor, DigestDeliveryProcessor],

@@ -22,6 +22,7 @@ export class MessagesFacade {
       MessagesFacade.logger.log('WhatsApp message sent. Response:', JSON.stringify(response.data));
       return response.data;
     } catch (error) {
+      console.error(error);
       MessagesFacade.logger.error('Error sending WhatsApp message:', error);
       throw error;
     }

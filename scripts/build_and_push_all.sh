@@ -5,7 +5,13 @@ set -e
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-echo "🚀 Building and pushing all services..."
+# Check if an app name was provided
+APP_NAME=$1
+
+echo "🚀 Building and pushing services..."
+if [ -n "$APP_NAME" ]; then
+    echo "Building specific app: $APP_NAME"
+fi
 
 # Login to AWS ECR
 aws ecr get-login-password --region $AWS_REGION | \
@@ -37,10 +43,21 @@ build_and_push() {
     docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$repo_name:latest
 }
 
-# Build and push each service
+# Define available services
 SERVICES=("backend" "webapp" "data-backend")
-for service in "${SERVICES[@]}"; do
-    build_and_push $service
-done
 
-echo -e "\n${GREEN}✅ All services have been built and pushed successfully!${NC}" 
+# If an app name is provided, validate and build only that app
+if [ -n "$APP_NAME" ]; then
+    if [[ ! " ${SERVICES[@]} " =~ " ${APP_NAME} " ]]; then
+        echo "Error: Invalid app name. Available apps are: ${SERVICES[*]}"
+        exit 1
+    fi
+    build_and_push "$APP_NAME"
+else
+    # Build and push each service
+    for service in "${SERVICES[@]}"; do
+        build_and_push $service
+    done
+fi
+
+echo -e "\n${GREEN}✅ Build and push completed successfully!${NC}" 

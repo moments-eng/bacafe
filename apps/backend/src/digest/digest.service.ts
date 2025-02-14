@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { BodyComponent, TemplateComponent } from '../channels/whatsapp/types/message-types';
 import { User } from '../users/schemas/user.schema';
 import { QueryDigestDto } from './dto/query-digest.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class DigestService {
@@ -18,6 +19,7 @@ export class DigestService {
     private readonly dataService: DataService,
     private readonly whatsappService: WhatsAppService,
     private readonly usersService: UsersService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async findOne(id: string): Promise<Digest> {
@@ -53,9 +55,9 @@ export class DigestService {
     this.validateUserNotificationSetup(user);
 
     const teaserText = await this.assembleUserDigestTeaser(userId);
-    await this.sendWhatsAppMessage(user.phoneNumber!, teaserText);
+    await this.notificationsService.enqueueDigestNotification(userId, teaserText);
 
-    this.logger.log(`Successfully sent notification to user ${userId}`);
+    this.logger.log(`Successfully enqueued notification for user ${userId}`);
   }
 
   async sendHourlyNotifications(currentHour: string): Promise<void> {
@@ -69,7 +71,7 @@ export class DigestService {
           await this.sendUserNotification(user._id.toString());
         } catch (error) {
           this.logger.error(
-            `Failed to send notification to user ${user._id.toString()}`,
+            `Failed to enqueue notification for user ${user._id.toString()}`,
             error instanceof Error ? error.stack : undefined,
           );
         }
@@ -108,17 +110,6 @@ export class DigestService {
       .filter((digest) => digest?.teaser)
       .map((digest) => digest.teaser)
       .join(', ');
-  }
-
-  private async sendWhatsAppMessage(phoneNumber: string, text: string): Promise<void> {
-    const components: TemplateComponent[] = [
-      {
-        type: 'body',
-        parameters: [{ type: 'text', text }],
-      } as BodyComponent,
-    ];
-
-    await this.whatsappService.sendTemplate(phoneNumber, 'daily_digest', components);
   }
 
   /**
