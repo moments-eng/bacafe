@@ -286,6 +286,8 @@ export const hebrewContent = {
         markAsRead: "סומן כנקרא",
         readMore: "לפרטים נוספים",
         readLess: "צמצם תצוגה",
+        showMore: "קרא עוד",
+        showLess: "הצג פחות",
       },
       swipeInstructions:
         "החליקו ימינה אם אתם אוהבים, ושמאלה אם פחות רלוונטי עבורכם",
